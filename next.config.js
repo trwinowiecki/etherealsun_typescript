@@ -1,7 +1,21 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-}
+const withTM = require('next-transpile-modules')([
+  '@square/web-sdk',
+  'react-square-web-payments-sdk',
+]);
+const { withPlaiceholder } = require('@plaiceholder/next');
 
-module.exports = nextConfig
+const nextConfig = withTM(
+  withPlaiceholder({
+    reactStrictMode: true,
+    swcMinify: true,
+    experimental: {
+      esmExternals: true,
+    },
+    images: {
+      domains: ['items-images-production.s3.us-west-2.amazonaws.com'],
+    },
+  })
+);
+
+module.exports = nextConfig;

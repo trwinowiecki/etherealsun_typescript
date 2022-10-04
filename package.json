@@ -9,11 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.3",
+    "@heroicons/react": "^2.0.11",
+    "@plaiceholder/next": "^2.5.0",
+    "@square/web-sdk": "^2.0.1",
+    "axios": "^0.27.2",
+    "bcryptjs": "^2.4.3",
+    "js-cookie": "^3.0.1",
     "next": "12.3.1",
+    "next-auth": "^4.12.2",
+    "next-transpile-modules": "^9.0.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-square-web-payments-sdk": "^3.2.1",
+    "square": "^22.0.0"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.2",
     "@types/node": "18.8.1",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",

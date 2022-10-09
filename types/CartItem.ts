@@ -1,3 +1,5 @@
 import { CatalogObject } from 'square';
 
-export interface CartItem extends CatalogObject {}
+export interface CartItem extends CatalogObject {
+  quantity: number;
+}

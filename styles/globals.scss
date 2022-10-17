@@ -20,6 +20,25 @@ a {
   box-sizing: border-box;
 }
 
+.nav {
+  .nav-items > * {
+    @apply rounded-md;
+    
+    &:hover {
+      @apply bg-standard-bg-darker cursor-pointer;
+    }
+  }
+  
+  .menu-items {
+    :first-child {
+      @apply pt-4 rounded-t-md;
+    }
+    :last-child {
+      @apply pb-4 rounded-b-md;
+    }
+  }
+}
+
 /* @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

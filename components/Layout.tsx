@@ -18,7 +18,6 @@ type LayoutProps = {
 
 export default function Layout({ title, children }: LayoutProps) {
   const { status, data: session } = useSession();
-
   const { state, dispatch } = useContext(Store);
   const cart = state.cart;
   const [cartItemsCount, setcartItemsCount] = useState(0);

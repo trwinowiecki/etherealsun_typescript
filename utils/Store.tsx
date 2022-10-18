@@ -38,7 +38,6 @@ export const Store = createContext<StoreContextInterface>({
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case CartCommands.ADD: {
-      console.log(action.payload);
       const newItem = action.payload;
       const existItem = state.cart.cartItems.find(
         (item: CartItem) => item.id === newItem.id

@@ -12,7 +12,7 @@ body {
 }
 
 a {
-  color: inherit;
+  @apply text-accent hover:text-accent-darker;
   text-decoration: none;
 }
 

@@ -6,6 +6,7 @@ import { getError } from '../utils/error';
 import { toast } from 'react-toastify';
 import { CatalogObject, SearchCatalogObjectsResponse } from 'square';
 import ProductCard from './ProductCard';
+import { SquareCommands } from '../enums/SquareCommands';
 
 enum ReducerActions {
   FETCH_REQUEST = 'FETCH_REQUEST',
@@ -44,9 +45,6 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
 }
 
 export default function ProductList() {
-  const { state, dispatch } = useContext(Store);
-  const { cart } = state;
-
   const [{ loading, error, catalog }, catalogDispatch] = useReducer(reducer, {
     loading: true,
   });
@@ -57,7 +55,7 @@ export default function ProductList() {
         const { data } = await axios({
           method: 'POST',
           url: `/api/square`,
-          data: { type: 'GET_ALL_CATALOG' },
+          data: { type: SquareCommands.GET_ALL_CATALOG },
         });
         catalogDispatch({
           type: ReducerActions.FETCH_SUCCESS,
@@ -72,23 +70,6 @@ export default function ProductList() {
     };
     fetchCatalog();
   }, []);
-
-  const addToCartHandler = async (product, image) => {
-    const existItem = cart.cartItems.find((x) => x.id === product.id);
-    const quantity = existItem ? existItem.quantity + 1 : 1;
-    // const { data } = await axios.get(`/api/products/${product._id}`);
-
-    // if (data.countInStock < quantity) {
-    //   return toast.error('Sorry. Product is out of stock');
-    // }
-
-    dispatch({
-      type: 'CART_ADD_ITEM',
-      payload: { ...product, image: image, quantity },
-    });
-
-    toast.success('Product added to the cart');
-  };
 
   return (
     <>

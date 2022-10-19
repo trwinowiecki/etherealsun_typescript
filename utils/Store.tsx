@@ -42,12 +42,17 @@ function reducer(state: State, action: Action): State {
       const existItem = state.cart.cartItems.find(
         (item: CartItem) => item.id === newItem.id
       );
+
       const cartItems = existItem
         ? state.cart.cartItems.map((item) =>
-            item.itemData?.name === existItem.itemData?.name ? newItem : item
+            item.itemData?.name === existItem.itemData?.name
+              ? { ...newItem, quantity: newItem.quantity + item.quantity }
+              : item
           )
         : [...state.cart.cartItems, newItem];
+
       Cookies.set('cart', JSON.stringify({ ...state.cart, cartItems }));
+
       return { ...state, cart: { ...state.cart, cartItems } };
     }
     case CartCommands.REMOVE: {
@@ -55,6 +60,7 @@ function reducer(state: State, action: Action): State {
         (item) => item.id !== action.payload.id
       );
       Cookies.set('cart', JSON.stringify({ ...state.cart, cartItems }));
+
       return { ...state, cart: { ...state.cart, cartItems } };
     }
     case CartCommands.RESET: {
@@ -72,6 +78,7 @@ function reducer(state: State, action: Action): State {
         'cart',
         JSON.stringify({ ...state.cart, cartItems: [] as CartItem[] })
       );
+
       return {
         ...state,
         cart: {

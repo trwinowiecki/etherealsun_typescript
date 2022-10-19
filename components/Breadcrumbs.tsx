@@ -1,4 +1,6 @@
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { Fragment } from 'react';
 
 export type BreadcrumbPage = {
   href: string;
@@ -12,7 +14,7 @@ interface BreadcrumbProps {
 
 function Breadcrumbs({ pages }: BreadcrumbProps) {
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-1 items-center">
       {pages.map((page, i, { length }) =>
         length - 1 === i ? (
           <span
@@ -22,14 +24,14 @@ function Breadcrumbs({ pages }: BreadcrumbProps) {
             {page.name}
           </span>
         ) : (
-          <>
-            <Link href={page.href} key={page.name}>
+          <Fragment key={page.name}>
+            <Link key={page.name} href={page.href}>
               <a className={`${page.active ? '' : 'font-semibold'} capitalize`}>
                 {page.name}
               </a>
             </Link>
-            <span key={`${page.name}+/`}>/</span>
-          </>
+            <ChevronRightIcon className="h-4" />
+          </Fragment>
         )
       )}
     </div>

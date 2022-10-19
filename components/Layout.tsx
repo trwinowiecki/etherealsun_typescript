@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { UserCircleIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 import { signOut, useSession } from 'next-auth/react';
 import { Store } from '../utils/Store';
@@ -26,7 +27,9 @@ export default function Layout({ title, children }: LayoutProps) {
   const [theme, setTheme] = useState(DEFAULT_THEME);
 
   useEffect(() => {
-    setcartItemsCount(cart.cartItems.reduce((a, c) => a + c.quantity, 0));
+    setcartItemsCount(
+      cart.cartItems.reduce((acc, item) => acc + item.quantity, 0)
+    );
   }, [cart.cartItems]);
 
   useEffect(() => {

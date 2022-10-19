@@ -7,6 +7,7 @@ import {
   CatalogObjectBatch,
   SearchCatalogObjectsResponse,
 } from 'square';
+import { getImages } from '../utils/images';
 
 interface ProductCardProps {
   item: CatalogObject;
@@ -14,11 +15,8 @@ interface ProductCardProps {
 }
 
 function ProductCard({ item, relatedObj }: ProductCardProps) {
-  const imageIds = item.itemData?.imageIds;
-  const itemImages =
-    relatedObj?.filter(
-      (obj) => obj.type === 'IMAGE' && imageIds?.includes(obj.id)
-    ) || [];
+  const itemImages = getImages(item, relatedObj!);
+
   const prices = Array.from(
     new Set(
       item.itemData?.variations?.map(
@@ -34,11 +32,7 @@ function ProductCard({ item, relatedObj }: ProductCardProps) {
         <a>
           <Image
             alt={item.itemData?.name}
-            src={
-              itemImages.length > 0
-                ? itemImages[0].imageData?.url!
-                : '/defaultProduct.png'
-            }
+            src={itemImages[0].imageData?.url!}
             width={1}
             height={1}
             layout="responsive"

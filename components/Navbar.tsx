@@ -18,7 +18,7 @@ const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
       <a
         ref={ref}
         {...rest}
-        className={`${active && 'bg-standard-bg-darker'} py-2 px-4`}
+        className={`${active && 'bg-primary-background-darker'} py-2 px-4`}
       >
         {children}
       </a>
@@ -30,7 +30,7 @@ function Navbar() {
   const { status, data: session } = useSession();
 
   return (
-    <nav className="nav z-50 sticky top-0 flex w-full justify-between items-center h-12 px-4 shadow-lg bg-standard-bg">
+    <nav className="nav z-50 sticky top-0 flex w-full justify-between items-center h-12 px-4 shadow-lg bg-primary-background">
       <Link href="/">
         <a className="text-lg font-bold">Ethereal Sun</a>
       </Link>
@@ -62,7 +62,7 @@ function Navbar() {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="menu-items absolute flex flex-col right-0 mt-2 mr-2 w-auto origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none bg-standard-bg">
+            <Menu.Items className="menu-items absolute flex flex-col right-0 mt-2 mr-2 w-auto origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
               {status === 'loading' ? (
                 'Loading'
               ) : session?.user ? (

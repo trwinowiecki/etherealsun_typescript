@@ -10,17 +10,30 @@ module.exports = {
         xs: '480px',
       },
       colors: {
-        'standard-bg': {
-          DEFAULT: '#FAF1E2',
-          darker: '#F0E0C5',
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          darker: 'var(--color-primary-darker)',
         },
-        primary: '#C19728',
-        accent: {
-          DEFAULT: '#62BD72',
-          darker: '#376B40',
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          darker: 'var(--color-secondary-darker)',
         },
+        negative: 'var(--color-negative)',
+        positive: 'var(--color-positive)',
+        'primary-text': 'var(--color-text-primary)',
+        'primary-background': {
+          DEFAULT: 'var(--background-primary)',
+          darker: 'var(--background-primary-darker)',
+        },
+        'sec-background': 'var(--background-sec)',
       },
     },
+    backgroundColor: (theme) => ({
+      ...theme('colors'),
+    }),
+  },
+  variants: {
+    backgroundColor: ['active'],
   },
   plugins: [],
 };

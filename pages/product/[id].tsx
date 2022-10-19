@@ -81,7 +81,7 @@ function ProductPage(props: ProductPageProps) {
                       key={image.id + i}
                       className={`${
                         selectedImage.id === image.id ? 'border-2' : ''
-                      } border-standard-bg-darker hover:cursor-pointer w-12 md:w-auto`}
+                      } border-primary-background-darker hover:cursor-pointer w-12 md:w-auto`}
                       onClick={() => setSelectedImage(image)}
                     >
                       <Image

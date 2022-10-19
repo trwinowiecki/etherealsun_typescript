@@ -10,6 +10,8 @@ import Cookies from 'js-cookie';
 import { CartCommands } from '../enums/CartCommands';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { DEFAULT_THEME } from '../styles/themes';
+import { applyTheme } from '../styles/themes/utils';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -21,9 +23,15 @@ export default function Layout({ title, children }: LayoutProps) {
   const { state, dispatch } = useContext(Store);
   const cart = state.cart;
   const [cartItemsCount, setcartItemsCount] = useState(0);
+  const [theme, setTheme] = useState(DEFAULT_THEME);
+
   useEffect(() => {
     setcartItemsCount(cart.cartItems.reduce((a, c) => a + c.quantity, 0));
   }, [cart.cartItems]);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   const logoutClickHandler = () => {
     Cookies.remove('cart');

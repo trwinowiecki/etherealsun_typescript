@@ -7,7 +7,7 @@ export default function Custom404() {
   return (
     <Layout title="404">
       <div className="w-full flex flex-col items-center gap-4">
-        <div className="w-10/12 sm:w-1/2 lg:w-1/3 xl:w-1/4">
+        <div className="w-9/12 sm:w-1/2 lg:w-1/3 xl:w-1/4">
           <ExclamationCircleIcon className="text-primary" />
         </div>
         <div className="flex flex-col items-center">

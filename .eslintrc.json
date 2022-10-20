@@ -1,3 +1,26 @@
 {
-  "extends": "next/core-web-vitals"
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:@shopify/esnext",
+    "plugin:@shopify/typescript",
+    "plugin:@shopify/react",
+    "plugin:@shopify/prettier"
+  ],
+  "parserOptions": {
+    "project": "tsconfig.json"
+  },
+  "rules": {
+    "no-console": 1,       // Means warning
+    "prettier/prettier": 2 // Means error
+  }
 }

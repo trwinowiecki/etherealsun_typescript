@@ -16,6 +16,6 @@ export function getImages(
   const itemImages = imageObjects.filter(
     obj => obj.type === 'IMAGE' && imageIds?.includes(obj.id)
   );
-  console.log(itemImages.length >= 1 ? itemImages : [DEFAULT_IMAGE]);
+
   return itemImages.length >= 1 ? itemImages : [DEFAULT_IMAGE];
 }

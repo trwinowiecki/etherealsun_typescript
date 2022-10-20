@@ -23,11 +23,15 @@ const handler = async (req: squareRequest, res: NextApiResponse) => {
       res.status(200).send(data);
       break;
     case SquareCommands.GET_BATCH_CATALOG:
+      console.log(
+        '🚀 ~ file: square.ts ~ line 27 ~ handler ~ req.body.ids',
+        req.body.ids
+      );
       if (req.body.ids) {
         data = await getBatchCatalog(client, req.body.ids);
         res.status(200).send(data);
       } else {
-        res.status(400).send('No search IDs provided');
+        res.status(400).send({ message: 'No search IDs provided' });
       }
       break;
     case SquareCommands.GET_ONE_CATALOG:
@@ -35,7 +39,7 @@ const handler = async (req: squareRequest, res: NextApiResponse) => {
         data = await getOneCatalog(client, req.body.id);
         res.status(200).send(data);
       } else {
-        res.status(400).send('Invalid ID');
+        res.status(400).send({ message: 'Invalid ID' });
       }
       break;
     case SquareCommands.GET_ONE_INVENTORY:
@@ -43,11 +47,11 @@ const handler = async (req: squareRequest, res: NextApiResponse) => {
         data = await getOneInventory(client, req.body.id);
         res.status(200).send(data);
       } else {
-        res.status(400).send('Invalid ID');
+        res.status(400).send({ message: 'Invalid ID' });
       }
       break;
     default:
-      res.status(404).send('Request not found');
+      res.status(404).send({ message: 'Request not found' });
   }
 };
 

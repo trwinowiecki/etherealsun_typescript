@@ -1,26 +1,21 @@
 {
-  "root": true,
-  "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint",
-    "prettier"
-  ],
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
   "extends": [
-    "next/core-web-vitals",
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier",
+    "plugin:react/recommended",
+    "standard-with-typescript",
     "plugin:@shopify/esnext",
     "plugin:@shopify/typescript",
     "plugin:@shopify/react",
     "plugin:@shopify/prettier"
   ],
+  "overrides": [],
   "parserOptions": {
-    "project": "tsconfig.json"
+    "ecmaVersion": "latest",
+    "sourceType": "module"
   },
-  "rules": {
-    "no-console": 1,       // Means warning
-    "prettier/prettier": 2 // Means error
-  }
+  "plugins": ["react"],
+  "rules": {}
 }

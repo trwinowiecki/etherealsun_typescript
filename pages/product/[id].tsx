@@ -68,10 +68,13 @@ function ProductPage(props: ProductPageProps) {
     itemImages[0]
   );
 
-  const addToCartHandler = async (product: CatalogObject) => {
+  const addToCartHandler = async (
+    product: CatalogObject,
+    relatedObjects: CatalogObject[]
+  ) => {
     dispatch({
       type: CartCommands.ADD,
-      payload: { ...product, quantity }
+      payload: { ...product, quantity, relatedObjects }
     });
 
     toast.success('Product added to the cart');
@@ -193,7 +196,14 @@ function ProductPage(props: ProductPageProps) {
                   </Listbox.Options>
                 </Transition>
               </Listbox>
-              <Button onClick={() => addToCartHandler(catalogObjects.object)}>
+              <Button
+                onClick={() =>
+                  addToCartHandler(
+                    catalogObjects.object!,
+                    catalogObjects.relatedObjects!
+                  )
+                }
+              >
                 Add to bag
               </Button>
             </div>

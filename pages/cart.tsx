@@ -18,10 +18,11 @@ enum ReducerActions {
 }
 interface ReducerState extends BatchRetrieveCatalogObjectsResponse {
   loading: boolean;
+  axiosError?: string;
 }
 type ReducerAction =
   | { type: ReducerActions.FETCH_REQUEST }
-  | { type: ReducerActions.FETCH_FAIL; payload: ReducerState }
+  | { type: ReducerActions.FETCH_FAIL; payload: string }
   | {
       type: ReducerActions.FETCH_SUCCESS;
       payload: ReducerState;
@@ -38,7 +39,7 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
         loading: false
       };
     case ReducerActions.FETCH_FAIL:
-      return { ...state, ...action.payload, loading: false };
+      return { ...state, axiosError: action.payload, loading: false };
     default:
       return state;
   }
@@ -47,23 +48,36 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
 const Cart: NextPage<Props> = ({}) => {
   const { state, dispatch } = useContext(Store);
   const { cart } = state;
-  const [{ loading, errors, objects, relatedObjects }, catalogDispatch] =
-    useReducer(reducer, {
-      loading: true
-    });
+  const [
+    { loading, axiosError, errors, objects, relatedObjects },
+    catalogDispatch
+  ] = useReducer(reducer, {
+    loading: true
+  });
+
+  console.log(cart);
 
   useEffect(() => {
-    const fetchCatalog = async () => {
+    const fetchCartItems = async () => {
       try {
         catalogDispatch({ type: ReducerActions.FETCH_REQUEST });
+        console.log(
+          '🚀 ~ file: cart.tsx ~ line 68 ~ fetchCartItems ~ cart.cartItems.map(item => item.id)',
+          cart.cartItems.map(item => item.id)
+        );
+        const itemIds = cart.cartItems.map(item => item.id);
         const { data } = await axios({
           method: 'POST',
           url: `/api/square`,
           data: {
             type: SquareCommands.GET_BATCH_CATALOG,
-            body: cart.cartItems.map(item => item.id)
+            body: itemIds
           }
         });
+        console.log(
+          '🚀 ~ file: cart.tsx ~ line 71 ~ fetchCartItems ~ data',
+          data
+        );
         catalogDispatch({
           type: ReducerActions.FETCH_SUCCESS,
           payload: data
@@ -75,36 +89,52 @@ const Cart: NextPage<Props> = ({}) => {
         });
       }
     };
-    fetchCatalog();
+    fetchCartItems();
   }, [cart.cartItems]);
 
-  let itemImages: { [id: string]: CatalogObject[] };
-  objects?.forEach(item => {
-    itemImages[item.id] = getImages(item, relatedObjects!);
-  });
+  const emptyCart = <Layout title="Cart"> test</Layout>;
+
+  let itemImages: { id: string; images: CatalogObject[] }[];
+
+  if (objects) {
+    objects.forEach(item => {
+      console.log(item);
+      itemImages = [
+        ...itemImages,
+        { id: item.id, images: getImages(item, relatedObjects!) }
+      ];
+    });
+    console.log(itemImages);
+  }
 
   return (
     <Layout title="Cart">
       <>
-        <h1>Cart</h1>
-        {cart.cartItems ? (
-          <div className="w-full flex flex-col">
-            {cart.cartItems.map(item => {
-              return (
-                <div key={item.id}>
-                  <Image
-                    width={10}
-                    height={10}
-                    objectFit="cover"
-                    src={itemImages[item.id][0].imageData?.url!}
-                    alt={item.itemData?.name}
-                  />
-                </div>
-              );
-            })}
-          </div>
+        {loading ? (
+          <div>Loading...</div>
         ) : (
-          <div>No cart items found</div>
+          <div>
+            <h1>Cart</h1>
+            {cart.cartItems && cart.cartItems.length > 0 ? (
+              <div className="w-full flex flex-col">
+                {cart.cartItems.map(item => {
+                  return (
+                    <div key={item.id}>
+                      <Image
+                        width={10}
+                        height={10}
+                        objectFit="cover"
+                        src={itemImages[item.id][0].imageData?.url!}
+                        alt={item.itemData?.name}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div>No cart items found</div>
+            )}
+          </div>
         )}
       </>
     </Layout>

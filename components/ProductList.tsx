@@ -1,17 +1,14 @@
-import React, { useContext, useEffect, useReducer } from 'react';
-import PropTypes from 'prop-types';
-import { Store } from '../utils/Store';
 import axios from 'axios';
-import { getError } from '../utils/error';
-import { toast } from 'react-toastify';
-import { CatalogObject, SearchCatalogObjectsResponse } from 'square';
-import ProductCard from './ProductCard';
+import { useEffect, useReducer } from 'react';
+import { SearchCatalogObjectsResponse } from 'square';
 import { SquareCommands } from '../enums/SquareCommands';
+import { getError } from '../utils/error';
+import ProductCard from './ProductCard';
 
 enum ReducerActions {
   FETCH_REQUEST = 'FETCH_REQUEST',
   FETCH_SUCCESS = 'FETCH_SUCCESS',
-  FETCH_FAIL = 'FETCH_FAIL',
+  FETCH_FAIL = 'FETCH_FAIL'
 }
 type ReducerState = {
   loading: boolean;
@@ -35,7 +32,7 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
         ...state,
         loading: false,
         catalog: action.payload,
-        error: '',
+        error: ''
       };
     case ReducerActions.FETCH_FAIL:
       return { ...state, loading: false, error: action.payload };
@@ -46,7 +43,7 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
 
 export default function ProductList() {
   const [{ loading, error, catalog }, catalogDispatch] = useReducer(reducer, {
-    loading: true,
+    loading: true
   });
   useEffect(() => {
     const fetchCatalog = async () => {
@@ -55,16 +52,16 @@ export default function ProductList() {
         const { data } = await axios({
           method: 'POST',
           url: `/api/square`,
-          data: { type: SquareCommands.GET_ALL_CATALOG },
+          data: { type: SquareCommands.GET_ALL_CATALOG }
         });
         catalogDispatch({
           type: ReducerActions.FETCH_SUCCESS,
-          payload: data,
+          payload: data
         });
       } catch (error) {
         catalogDispatch({
           type: ReducerActions.FETCH_FAIL,
-          payload: getError(error),
+          payload: getError(error)
         });
       }
     };
@@ -80,7 +77,7 @@ export default function ProductList() {
       ) : (
         <div className="w-full flex flex-wrap gap-4 justify-center">
           {catalog?.objects ? (
-            catalog.objects.map((catalogObj) => {
+            catalog.objects.map(catalogObj => {
               if (catalogObj.type === 'ITEM') {
                 return (
                   <ProductCard

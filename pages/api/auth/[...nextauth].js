@@ -33,7 +33,7 @@ export default NextAuth({
     // }),
     FacebookProvider({
       clientId: process.env.FACEBOOK_ID,
-      clientSecret: process.env.FACEBOOK_SECRET,
+      clientSecret: process.env.FACEBOOK_SECRET
     }),
     // GithubProvider({
     //   clientId: process.env.GITHUB_ID,
@@ -44,8 +44,8 @@ export default NextAuth({
     // }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
-    }),
+      clientSecret: process.env.GOOGLE_SECRET
+    })
     // TwitterProvider({
     //   clientId: process.env.TWITTER_ID,
     //   clientSecret: process.env.TWITTER_SECRET,
@@ -68,7 +68,7 @@ export default NextAuth({
     // Use JSON Web Tokens for session instead of database sessions.
     // This option can be used with or without a database for users/accounts.
     // Note: `strategy` should be set to 'jwt' if no database is used.
-    strategy: 'jwt',
+    strategy: 'jwt'
 
     // Seconds - How long until an idle session expires and is no longer valid.
     // maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -84,7 +84,7 @@ export default NextAuth({
   // https://next-auth.js.org/configuration/options#jwt
   jwt: {
     // A secret to use for key generation (you should set this explicitly)
-    secret: process.env.SECRET,
+    secret: process.env.SECRET
     // Set to true to use encryption (default: false)
     // encryption: true,
     // You can define your own encode/decode functions for signing and encryption
@@ -100,7 +100,7 @@ export default NextAuth({
   // https://next-auth.js.org/configuration/pages
   pages: {
     signIn: '/auth/signin', // Displays signin buttons
-    signOut: '/auth/signout', // Displays form with sign out button
+    signOut: '/auth/signout' // Displays form with sign out button
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // Used for check email page
     // newUser: null // If set, new users will be directed here on first sign in
@@ -117,5 +117,5 @@ export default NextAuth({
   },
 
   // Enable debug messages in the console if you are having problems
-  debug: false,
+  debug: false
 });

@@ -1,8 +1,8 @@
-import { createContext, useReducer } from 'react';
 import Cookies from 'js-cookie';
+import { createContext, useReducer } from 'react';
+import { CartCommands } from '../enums/CartCommands';
 import { Cart } from '../types/Cart';
 import { CartItem } from '../types/CartItem';
-import { CartCommands } from '../enums/CartCommands';
 
 interface StoreContextInterface {
   state: State;
@@ -27,12 +27,12 @@ type Action =
 const initialState: State = {
   cart: Cookies.get('cart')
     ? JSON.parse(Cookies.get('cart')!)
-    : { cartItems: [] as CartItem[], shippingAddress: {}, paymentMethod: '' },
+    : { cartItems: [] as CartItem[], shippingAddress: {}, paymentMethod: '' }
 };
 
 export const Store = createContext<StoreContextInterface>({
   state: initialState,
-  dispatch: () => null,
+  dispatch: () => null
 });
 
 function reducer(state: State, action: Action): State {
@@ -44,7 +44,7 @@ function reducer(state: State, action: Action): State {
       );
 
       const cartItems = existItem
-        ? state.cart.cartItems.map((item) =>
+        ? state.cart.cartItems.map(item =>
             item.itemData?.name === existItem.itemData?.name
               ? { ...newItem, quantity: newItem.quantity + item.quantity }
               : item
@@ -57,7 +57,7 @@ function reducer(state: State, action: Action): State {
     }
     case CartCommands.REMOVE: {
       const cartItems = state.cart.cartItems.filter(
-        (item) => item.id !== action.payload.id
+        item => item.id !== action.payload.id
       );
       Cookies.set('cart', JSON.stringify({ ...state.cart, cartItems }));
 
@@ -69,8 +69,8 @@ function reducer(state: State, action: Action): State {
         cart: {
           cartItems: [] as CartItem[],
           shippingAddress: {} as Cart['shippingAddress'],
-          paymentMethod: '',
-        },
+          paymentMethod: ''
+        }
       };
     }
     case CartCommands.CLEAR: {
@@ -83,8 +83,8 @@ function reducer(state: State, action: Action): State {
         ...state,
         cart: {
           ...state.cart,
-          cartItems: [] as CartItem[],
-        },
+          cartItems: [] as CartItem[]
+        }
       };
     }
     case CartCommands.SAVE_SHIPPING_ADDRESS: {
@@ -94,9 +94,9 @@ function reducer(state: State, action: Action): State {
           ...state.cart,
           shippingAddress: {
             ...state.cart.shippingAddress,
-            ...action.payload,
-          },
-        },
+            ...action.payload
+          }
+        }
       };
     }
     case CartCommands.SAVE_PAYMENT_METHOD: {
@@ -104,8 +104,8 @@ function reducer(state: State, action: Action): State {
         ...state,
         cart: {
           ...state.cart,
-          paymentMethod: action.payload,
-        },
+          paymentMethod: action.payload
+        }
       };
     }
     default:

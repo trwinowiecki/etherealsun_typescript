@@ -32,7 +32,7 @@ export const mapTheme = (variables: ITheme): IMappedTheme => {
     '--color-text-primary': variables.textPrimary || '',
     '--background-primary': variables.backgroundPrimary || '',
     '--background-primary-darker': variables.backgroundPrimaryDarker || '',
-    '--background-sec': variables.backgroundSecondary || '',
+    '--background-sec': variables.backgroundSecondary || ''
   };
 };
 
@@ -42,7 +42,7 @@ export const applyTheme = (theme: string): void => {
 
   const root = document.documentElement;
 
-  Object.keys(themeObject).forEach((property) => {
+  Object.keys(themeObject).forEach(property => {
     if (property === 'name') {
       return;
     }

@@ -1,26 +1,20 @@
+import { Listbox, Transition } from '@headlessui/react';
+import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
-import { Fragment, useContext, useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+import React, { useContext, useState } from 'react';
+import { toast } from 'react-toastify';
 import { CatalogObject, RetrieveCatalogObjectResponse } from 'square';
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
-import Layout from '../../components/Layout';
-import { SquareCommands } from '../../enums/SquareCommands';
-import useWindowBreakpoint, { windowSizes } from '../../utils/windowDimensions';
-import { Store } from '../../utils/Store';
-import { toast } from 'react-toastify';
 import Button from '../../components/Button';
+import Layout from '../../components/Layout';
 import { CartCommands } from '../../enums/CartCommands';
-import { Listbox, Transition } from '@headlessui/react';
-import {
-  CheckIcon,
-  ChevronDoubleDownIcon,
-  ChevronDownIcon,
-} from '@heroicons/react/24/outline';
-import React from 'react';
-import { act } from '@react-three/fiber';
+import { SquareCommands } from '../../enums/SquareCommands';
 import { DEFAULT_IMAGE, getImages } from '../../utils/images';
+import { Store } from '../../utils/Store';
+import useWindowBreakpoint, { windowSizes } from '../../utils/windowDimensions';
 
 interface ProductPageProps {
   catalogObjects: RetrieveCatalogObjectResponse;
@@ -48,8 +42,8 @@ function ProductPage(props: ProductPageProps) {
     {
       href: `/product/${catalogObjects.object?.id}`,
       name: `${catalogObjects.object?.itemData?.name}`,
-      active: true,
-    },
+      active: true
+    }
   ];
 
   let itemImages = getImages(
@@ -65,7 +59,7 @@ function ProductPage(props: ProductPageProps) {
       DEFAULT_IMAGE,
       DEFAULT_IMAGE,
       DEFAULT_IMAGE,
-      DEFAULT_IMAGE,
+      DEFAULT_IMAGE
     ];
   }
 
@@ -77,7 +71,7 @@ function ProductPage(props: ProductPageProps) {
   const addToCartHandler = async (product: CatalogObject) => {
     dispatch({
       type: CartCommands.ADD,
-      payload: { ...product, quantity },
+      payload: { ...product, quantity }
     });
 
     toast.success('Product added to the cart');
@@ -210,19 +204,19 @@ function ProductPage(props: ProductPageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async context => {
   const id = context.params?.id as string;
 
   const { data } = await axios({
     method: 'POST',
     url: `${process.env.BASE_URL}/api/square`,
-    data: { type: SquareCommands.GET_ONE_CATALOG, id: id },
+    data: { type: SquareCommands.GET_ONE_CATALOG, id: id }
   });
 
   return {
     props: {
-      catalogObjects: data,
-    },
+      catalogObjects: data
+    }
   };
 };
 

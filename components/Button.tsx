@@ -9,7 +9,7 @@ interface ButtonProps {
 const Button: NextPage<ButtonProps> = ({
   children,
   extraClasses = '',
-  onClick,
+  onClick
 }) => {
   return (
     <button

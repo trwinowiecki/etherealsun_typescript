@@ -1,12 +1,6 @@
-import { maxHeaderSize } from 'http';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { PropsWithoutRef } from 'react';
-import {
-  CatalogObject,
-  CatalogObjectBatch,
-  SearchCatalogObjectsResponse,
-} from 'square';
+import { CatalogObject, SearchCatalogObjectsResponse } from 'square';
 import { getImages } from '../utils/images';
 
 interface ProductCardProps {
@@ -20,7 +14,7 @@ function ProductCard({ item, relatedObj }: ProductCardProps) {
   const prices = Array.from(
     new Set(
       item.itemData?.variations?.map(
-        (variation) =>
+        variation =>
           (variation?.itemVariationData?.priceMoney
             ?.amount as unknown as number) / 100
       )

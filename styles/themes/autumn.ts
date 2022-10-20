@@ -4,5 +4,5 @@ import { extend } from './utils';
 export default extend(base, {
   primary: 'red',
   backgroundPrimary: '#fff',
-  backgroundPrimaryDarker: '#eee',
+  backgroundPrimaryDarker: '#eee'
 });

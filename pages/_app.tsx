@@ -1,10 +1,10 @@
-import '../styles/globals.scss';
-import type { AppProps } from 'next/app';
-import type { PropsWithChildren } from 'react';
 import type { Session } from 'next-auth';
 import { SessionProvider, useSession } from 'next-auth/react';
-import { StoreProvider } from '../utils/Store';
+import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
+import type { PropsWithChildren } from 'react';
+import '../styles/globals.scss';
+import { StoreProvider } from '../utils/Store';
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
   return (
@@ -28,7 +28,7 @@ function Auth({ children }: PropsWithChildren) {
     required: true,
     onUnauthenticated() {
       router.push('/unauthorized?message=login required');
-    },
+    }
   });
   if (status === 'loading') {
     return <div>Loading...</div>;

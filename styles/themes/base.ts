@@ -9,5 +9,5 @@ export default {
   textPrimary: '#333',
   backgroundPrimary: '#FAF1E2',
   backgroundPrimaryDarker: '#F0E0C5',
-  backgroundSecondary: '#F6F9FC',
+  backgroundSecondary: '#F6F9FC'
 };

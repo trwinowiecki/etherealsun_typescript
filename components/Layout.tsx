@@ -1,18 +1,15 @@
-import { Menu, Transition } from '@headlessui/react';
+import Cookies from 'js-cookie';
+import { signOut, useSession } from 'next-auth/react';
 import Head from 'next/head';
-import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { UserCircleIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
-import { signOut, useSession } from 'next-auth/react';
-import { Store } from '../utils/Store';
-import Cookies from 'js-cookie';
 import { CartCommands } from '../enums/CartCommands';
-import Navbar from './Navbar';
-import Footer from './Footer';
 import { DEFAULT_THEME } from '../styles/themes';
 import { applyTheme } from '../styles/themes/utils';
+import { Store } from '../utils/Store';
+import Footer from './Footer';
+import Navbar from './Navbar';
 
 type LayoutProps = {
   children: React.ReactNode;

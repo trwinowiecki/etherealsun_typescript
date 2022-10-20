@@ -1,5 +1,5 @@
-import { Client, Environment } from 'square';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { Client, Environment } from 'square';
 import { SquareCommands } from '../../enums/SquareCommands';
 
 interface squareRequest extends NextApiRequest {
@@ -12,7 +12,7 @@ const merchantId = 'MLQSF7HKN6S30';
 const handler = async (req: squareRequest, res: NextApiResponse) => {
   const client = new Client({
     accessToken: process.env.SQUARE_ACCESS_TOKEN_PROD,
-    environment: Environment.Production,
+    environment: Environment.Production
   });
 
   let data;
@@ -62,7 +62,7 @@ const covertToJSON = (data: any) => {
 
 const getAllCatalog = async (client: Client) => {
   const res = await client.catalogApi.searchCatalogObjects({
-    includeRelatedObjects: true,
+    includeRelatedObjects: true
   });
 
   return covertToJSON(res);
@@ -71,7 +71,7 @@ const getAllCatalog = async (client: Client) => {
 const getBatchCatalog = async (client: Client, ids: string[]) => {
   const res = await client.catalogApi.batchRetrieveCatalogObjects({
     objectIds: ids,
-    includeRelatedObjects: true,
+    includeRelatedObjects: true
   });
 
   return covertToJSON(res);
@@ -85,7 +85,7 @@ const getOneCatalog = async (client: Client, id: string) => {
       ...res,
       inventory: await client.inventoryApi.retrieveInventoryCount(
         covertToJSON(res).object.itemData.variations[0].id
-      ),
+      )
     };
   } catch (error) {
     res = error;

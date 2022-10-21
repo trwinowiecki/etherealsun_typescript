@@ -1,14 +1,13 @@
-import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 import { CatalogObject, RetrieveCatalogObjectResponse } from 'square';
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
 import Button from '../../components/Button';
+import CustomListbox from '../../components/CustomListbox';
 import Layout from '../../components/Layout';
 import { CartCommands } from '../../enums/CartCommands';
 import { SquareCommands } from '../../enums/SquareCommands';
@@ -143,59 +142,11 @@ function ProductPage(props: ProductPageProps) {
             </span>
             <div>{catalogObjects.object?.itemData?.description}</div>
             <div className="flex gap-4 items-center">
-              <Listbox as={'div'} value={quantity} onChange={setQuantity}>
-                <Listbox.Button className="relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md sm:text-sm">
-                  <span>{quantity}</span>
-                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                    <ChevronDownIcon
-                      className="h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </Listbox.Button>
-                <Transition
-                  as={React.Fragment}
-                  leave="transition ease-in duration-100"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <Listbox.Options className="absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg sm:text-sm">
-                    {[...Array(5).keys()].map((num, i) => (
-                      <Listbox.Option
-                        key={i}
-                        value={i}
-                        className={({ active }) =>
-                          `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                            active
-                              ? 'bg-amber-100 text-amber-900'
-                              : 'text-gray-900'
-                          }`
-                        }
-                      >
-                        {({ selected }) => (
-                          <>
-                            <span
-                              className={`block truncate ${
-                                selected ? 'font-medium' : 'font-normal'
-                              }`}
-                            >
-                              {i}
-                            </span>
-                            {selected ? (
-                              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                <CheckIcon
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
-                              </span>
-                            ) : null}
-                          </>
-                        )}
-                      </Listbox.Option>
-                    ))}
-                  </Listbox.Options>
-                </Transition>
-              </Listbox>
+              <CustomListbox
+                listOfItems={[1, 2, 3, 4, 5]}
+                state={quantity}
+                setState={setQuantity}
+              />
               <Button
                 onClick={() =>
                   addToCartHandler(

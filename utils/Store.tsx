@@ -15,6 +15,7 @@ type State = {
 
 type Action =
   | { type: CartCommands.ADD; payload: CartItem }
+  | { type: CartCommands.UPDATE; payload: CartItem }
   | { type: CartCommands.REMOVE; payload: CartItem }
   | { type: CartCommands.RESET }
   | { type: CartCommands.CLEAR; payload: CartItem }
@@ -50,6 +51,24 @@ function reducer(state: State, action: Action): State {
               : item
           )
         : [...state.cart.cartItems, newItem];
+
+      Cookies.set('cart', JSON.stringify({ ...state.cart, cartItems }));
+
+      return { ...state, cart: { ...state.cart, cartItems } };
+    }
+    case CartCommands.UPDATE: {
+      const updatedItem = action.payload;
+      const existItem = state.cart.cartItems.find(
+        (item: CartItem) => item.id === updatedItem.id
+      );
+
+      const cartItems = existItem
+        ? state.cart.cartItems.map(item =>
+            item.itemData?.name === existItem.itemData?.name
+              ? { ...updatedItem, quantity: updatedItem.quantity }
+              : item
+          )
+        : [...state.cart.cartItems, updatedItem];
 
       Cookies.set('cart', JSON.stringify({ ...state.cart, cartItems }));
 

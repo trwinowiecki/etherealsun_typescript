@@ -2,38 +2,41 @@
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}'
   ],
   theme: {
     extend: {
       screens: {
-        xs: '480px',
+        xs: '480px'
       },
       colors: {
         primary: {
           DEFAULT: 'var(--color-primary)',
-          darker: 'var(--color-primary-darker)',
+          darker: 'var(--color-primary-darker)'
         },
         secondary: {
           DEFAULT: 'var(--color-secondary)',
-          darker: 'var(--color-secondary-darker)',
+          darker: 'var(--color-secondary-darker)'
         },
         negative: 'var(--color-negative)',
         positive: 'var(--color-positive)',
         'primary-text': 'var(--color-text-primary)',
         'primary-background': {
           DEFAULT: 'var(--background-primary)',
-          darker: 'var(--background-primary-darker)',
+          darker: 'var(--background-primary-darker)'
         },
-        'sec-background': 'var(--background-sec)',
+        'sec-background': 'var(--background-sec)'
       },
+      animation: {
+        'spin-slow': 'spin 3s linear infinite'
+      }
     },
-    backgroundColor: (theme) => ({
-      ...theme('colors'),
-    }),
+    backgroundColor: theme => ({
+      ...theme('colors')
+    })
   },
   variants: {
-    backgroundColor: ['active'],
+    backgroundColor: ['active']
   },
-  plugins: [],
+  plugins: []
 };

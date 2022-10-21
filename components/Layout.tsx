@@ -14,6 +14,7 @@ import Navbar from './Navbar';
 type LayoutProps = {
   children: React.ReactNode;
   title?: string;
+  loading?: boolean;
 };
 
 export default function Layout({ title, children }: LayoutProps) {
@@ -51,7 +52,7 @@ export default function Layout({ title, children }: LayoutProps) {
 
       <div className="wrapper flex min-h-screen flex-col justify-between">
         <Navbar />
-        <main className="container m-auto mt-4 px-4">{children}</main>
+        <main className="flex-1 w-full mt-4 px-4">{children}</main>
         <Footer />
       </div>
     </>

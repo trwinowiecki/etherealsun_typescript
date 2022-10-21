@@ -3,6 +3,7 @@ import { useEffect, useReducer } from 'react';
 import { SearchCatalogObjectsResponse } from 'square';
 import { SquareCommands } from '../enums/SquareCommands';
 import { getError } from '../utils/error';
+import Loading from './Loading';
 import ProductCard from './ProductCard';
 
 enum ReducerActions {
@@ -71,7 +72,7 @@ export default function ProductList() {
   return (
     <>
       {loading ? (
-        <div>Loading</div>
+        <Loading />
       ) : error ? (
         <div>{error}</div>
       ) : (

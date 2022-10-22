@@ -8,6 +8,7 @@ import { CartCommands } from '../enums/CartCommands';
 import { DEFAULT_THEME } from '../styles/themes';
 import { applyTheme } from '../styles/themes/utils';
 import { Store } from '../utils/Store';
+import CartPopup from './CartPopup';
 import Footer from './Footer';
 import Navbar from './Navbar';
 
@@ -53,6 +54,7 @@ export default function Layout({ title, children }: LayoutProps) {
       <div className="wrapper flex min-h-screen flex-col justify-between">
         <Navbar />
         <main className="flex-1 w-full mt-4 px-4">{children}</main>
+        <CartPopup />
         <Footer />
       </div>
     </>

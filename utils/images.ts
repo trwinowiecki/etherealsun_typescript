@@ -1,4 +1,5 @@
 import { CatalogObject } from 'square';
+import { CartItem } from '../types/CartItem';
 
 export const DEFAULT_IMAGE: CatalogObject = {
   imageData: {
@@ -9,7 +10,7 @@ export const DEFAULT_IMAGE: CatalogObject = {
 };
 
 export function getImages(
-  item: CatalogObject,
+  item: CatalogObject | CartItem,
   imageObjects: CatalogObject[]
 ): CatalogObject[] {
   const imageIds = item.itemData?.imageIds;

@@ -1,7 +1,6 @@
-import Cookies from 'js-cookie';
 import { createContext, useReducer } from 'react';
 import { CartCommands } from '../enums/CartCommands';
-import { Cart } from '../types/Cart';
+import { Cart, ShippingAddress } from '../types/Cart.model';
 import { CartItem } from '../types/CartItem';
 
 interface StoreContextInterface {
@@ -21,14 +20,17 @@ type Action =
   | { type: CartCommands.CLEAR; payload: CartItem }
   | {
       type: CartCommands.SAVE_SHIPPING_ADDRESS;
-      payload: Cart['shippingAddress'];
+      payload: ShippingAddress;
     }
   | { type: CartCommands.SAVE_PAYMENT_METHOD; payload: string };
 
 const initialState: State = {
-  cart: Cookies.get('cart')
-    ? JSON.parse(Cookies.get('cart')!)
-    : { cartItems: [] as CartItem[], shippingAddress: {}, paymentMethod: '' }
+  cart:
+    typeof window !== 'undefined'
+      ? localStorage.getItem('cart')
+        ? JSON.parse(localStorage.getItem('cart')!)
+        : { cartItems: [], shippingAddress: {}, paymentMethod: '' }
+      : { cartItems: [], shippingAddress: {}, paymentMethod: '' }
 };
 
 export const Store = createContext<StoreContextInterface>({
@@ -37,98 +39,111 @@ export const Store = createContext<StoreContextInterface>({
 });
 
 function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case CartCommands.ADD: {
-      const newItem = action.payload;
-      const existItem = state.cart.cartItems.find(
-        (item: CartItem) => item.id === newItem.id
-      );
+  if (typeof window !== undefined) {
+    switch (action.type) {
+      case CartCommands.ADD: {
+        const newItem = action.payload;
+        const existItem = state.cart.cartItems.find(
+          (item: CartItem) => item.id === newItem.id
+        );
 
-      const cartItems = existItem
-        ? state.cart.cartItems.map(item =>
-            item.itemData?.name === existItem.itemData?.name
-              ? { ...newItem, quantity: newItem.quantity + item.quantity }
-              : item
-          )
-        : [...state.cart.cartItems, newItem];
+        const cartItems = existItem
+          ? state.cart.cartItems.map(item =>
+              item.id === existItem.id
+                ? { ...newItem, quantity: newItem.quantity + item.quantity }
+                : item
+            )
+          : [...state.cart.cartItems, newItem];
 
-      Cookies.set('cart', JSON.stringify({ ...state.cart, cartItems }));
+        localStorage.setItem(
+          'cart',
+          JSON.stringify({ ...state.cart, cartItems })
+        );
 
-      return { ...state, cart: { ...state.cart, cartItems } };
-    }
-    case CartCommands.UPDATE: {
-      const updatedItem = action.payload;
-      const existItem = state.cart.cartItems.find(
-        (item: CartItem) => item.id === updatedItem.id
-      );
+        return { ...state, cart: { ...state.cart, cartItems } };
+      }
+      case CartCommands.UPDATE: {
+        const updatedItem = action.payload;
+        const existItem = state.cart.cartItems.find(
+          (item: CartItem) => item.id === updatedItem.id
+        );
 
-      const cartItems = existItem
-        ? state.cart.cartItems.map(item =>
-            item.itemData?.name === existItem.itemData?.name
-              ? { ...updatedItem, quantity: updatedItem.quantity }
-              : item
-          )
-        : [...state.cart.cartItems, updatedItem];
+        const cartItems = existItem
+          ? state.cart.cartItems.map(item =>
+              item.itemData?.name === existItem.itemData?.name
+                ? { ...updatedItem, quantity: updatedItem.quantity }
+                : item
+            )
+          : [...state.cart.cartItems, updatedItem];
 
-      Cookies.set('cart', JSON.stringify({ ...state.cart, cartItems }));
+        localStorage.setItem(
+          'cart',
+          JSON.stringify({ ...state.cart, cartItems })
+        );
 
-      return { ...state, cart: { ...state.cart, cartItems } };
-    }
-    case CartCommands.REMOVE: {
-      const cartItems = state.cart.cartItems.filter(
-        item => item.id !== action.payload.id
-      );
-      Cookies.set('cart', JSON.stringify({ ...state.cart, cartItems }));
+        return { ...state, cart: { ...state.cart, cartItems } };
+      }
+      case CartCommands.REMOVE: {
+        const cartItems = state.cart.cartItems.filter(
+          item => item.id !== action.payload.id
+        );
+        localStorage.setItem(
+          'cart',
+          JSON.stringify({ ...state.cart, cartItems })
+        );
 
-      return { ...state, cart: { ...state.cart, cartItems } };
-    }
-    case CartCommands.RESET: {
-      return {
-        ...state,
-        cart: {
-          cartItems: [] as CartItem[],
-          shippingAddress: {} as Cart['shippingAddress'],
-          paymentMethod: ''
-        }
-      };
-    }
-    case CartCommands.CLEAR: {
-      Cookies.set(
-        'cart',
-        JSON.stringify({ ...state.cart, cartItems: [] as CartItem[] })
-      );
-
-      return {
-        ...state,
-        cart: {
-          ...state.cart,
-          cartItems: [] as CartItem[]
-        }
-      };
-    }
-    case CartCommands.SAVE_SHIPPING_ADDRESS: {
-      return {
-        ...state,
-        cart: {
-          ...state.cart,
-          shippingAddress: {
-            ...state.cart.shippingAddress,
-            ...action.payload
+        return { ...state, cart: { ...state.cart, cartItems } };
+      }
+      case CartCommands.RESET: {
+        return {
+          ...state,
+          cart: {
+            cartItems: [],
+            shippingAddress: {} as ShippingAddress,
+            paymentMethod: ''
           }
-        }
-      };
+        };
+      }
+      case CartCommands.CLEAR: {
+        localStorage.setItem(
+          'cart',
+          JSON.stringify({ ...state.cart, cartItems: [] as CartItem[] })
+        );
+
+        return {
+          ...state,
+          cart: {
+            ...state.cart,
+            cartItems: [] as CartItem[]
+          }
+        };
+      }
+      case CartCommands.SAVE_SHIPPING_ADDRESS: {
+        return {
+          ...state,
+          cart: {
+            ...state.cart,
+            shippingAddress: {
+              ...state.cart.shippingAddress,
+              ...action.payload
+            }
+          }
+        };
+      }
+      case CartCommands.SAVE_PAYMENT_METHOD: {
+        return {
+          ...state,
+          cart: {
+            ...state.cart,
+            paymentMethod: action.payload
+          }
+        };
+      }
+      default:
+        return state;
     }
-    case CartCommands.SAVE_PAYMENT_METHOD: {
-      return {
-        ...state,
-        cart: {
-          ...state.cart,
-          paymentMethod: action.payload
-        }
-      };
-    }
-    default:
-      return state;
+  } else {
+    return initialState;
   }
 }
 

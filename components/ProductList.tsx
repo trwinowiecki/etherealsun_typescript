@@ -66,7 +66,9 @@ export default function ProductList() {
         });
       }
     };
-    fetchCatalog();
+    if (typeof window !== 'undefined') {
+      fetchCatalog();
+    }
   }, []);
 
   return (

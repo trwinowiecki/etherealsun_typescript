@@ -46,7 +46,7 @@ const Cart: NextPage<Props> = ({}) => {
             </div>
           ) : (
             <div className="w-full flex flex-col bg-sec-background rounded-md overflow-hidden shadow-md">
-              {cartItems.map(item => {
+              {cartItems.slice().map(item => {
                 return (
                   <div
                     key={item.id}

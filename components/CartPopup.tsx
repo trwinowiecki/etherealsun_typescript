@@ -1,3 +1,4 @@
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
@@ -32,9 +33,10 @@ function CartPopup() {
     <div
       className={`${
         showing ? 'bottom-0' : 'top-full'
-      } absolute left-0 bottom-0 right-0 h-[50vh] overflow-y-hidden overflow-x-auto bg-slate-500`}
+      } absolute left-0 bottom-0 right-0 max-h-[50vh] rounded-t-md p-4 overflow-y-hidden overflow-x-auto bg-slate-500`}
       onClick={() => handleClose}
     >
+      <XMarkIcon className="" />
       {JSON.stringify(cartItems)}
     </div>
   );

@@ -2,7 +2,8 @@ import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useContext } from 'react';
+import { Store } from '../utils/Store';
 
 type myLinkProps = {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ type myLinkProps = {
 // eslint-disable-next-line react/display-name
 const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
   let { href, active, children, ...rest } = props;
+
   return (
     <Link href={href}>
       <a
@@ -28,6 +30,10 @@ const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
 
 function Navbar() {
   const { status, data: session } = useSession();
+  const { state, dispatch } = useContext(Store);
+  const {
+    cart: { cartItems }
+  } = state;
 
   return (
     <nav className="nav z-50 sticky top-0 flex w-full justify-between items-center h-12 px-4 shadow-lg bg-primary-background">
@@ -35,12 +41,26 @@ function Navbar() {
         <a className="text-lg font-bold">Ethereal Sun</a>
       </Link>
       <div className="nav-items flex h-full justify-end items-center gap-4">
-        <Link href="/cart">
-          <ShoppingBagIcon
-            className="p-2 h-10 w-10"
-            aria-label="shopping bag"
-          />
-        </Link>
+        <div className="">
+          <Link href="/cart">
+            <div className="w-full h-full relative">
+              <ShoppingBagIcon
+                className="p-2 h-10 w-10"
+                aria-label="shopping bag"
+              />
+              <div
+                className={`${
+                  cartItems.length > 0 ? 'absolute' : 'hidden'
+                } top-1 right-1 text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1`}
+              >
+                {cartItems.reduce(
+                  (acc, item) => (acc = acc + item.quantity),
+                  0
+                )}
+              </div>
+            </div>
+          </Link>
+        </div>
         <Menu as="div" className="z-10">
           <Menu.Button className="flex h-full items-center">
             {status === 'loading'

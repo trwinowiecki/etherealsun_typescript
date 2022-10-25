@@ -22,15 +22,21 @@ type Action =
       type: CartCommands.SAVE_SHIPPING_ADDRESS;
       payload: ShippingAddress;
     }
-  | { type: CartCommands.SAVE_PAYMENT_METHOD; payload: string };
+  | { type: CartCommands.SAVE_PAYMENT_METHOD; payload: string }
+  | { type: CartCommands.POP_UP; payload: boolean };
 
 const initialState: State = {
   cart:
     typeof window !== 'undefined'
       ? localStorage.getItem('cart')
         ? JSON.parse(localStorage.getItem('cart')!)
-        : { cartItems: [], shippingAddress: {}, paymentMethod: '' }
-      : { cartItems: [], shippingAddress: {}, paymentMethod: '' }
+        : {
+            cartItems: [],
+            shippingAddress: {},
+            paymentMethod: '',
+            popUp: false
+          }
+      : { cartItems: [], shippingAddress: {}, paymentMethod: '', popUp: false }
 };
 
 export const Store = createContext<StoreContextInterface>({
@@ -100,7 +106,8 @@ function reducer(state: State, action: Action): State {
           cart: {
             cartItems: [],
             shippingAddress: {} as ShippingAddress,
-            paymentMethod: ''
+            paymentMethod: '',
+            popUp: false
           }
         };
       }
@@ -136,6 +143,15 @@ function reducer(state: State, action: Action): State {
           cart: {
             ...state.cart,
             paymentMethod: action.payload
+          }
+        };
+      }
+      case CartCommands.POP_UP: {
+        return {
+          ...state,
+          cart: {
+            ...state.cart,
+            popUp: action.payload
           }
         };
       }

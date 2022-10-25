@@ -75,6 +75,10 @@ function ProductPage(props: ProductPageProps) {
       type: CartCommands.ADD,
       payload: { ...product, quantity, relatedObjects }
     });
+    dispatch({
+      type: CartCommands.POP_UP,
+      payload: true
+    });
 
     toast.success('Product added to the cart');
   };

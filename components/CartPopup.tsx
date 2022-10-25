@@ -1,7 +1,8 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
+import { CartCommands } from '../enums/CartCommands';
 import { Store } from '../utils/Store';
 
 interface Props {}
@@ -9,35 +10,27 @@ interface Props {}
 function CartPopup() {
   const { state, dispatch } = useContext(Store);
   const {
-    cart: { cartItems }
+    cart: { cartItems, popUp }
   } = state;
   const router = useRouter();
 
-  const [showing, setShowing] = useState(false);
-
-  useEffect(() => {
-    console.log(showing);
-    if (router.pathname.includes('/cart') || showing) {
-      setShowing(false);
-    } else {
-      setShowing(true);
-    }
-    console.log(showing);
-  }, [cartItems]);
-
   const handleClose = () => {
-    setShowing(false);
+    dispatch({
+      type: CartCommands.POP_UP,
+      payload: false
+    });
   };
 
   return (
     <div
       className={`${
-        showing ? 'bottom-0' : 'top-full'
-      } absolute left-0 bottom-0 right-0 max-h-[50vh] rounded-t-md p-4 overflow-y-hidden overflow-x-auto bg-slate-500`}
-      onClick={() => handleClose}
+        popUp ? 'sticky' : 'hidden'
+      } left-0 bottom-0 right-0 max-h-[50vh] rounded-t-md p-4 overflow-y-hidden overflow-x-auto z-50 bg-slate-500`}
     >
-      <XMarkIcon className="" />
-      {JSON.stringify(cartItems)}
+      <div className="cursor-pointer" onClick={handleClose}>
+        <XMarkIcon className="h-6" />
+      </div>
+      {popUp ? 'true' : 'false'}
     </div>
   );
 }

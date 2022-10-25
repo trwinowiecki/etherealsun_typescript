@@ -4,6 +4,7 @@ export interface Cart {
   cartItems: CartItem[];
   shippingAddress: ShippingAddress;
   paymentMethod: string;
+  popUp: boolean;
 }
 
 export interface ShippingAddress {

@@ -51,12 +51,14 @@ function Navbar() {
               <div
                 className={`${
                   cartItems.length > 0 ? 'absolute' : 'hidden'
-                } top-1 right-1 text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1`}
+                } top-1 right-1`}
               >
-                {cartItems.reduce(
-                  (acc, item) => (acc = acc + item.quantity),
-                  0
-                )}
+                <div className="flex justify-center items-center text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1">
+                  {cartItems.reduce(
+                    (acc, item) => (acc = acc + item.quantity),
+                    0
+                  )}
+                </div>
               </div>
             </div>
           </Link>

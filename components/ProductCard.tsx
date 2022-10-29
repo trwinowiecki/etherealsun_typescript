@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from '@ui/Image';
 import Link from 'next/link';
 import { CatalogObject, SearchCatalogObjectsResponse } from 'square';
 import { getImages } from '../utils/images';
@@ -25,12 +25,8 @@ function ProductCard({ item, relatedObj }: ProductCardProps) {
       <Link href={`/product/${item.id}`}>
         <a>
           <Image
-            alt={item.itemData?.name}
+            alt={item.itemData?.name!}
             src={itemImages[0].imageData?.url!}
-            width={1}
-            height={1}
-            layout="responsive"
-            objectFit="cover"
           />
           <div className="p-2 text-center">
             <div className="font-semibold">{item.itemData?.name}</div>

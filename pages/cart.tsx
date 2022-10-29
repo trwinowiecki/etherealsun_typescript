@@ -1,6 +1,6 @@
+import Image from '@ui/Image';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useContext } from 'react';
 import CustomListbox from '../components/CustomListbox';
@@ -38,32 +38,32 @@ const Cart: NextPage<Props> = ({}) => {
         <div>
           <h1 className="text-4xl tracking-wide mb-4">Your bag</h1>
           {!cartItems || cartItems.length === 0 ? (
-            <div className="w-full h-full bg-sec-background rounded-md shadow-md p-4">
+            <div className="w-full h-full bg-primary-background-darker rounded-md shadow-md p-4">
               <span className="text-2xl">No treasures here yet!</span>
               <div className="text-2xl font-bold">
                 <Link href="/">Go hunting!</Link>
               </div>
             </div>
           ) : (
-            <div className="w-full flex flex-col bg-sec-background rounded-md overflow-hidden shadow-md">
+            <div className="w-full flex flex-col bg-primary-background-darker rounded-md overflow-hidden shadow-md">
               {cartItems.slice().map(item => {
                 return (
                   <div
                     key={item.id}
                     className="flex justify-between items-center gap-2 p-2 px-4"
                   >
-                    <div key={item.id} className="flex items-center gap-2">
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 flex-1"
+                    >
                       <Link href={`/product/${item.id}`}>
-                        <a>
+                        <a className="w-14">
                           <Image
-                            width={50}
-                            height={50}
-                            objectFit="cover"
                             src={
                               getImages(item, item.relatedObjects)[0].imageData
                                 ?.url!
                             }
-                            alt={item.itemData?.name}
+                            alt={item.itemData?.name!}
                           />
                         </a>
                       </Link>
@@ -74,7 +74,7 @@ const Cart: NextPage<Props> = ({}) => {
                           </a>
                         </Link>
                         <CustomListbox
-                          listOfItems={[1, 2, 3, 4, 5]}
+                          listOfItems={['remove', 1, 2, 3, 4, 5]}
                           state={item.quantity}
                           setState={(newQuantity: number) =>
                             handleQuantityUpdate(item, newQuantity)

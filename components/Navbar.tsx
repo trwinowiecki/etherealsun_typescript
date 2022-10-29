@@ -1,6 +1,7 @@
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { useSession } from 'next-auth/react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { forwardRef, useContext } from 'react';
 import { Store } from '../utils/Store';
@@ -130,4 +131,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default dynamic(() => Promise.resolve(Navbar), { ssr: false });

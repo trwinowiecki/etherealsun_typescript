@@ -1,12 +1,12 @@
+import Button from '@ui/Button';
+import Image from '@ui/Image';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 import { CatalogObject, RetrieveCatalogObjectResponse } from 'square';
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
-import Button from '../../components/Button';
 import CustomListbox from '../../components/CustomListbox';
 import Layout from '../../components/Layout';
 import { CartCommands } from '../../enums/CartCommands';
@@ -104,12 +104,7 @@ function ProductPage(props: ProductPageProps) {
                     >
                       <Image
                         src={image.imageData?.url!}
-                        width={500}
-                        height={500}
-                        alt={catalogObjects.object?.itemData?.name}
-                        layout="responsive"
-                        objectFit="cover"
-                        sizes={`(min-width: ${windowSizes.md}px) 33vw, 10vw `}
+                        alt={catalogObjects.object?.itemData?.name!}
                       />
                     </div>
                   ))}
@@ -117,12 +112,7 @@ function ProductPage(props: ProductPageProps) {
                 <div className="w-full">
                   <Image
                     src={selectedImage.imageData?.url!}
-                    width={500}
-                    height={500}
-                    alt={catalogObjects.object?.itemData?.name}
-                    layout="responsive"
-                    objectFit="cover"
-                    sizes={`(min-width: ${windowSizes.md}px) 50vw, 100vw `}
+                    alt={catalogObjects.object?.itemData?.name!}
                   />
                 </div>
               </div>
@@ -131,12 +121,7 @@ function ProductPage(props: ProductPageProps) {
                 src={
                   itemImages.length > 0 ? itemImages[0].imageData?.url! : '/'
                 }
-                width={500}
-                height={500}
-                alt={catalogObjects.object?.itemData?.name}
-                layout="responsive"
-                objectFit="cover"
-                sizes={`(min-width: ${windowSizes.md}px) 50vw, 100vw `}
+                alt={catalogObjects.object?.itemData?.name!}
               />
             )}
           </div>
@@ -152,6 +137,7 @@ function ProductPage(props: ProductPageProps) {
                 setState={setQuantity}
               />
               <Button
+                intent={'danger'}
                 onClick={() =>
                   addToCartHandler(
                     catalogObjects.object!,

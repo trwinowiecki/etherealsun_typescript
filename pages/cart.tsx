@@ -1,13 +1,11 @@
-import Image from '@ui/Image';
+import CartItemComponent from '@ui/CartItemComponent';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useContext } from 'react';
-import CustomListbox from '../components/CustomListbox';
 import Layout from '../components/Layout';
 import { CartCommands } from '../enums/CartCommands';
 import { CartItem } from '../types/CartItem';
-import { getImages } from '../utils/images';
 import { Store } from '../utils/Store';
 
 interface Props {}
@@ -47,50 +45,7 @@ const Cart: NextPage<Props> = ({}) => {
           ) : (
             <div className="w-full flex flex-col bg-primary-background-darker rounded-md overflow-hidden shadow-md">
               {cartItems.slice().map(item => {
-                return (
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center gap-2 p-2 px-4"
-                  >
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-4 flex-1"
-                    >
-                      <Link href={`/product/${item.id}`}>
-                        <a className="w-14">
-                          <Image
-                            src={
-                              getImages(item, item.relatedObjects)[0].imageData
-                                ?.url!
-                            }
-                            alt={item.itemData?.name!}
-                          />
-                        </a>
-                      </Link>
-                      <div className="flex flex-col gap-1">
-                        <Link href={`/product/${item.id}`}>
-                          <a>
-                            <span>{item.itemData?.name}</span>
-                          </a>
-                        </Link>
-                        <CustomListbox
-                          listOfItems={['remove', 1, 2, 3, 4, 5]}
-                          state={item.quantity}
-                          setState={(newQuantity: number) =>
-                            handleQuantityUpdate(item, newQuantity)
-                          }
-                        />
-                      </div>
-                    </div>
-                    <span className="">
-                      $
-                      {Number(
-                        item.itemData?.variations![0].itemVariationData
-                          ?.priceMoney?.amount
-                      ) / 100}
-                    </span>
-                  </div>
-                );
+                return <CartItemComponent key={item.id} item={item} />;
               })}
             </div>
           )}

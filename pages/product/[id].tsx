@@ -4,7 +4,6 @@ import axios from 'axios';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
-import { toast } from 'react-toastify';
 import { CatalogObject, RetrieveCatalogObjectResponse } from 'square';
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
 import CustomListbox from '../../components/CustomListbox';
@@ -80,7 +79,7 @@ function ProductPage(props: ProductPageProps) {
       payload: true
     });
 
-    toast.success('Product added to the cart');
+    // toast.success('Product added to the cart');
   };
 
   return (

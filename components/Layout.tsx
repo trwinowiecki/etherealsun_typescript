@@ -53,7 +53,9 @@ export default function Layout({ title, children }: LayoutProps) {
 
       <div className="wrapper flex min-h-screen flex-col justify-between">
         <Navbar />
-        <main className="flex-1 w-full mt-4 px-4">{children}</main>
+        <div className="flex-1 w-full flex justify-center">
+          <main className="mt-4 px-4 lg:max-w-screen-lg">{children}</main>
+        </div>
         <Footer />
         <CartPopup />
       </div>

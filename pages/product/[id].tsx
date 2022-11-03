@@ -136,7 +136,7 @@ function ProductPage(props: ProductPageProps) {
                 setState={setQuantity}
               />
               <Button
-                intent={'danger'}
+                intent={'primary'}
                 onClick={() =>
                   addToCartHandler(
                     catalogObjects.object!,

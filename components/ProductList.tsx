@@ -47,28 +47,36 @@ export default function ProductList() {
     loading: true
   });
   useEffect(() => {
+    const controller = new AbortController();
     const fetchCatalog = async () => {
       try {
         catalogDispatch({ type: ReducerActions.FETCH_REQUEST });
         const { data } = await axios({
           method: 'POST',
           url: `/api/square`,
-          data: { type: SquareCommands.GET_ALL_CATALOG }
+          data: { type: SquareCommands.GET_ALL_CATALOG },
+          signal: controller.signal
         });
         catalogDispatch({
           type: ReducerActions.FETCH_SUCCESS,
           payload: data
         });
       } catch (error) {
-        catalogDispatch({
-          type: ReducerActions.FETCH_FAIL,
-          payload: getError(error)
-        });
+        if (!controller.signal.aborted) {
+          catalogDispatch({
+            type: ReducerActions.FETCH_FAIL,
+            payload: getError(error)
+          });
+        }
       }
     };
     if (typeof window !== 'undefined') {
       fetchCatalog();
     }
+
+    return () => {
+      controller.abort('Process aborted');
+    };
   }, []);
 
   return (
@@ -76,7 +84,7 @@ export default function ProductList() {
       {loading ? (
         <Loading />
       ) : error ? (
-        <div>{error}</div>
+        <div>Error: {error}</div>
       ) : (
         <div className="w-full flex flex-wrap gap-4 justify-center">
           {catalog?.objects ? (

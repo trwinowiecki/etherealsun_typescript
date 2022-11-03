@@ -21,9 +21,9 @@ function ProductCard({ item, relatedObj }: ProductCardProps) {
     )
   );
   return (
-    <div className="overflow-hidden w-full max-w-xs sm:w-1/3 md:w-1/3 lg:w-1/4 drop-shadow-lg rounded-t-full rounded-lg hover:cursor-pointer hover:drop-shadow-2xl hover:scale-105 border-primary-background-darker border-8 bg-primary-background-darker hover:-translate-y-2 transition-all ease-in-out duration-300">
+    <div className="overflow-hidden w-full max-w-xs sm:w-1/3 md:w-1/3 lg:w-1/4 drop-shadow-lg rounded-t-full rounded-lg hover:cursor-pointer hover:drop-shadow-2xl hover:scale-105 border-primary-background-darker border-8 bg-primary-background-darker hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10">
       <Link href={`/product/${item.id}`}>
-        <a>
+        <a className="text-primary-text hover:text-primary-text">
           <Image
             alt={item.itemData?.name!}
             src={itemImages[0].imageData?.url!}

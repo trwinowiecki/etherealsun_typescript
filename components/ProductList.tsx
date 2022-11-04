@@ -86,7 +86,7 @@ export default function ProductList() {
       ) : error ? (
         <div>Error: {error}</div>
       ) : (
-        <div className="w-full flex flex-wrap gap-4 justify-center">
+        <div className="w-full flex flex-wrap gap-6 justify-center">
           {catalog?.objects ? (
             catalog.objects.map(catalogObj => {
               if (catalogObj.type === 'ITEM') {

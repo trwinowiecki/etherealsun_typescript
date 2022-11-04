@@ -1,6 +1,13 @@
 import Image from '@ui/Image';
+import axios from 'axios';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import Link from 'next/link';
-import { CatalogObject, SearchCatalogObjectsResponse } from 'square';
+import {
+  CatalogObject,
+  RetrieveCatalogObjectResponse,
+  SearchCatalogObjectsResponse
+} from 'square';
+import { SquareCommands } from '../enums/SquareCommands';
 import { getImages } from '../utils/images';
 
 interface ProductCardProps {
@@ -41,5 +48,34 @@ function ProductCard({ item, relatedObj }: ProductCardProps) {
     </div>
   );
 }
+
+export const getStaticPaths: GetStaticPaths = async ctx => {
+  const { data }: { data: SearchCatalogObjectsResponse } = await axios({
+    method: 'POST',
+    url: `/api/square`,
+    data: { type: SquareCommands.GET_ALL_CATALOG }
+  });
+
+  const paths = data.objects!.map(obj => ({ params: { id: obj.id } }));
+
+  return {
+    paths,
+    fallback: true
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ctx => {
+  const { data }: { data: RetrieveCatalogObjectResponse } = await axios({
+    method: 'POST',
+    url: `/api/square`,
+    data: { type: SquareCommands.GET_ONE_CATALOG, id: ctx.params!.id }
+  });
+
+  console.log(ctx);
+
+  return {
+    props: { item: data.object, relatedObj: data.relatedObjects }
+  };
+};
 
 export default ProductCard;

@@ -1,4 +1,5 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import Button from '@ui/Button';
 import CartItemComponent from '@ui/CartItemComponent';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -14,6 +15,11 @@ function CartPopup() {
     cart: { cartItems, popUp }
   } = state;
   const router = useRouter();
+
+  const handleRoute = (route: string) => {
+    router.push(route);
+    handleClose();
+  };
 
   const handleClose = () => {
     dispatch({
@@ -35,8 +41,11 @@ function CartPopup() {
           popUp ? 'sticky bottom-0' : 'hidden '
         } left-0 right-0 max-h-[50vh] rounded-t-lg p-4 overflow-y-hidden overflow-x-auto z-50 bg-primary-background transition-all`}
       >
-        <div className="cursor-pointer" onClick={handleClose}>
-          <XMarkIcon className="h-6" />
+        <div>
+          <XMarkIcon className="cursor-pointer h-6" onClick={handleClose} />
+          <Button intent={'primary'} onClick={() => handleRoute('/cart')}>
+            Go to Cart
+          </Button>
         </div>
         {cartItems.map(item => (
           <CartItemComponent key={item.id} item={item} />

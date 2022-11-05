@@ -6,6 +6,7 @@ import { CartItem } from '../../types/CartItem';
 import { getImages } from '../../utils/images';
 import { Store } from '../../utils/Store';
 import CustomListbox from '../CustomListbox';
+import Quantity from './Quantity';
 
 interface CartItemProps {
   item: CartItem;
@@ -16,11 +17,11 @@ interface CartItemProps {
 function CartItemComponent({
   item,
   classes = '',
-  children = null
+  children = null,
 }: CartItemProps) {
   const { state, dispatch } = useContext(Store);
   const {
-    cart: { cartItems }
+    cart: { cartItems },
   } = state;
 
   const handleQuantityUpdate = async (
@@ -32,8 +33,8 @@ function CartItemComponent({
       payload: {
         ...selectedItem,
         quantity,
-        relatedObjects: selectedItem.relatedObjects
-      }
+        relatedObjects: selectedItem.relatedObjects,
+      },
     });
   };
 
@@ -57,11 +58,10 @@ function CartItemComponent({
               <span>{item.itemData?.name}</span>
             </a>
           </Link>
-          <CustomListbox
-            listOfItems={['remove', 1, 2, 3, 4, 5]}
-            state={item.quantity}
-            setState={(newQuantity: number) =>
-              handleQuantityUpdate(item, newQuantity)
+          <Quantity
+            quantity={item.quantity}
+            adjustQuantity={(adjustment) =>
+              handleQuantityUpdate(item, adjustment + item.quantity)
             }
           />
         </div>

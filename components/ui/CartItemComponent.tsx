@@ -28,14 +28,23 @@ function CartItemComponent({
     selectedItem: CartItem,
     quantity: number
   ) => {
-    dispatch({
-      type: CartCommands.UPDATE,
-      payload: {
-        ...selectedItem,
-        quantity,
-        relatedObjects: selectedItem.relatedObjects,
-      },
-    });
+    if (quantity <= 0) {
+      dispatch({
+        type: CartCommands.REMOVE,
+        payload: {
+          selectedItem,
+        },
+      });
+    } else {
+      dispatch({
+        type: CartCommands.UPDATE,
+        payload: {
+          ...selectedItem,
+          quantity,
+          relatedObjects: selectedItem.relatedObjects,
+        },
+      });
+    }
   };
 
   return (

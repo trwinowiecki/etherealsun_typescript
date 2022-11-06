@@ -4,6 +4,7 @@ import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 interface ButtonProps {
   quantity: number;
   adjustQuantity: (q: number) => void;
+  maxQuantity: number;
 }
 
 const Quantity = ({ quantity, adjustQuantity }: ButtonProps) => {
@@ -12,7 +13,7 @@ const Quantity = ({ quantity, adjustQuantity }: ButtonProps) => {
   };
 
   return (
-    <div>
+    <div className='flex gap-2 items-center'>
       <MinusIcon onClick={() => handleQuantityUpdate(-1)} />
       <div>{quantity}</div>
       <PlusIcon onClick={() => handleQuantityUpdate(1)} />

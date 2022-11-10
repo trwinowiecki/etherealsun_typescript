@@ -1,4 +1,5 @@
-import React from 'react';
+import { Disclosure } from '@headlessui/react';
+import { ChevronUpIcon } from '@heroicons/react/20/solid';
 
 export interface FilterField {
   name: string;
@@ -17,7 +18,18 @@ const Filter = ({ fields }: FilterProps) => {
   return (
     <div className="">
       {fields.map((field, i) => (
-        <div key={i}>{field.name}</div>
+        <Disclosure key={i}>
+          {({ open }) => (
+            <>
+              <Disclosure.Button>
+                <span>{field.name}</span>
+                <ChevronUpIcon
+                  className={`${open ? 'rotate-180 transform' : ''} h-5 w-5`}
+                />
+              </Disclosure.Button>
+            </>
+          )}
+        </Disclosure>
       ))}
     </div>
   );

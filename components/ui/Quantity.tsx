@@ -14,9 +14,9 @@ const Quantity = ({ quantity, adjustQuantity }: ButtonProps) => {
 
   return (
     <div className='flex gap-2 items-center'>
-      <MinusIcon onClick={() => handleQuantityUpdate(-1)} />
+      <MinusIcon className='h-5 cursor-pointer' onClick={() => handleQuantityUpdate(-1)} />
       <div>{quantity}</div>
-      <PlusIcon onClick={() => handleQuantityUpdate(1)} />
+      <PlusIcon className='h-5 cursor-pointer' onClick={() => handleQuantityUpdate(1)} />
     </div>
   );
 };

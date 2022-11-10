@@ -1,5 +1,7 @@
+import Filter, { FilterField } from '@ui/Filter';
+import Modal from '@ui/Modal';
 import axios from 'axios';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { SearchCatalogObjectsResponse } from 'square';
 import { SquareCommands } from '../enums/SquareCommands';
 import { getError } from '../utils/error';
@@ -78,6 +80,17 @@ export default function ProductList() {
       controller.abort('Process aborted');
     };
   }, []);
+  const [test, setTest] = useState('')
+
+  const filterFields: FilterField[] = [
+    {
+      name: 'test',
+      values:['testone', 'test2'],
+      selected: test,
+      handleSelect: (val) => setTest(val),
+      multipleSelectable: true
+    }
+  ]
 
   return (
     <>
@@ -86,22 +99,27 @@ export default function ProductList() {
       ) : error ? (
         <div>Error: {error}</div>
       ) : (
-        <div className="w-full flex flex-wrap gap-6 justify-center">
-          {catalog?.objects ? (
-            catalog.objects.map(catalogObj => {
-              if (catalogObj.type === 'ITEM') {
-                return (
-                  <ProductCard
-                    key={catalogObj.id}
-                    item={catalogObj}
-                    relatedObj={catalog.relatedObjects}
-                  />
-                );
-              }
-            })
-          ) : (
-            <div>No Items Found</div>
-          )}
+        <div className='flex flex-col items-center'>
+          <Modal name='Filters'>
+          <Filter fields={filterFields} />
+          </Modal>
+          <div className="w-full flex flex-wrap gap-6 justify-center">
+            {catalog?.objects ? (
+              catalog.objects.map(catalogObj => {
+                if (catalogObj.type === 'ITEM') {
+                  return (
+                    <ProductCard
+                      key={catalogObj.id}
+                      item={catalogObj}
+                      relatedObj={catalog.relatedObjects}
+                    />
+                  );
+                }
+              })
+            ) : (
+              <div>No Items Found</div>
+            )}
+          </div>
         </div>
       )}
     </>

@@ -6,7 +6,7 @@ export interface FilterField {
   description?: string;
   values: {};
   selected: any;
-  handleSelect: () => any;
+  handleSelect: (val: any) => void;
   multipleSelectable: boolean;
 }
 
@@ -16,17 +16,22 @@ interface FilterProps {
 
 const Filter = ({ fields }: FilterProps) => {
   return (
-    <div className="">
+    <div className="w-full">
       {fields.map((field, i) => (
         <Disclosure key={i}>
           {({ open }) => (
             <>
-              <Disclosure.Button>
+              <Disclosure.Button className={'flex gap-2'}>
                 <span>{field.name}</span>
                 <ChevronUpIcon
-                  className={`${open ? 'rotate-180 transform' : ''} h-5 w-5`}
-                />
+                  className={`${open ? 'transform rotate-180' : ''} w-5 h-5`} />
               </Disclosure.Button>
+              <Disclosure.Panel>
+                <span>{field.description}</span>
+                {field.values.map(val => (
+                  <div key={val}>{val}</div>
+                ))}
+              </Disclosure.Panel>
             </>
           )}
         </Disclosure>

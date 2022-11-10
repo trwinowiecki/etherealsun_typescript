@@ -80,17 +80,25 @@ export default function ProductList() {
       controller.abort('Process aborted');
     };
   }, []);
-  const [test, setTest] = useState('')
+  const [test, setTest] = useState('');
 
   const filterFields: FilterField[] = [
     {
       name: 'test',
-      values:['testone', 'test2'],
+      values: ['testone', 'test2'],
       selected: test,
-      handleSelect: (val) => setTest(val),
-      multipleSelectable: true
+      setSelected: val => setTest(val),
+      type: 'radio'
+    },
+    {
+      name: 'test',
+      values: ['testone', 'test2'],
+      description: 'TEst description',
+      selected: test,
+      setSelected: val => setTest(val),
+      type: 'radio'
     }
-  ]
+  ];
 
   return (
     <>
@@ -99,10 +107,12 @@ export default function ProductList() {
       ) : error ? (
         <div>Error: {error}</div>
       ) : (
-        <div className='flex flex-col items-center'>
-          <Modal name='Filters'>
-          <Filter fields={filterFields} />
+        <div className="flex flex-col items-center">
+          <div className='w-full bg-background-primary shadow-md rounded-lg mb-4'>
+          <Modal name="Filters">
+            <Filter fields={filterFields} />
           </Modal>
+          </div>
           <div className="w-full flex flex-wrap gap-6 justify-center">
             {catalog?.objects ? (
               catalog.objects.map(catalogObj => {

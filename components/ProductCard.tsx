@@ -71,8 +71,6 @@ export const getStaticProps: GetStaticProps = async ctx => {
     data: { type: SquareCommands.GET_ONE_CATALOG, id: ctx.params!.id }
   });
 
-  console.log(ctx);
-
   return {
     props: { item: data.object, relatedObj: data.relatedObjects }
   };

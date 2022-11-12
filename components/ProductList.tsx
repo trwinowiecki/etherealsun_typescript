@@ -1,6 +1,7 @@
 import Filter, { FilterField } from '@ui/Filter';
 import Modal from '@ui/Modal';
 import axios from 'axios';
+import { GetServerSideProps, GetStaticProps } from 'next';
 import { useEffect, useReducer, useState } from 'react';
 import { SearchCatalogObjectsResponse } from 'square';
 import { SquareCommands } from '../enums/SquareCommands';
@@ -44,6 +45,10 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
   }
 }
 
+interface ProductListProps {
+  catalog: SearchCatalogObjectsResponse;
+}
+
 export default function ProductList() {
   const [{ loading, error, catalog }, catalogDispatch] = useReducer(reducer, {
     loading: true
@@ -81,6 +86,16 @@ export default function ProductList() {
     };
   }, []);
   const [test, setTest] = useState('');
+  const [category, setCategory] = useState('');
+
+  const categoryField: FilterField = {
+    name: 'Category',
+    values: catalog!.relatedObjects!.filter(obj => obj.type === 'CATEGORY')
+      .map(cat => cat.categoryData!.name!),
+    selected: category,
+    setSelected: cat => setCategory(cat),
+    type: 'radio'
+  };
 
   const filterFields: FilterField[] = [
     {
@@ -97,41 +112,54 @@ export default function ProductList() {
       selected: test,
       setSelected: val => setTest(val),
       type: 'radio'
-    }
+    },
+    categoryField
   ];
 
   return (
-    <>
-      {loading ? (
-        <Loading />
-      ) : error ? (
-        <div>Error: {error}</div>
-      ) : (
-        <div className="flex flex-col items-center">
-          <div className='w-full bg-background-primary shadow-md rounded-lg mb-4'>
-          <Modal name="Filters">
-            <Filter fields={filterFields} />
-          </Modal>
-          </div>
-          <div className="w-full flex flex-wrap gap-6 justify-center">
-            {catalog?.objects ? (
-              catalog.objects.map(catalogObj => {
-                if (catalogObj.type === 'ITEM') {
-                  return (
-                    <ProductCard
-                      key={catalogObj.id}
-                      item={catalogObj}
-                      relatedObj={catalog.relatedObjects}
-                    />
-                  );
-                }
-              })
-            ) : (
-              <div>No Items Found</div>
-            )}
-          </div>
-        </div>
-      )}
-    </>
+    <div className="flex flex-col items-center">
+      <div className="w-full bg-background-primary shadow-md rounded-lg mb-4">
+        <Modal name="Filters">
+          <Filter fields={filterFields} />
+        </Modal>
+      </div>
+      <div className="w-full flex flex-wrap gap-6 justify-center">
+        {catalog?.objects ? (
+          catalog.objects.map(catalogObj => {
+            if (catalogObj.type === 'ITEM') {
+              return (
+                <ProductCard
+                  key={catalogObj.id}
+                  item={catalogObj}
+                  relatedObj={catalog.relatedObjects}
+                />
+              );
+            }
+          })
+        ) : (
+          <div>No Items Found</div>
+        )}
+      </div>
+    </div>
   );
 }
+
+// export const getStaticProps: GetStaticProps = async () => {
+//   let data;
+
+//   try {
+//     const res = await axios({
+//       method: 'POST',
+//       url: `/api/square`,
+//       data: { type: SquareCommands.GET_ALL_CATALOG }
+//     });
+
+//     data = res;
+//   } catch (error) {
+//     data = error;
+//   }
+
+//   return {
+//     props: { catalog: data }
+//   };
+// };

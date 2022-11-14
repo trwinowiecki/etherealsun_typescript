@@ -1,23 +1,13 @@
 import Filter, { FilterField } from '@ui/Filter';
 import Modal from '@ui/Modal';
 import axios from 'axios';
-import { GetStaticProps } from 'next';
-import { useEffect, useReducer, useState } from 'react';
-import {
-  CatalogCategory,
-  CatalogObject,
-  SearchCatalogObjectsResponse
-} from 'square';
+import React, { useEffect, useReducer, useState } from 'react';
+import { CatalogObject, SearchCatalogObjectsResponse } from 'square';
 import { SquareCommands } from '../enums/SquareCommands';
 import { getError } from '../utils/error';
 import Loading from './Loading';
 import ProductCard from './ProductCard';
 
-enum ReducerActions {
-  FETCH_REQUEST = 'FETCH_REQUEST',
-  FETCH_SUCCESS = 'FETCH_SUCCESS',
-  FETCH_FAIL = 'FETCH_FAIL'
-}
 type ReducerState = {
   loading: boolean;
   error?: string;
@@ -25,18 +15,18 @@ type ReducerState = {
   filters?: CatalogObject[];
 };
 type ReducerAction =
-  | { type: ReducerActions.FETCH_REQUEST }
-  | { type: ReducerActions.FETCH_FAIL; payload: string }
+  | { type: 'FETCH_REQUEST' }
+  | { type: 'FETCH_FAIL'; payload: string }
   | {
-      type: ReducerActions.FETCH_SUCCESS;
+      type: 'FETCH_SUCCESS';
       payload: SearchCatalogObjectsResponse;
     };
 
 function reducer(state: ReducerState, action: ReducerAction): ReducerState {
   switch (action.type) {
-    case ReducerActions.FETCH_REQUEST:
+    case 'FETCH_REQUEST':
       return { ...state, loading: true, error: '' };
-    case ReducerActions.FETCH_SUCCESS:
+    case 'FETCH_SUCCESS':
       console.log(
         action.payload.relatedObjects?.filter(obj => obj.type === 'CATEGORY')
       );
@@ -49,7 +39,7 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
         ),
         error: ''
       };
-    case ReducerActions.FETCH_FAIL:
+    case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
@@ -67,7 +57,7 @@ export default function ProductList() {
     const controller = new AbortController();
     const fetchCatalog = async () => {
       try {
-        catalogDispatch({ type: ReducerActions.FETCH_REQUEST });
+        catalogDispatch({ type: 'FETCH_REQUEST' });
         const { data } = await axios({
           method: 'POST',
           url: `/api/square`,
@@ -75,13 +65,13 @@ export default function ProductList() {
           signal: controller.signal
         });
         catalogDispatch({
-          type: ReducerActions.FETCH_SUCCESS,
+          type: 'FETCH_SUCCESS',
           payload: data
         });
       } catch (error) {
         if (!controller.signal.aborted) {
           catalogDispatch({
-            type: ReducerActions.FETCH_FAIL,
+            type: 'FETCH_FAIL',
             payload: getError(error)
           });
         }
@@ -96,10 +86,13 @@ export default function ProductList() {
     };
   }, []);
 
-  console.log('catalog', catalog);
-
+  const [filter, setFilter] = useState({});
   const [test, setTest] = useState('');
   const [category, setCategory] = useState('');
+
+  const handleFilter = (event: any, field: FilterField) => {
+    setFilter({ id: field.name, value: event });
+  };
 
   const categoryField: FilterField = {
     name: 'Category',
@@ -117,8 +110,8 @@ export default function ProductList() {
     {
       name: 'test',
       values: ['testone', 'test2'],
-      selected: test,
-      setSelected: val => setTest(val),
+      selected: filter.find(f => f.id === 'test'),
+      setSelected: (event, field) => handleFilter(event, field),
       type: 'radio'
     },
     {

@@ -1,7 +1,6 @@
 import { Disclosure, RadioGroup } from '@headlessui/react';
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { AfterpayUnsupportedCurrencyError } from '@square/web-sdk';
 
 export interface FilterField {
   name: string;
@@ -41,10 +40,10 @@ const Filter = ({ fields }: FilterProps) => {
                 </div>
                 <RadioGroup
                   value={field.selected}
-                  onChange={e => field.setSelected(e)}
+                  onChange={e => field.setSelected(field, e)}
                 >
                   {field.values.map(val => (
-                    <RadioGroup.Option key={val} value={val}>
+                    <RadioGroup.Option key={val} value={val} name={field}>
                       {({ checked }) => (
                         <div
                           className={`${

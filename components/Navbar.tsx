@@ -37,7 +37,7 @@ function Navbar() {
   } = state;
 
   return (
-    <nav className="nav z-50 sticky top-0 flex w-full justify-between items-center h-12 px-4 shadow-lg bg-primary-background">
+    <nav className="nav z-50 sticky top-0 flex w-full justify-between items-center h-12 px-4 shadow-md bg-primary-background">
       <Link href="/">
         <a className="text-lg font-bold">Ethereal Sun</a>
       </Link>

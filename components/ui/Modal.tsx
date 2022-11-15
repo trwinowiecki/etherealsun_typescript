@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
+import Button from './Button';
 
 interface ModalProps {
   children: React.ReactNode;
@@ -61,16 +62,17 @@ const Modal = ({ name, children }: ModalProps) => {
                   >
                     {name}
                   </Dialog.Title>
-                  <div className="mt-2">{children}</div>
+                  <div className="mt-2 mb-14 max-h-[75vh] overflow-y-auto">
+                    {children}
+                  </div>
 
                   <div className="mt-4">
-                    <button
-                      type="button"
-                      className="absolute bottom-6 right-6 justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    <Button
+                      extraClasses="absolute bottom-6 right-6"
                       onClick={closeModal}
                     >
                       Done
-                    </button>
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

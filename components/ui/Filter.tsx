@@ -17,7 +17,7 @@ interface FilterProps {
 
 const Filter = ({ fields }: FilterProps) => {
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full h-full flex flex-col gap-2 overflow-y-auto">
       {fields.map((field, i) => (
         <Disclosure
           key={i}
@@ -40,7 +40,7 @@ const Filter = ({ fields }: FilterProps) => {
                 </div>
                 <RadioGroup
                   value={field.selected}
-                  onChange={e => field.setSelected(field, e)}
+                  onChange={e => field.setSelected(e, field)}
                 >
                   {field.values.map(val => (
                     <RadioGroup.Option key={val} value={val}>

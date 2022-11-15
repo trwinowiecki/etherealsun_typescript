@@ -33,7 +33,10 @@ function Button({
   fullWidth
 }: ButtonProps) {
   return (
-    <button className={buttonStyles({ intent, fullWidth })} onClick={onClick}>
+    <button
+      className={`${buttonStyles({ intent, fullWidth })} ${extraClasses}`}
+      onClick={onClick}
+    >
       {children}
     </button>
   );

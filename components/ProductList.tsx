@@ -5,6 +5,7 @@ import { useEffect, useReducer, useState } from 'react';
 import { CatalogObject, SearchCatalogObjectsResponse } from 'square';
 import { SquareCommands } from '../enums/SquareCommands';
 import { getError } from '../utils/error';
+import useWindowBreakpoint, { windowSizes } from '../utils/windowDimensions';
 import Loading from './Loading';
 import ProductCard from './ProductCard';
 
@@ -46,6 +47,8 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
   }
 }
 
+interface FilterState {}
+
 export default function ProductList() {
   const [{ loading, error, catalog, filters }, catalogDispatch] = useReducer(
     reducer,
@@ -53,6 +56,10 @@ export default function ProductList() {
       loading: true
     }
   );
+  const [filter, setFilter] = useState({});
+
+  const windowSize = useWindowBreakpoint();
+
   useEffect(() => {
     const controller = new AbortController();
     const fetchCatalog = async () => {
@@ -86,10 +93,8 @@ export default function ProductList() {
     };
   }, []);
 
-  const [filter, setFilter] = useState({});
-
   const handleFilter = (event: any, field: FilterField) => {
-    setFilter({ [field.name]: { value: event } });
+    setFilter(prev => ({ ...prev, [field.name]: { value: event } }));
   };
 
   const categoryField: FilterField = {
@@ -99,7 +104,7 @@ export default function ProductList() {
       filters
         .filter(obj => obj.type === 'CATEGORY')
         .map(cat => cat.categoryData!.name!),
-    selected: filter['Category'],
+    selected: filter['Category']?.value,
     setSelected: (val, field) => handleFilter(val, field),
     type: 'radio'
   };
@@ -108,7 +113,7 @@ export default function ProductList() {
     {
       name: 'test',
       values: ['testone', 'test2'],
-      selected: filter['test'],
+      selected: filter['test']?.value,
       setSelected: (val, field) => handleFilter(val, field),
       type: 'radio'
     },
@@ -116,7 +121,55 @@ export default function ProductList() {
       name: 'test2',
       values: ['testone', 'test2'],
       description: 'TEst description',
-      selected: filter['test2'],
+      selected: filter['test2']?.value,
+      setSelected: (val, field) => handleFilter(val, field),
+      type: 'radio'
+    },
+    {
+      name: 'test2',
+      values: ['testone', 'test2'],
+      description: 'TEst description',
+      selected: filter['test2']?.value,
+      setSelected: (val, field) => handleFilter(val, field),
+      type: 'radio'
+    },
+    {
+      name: 'test2',
+      values: ['testone', 'test2'],
+      description: 'TEst description',
+      selected: filter['test2']?.value,
+      setSelected: (val, field) => handleFilter(val, field),
+      type: 'radio'
+    },
+    {
+      name: 'test2',
+      values: ['testone', 'test2'],
+      description: 'TEst description',
+      selected: filter['test2']?.value,
+      setSelected: (val, field) => handleFilter(val, field),
+      type: 'radio'
+    },
+    {
+      name: 'test2',
+      values: ['testone', 'test2'],
+      description: 'TEst description',
+      selected: filter['test2']?.value,
+      setSelected: (val, field) => handleFilter(val, field),
+      type: 'radio'
+    },
+    {
+      name: 'test2',
+      values: ['testone', 'test2'],
+      description: 'TEst description',
+      selected: filter['test2']?.value,
+      setSelected: (val, field) => handleFilter(val, field),
+      type: 'radio'
+    },
+    {
+      name: 'test2',
+      values: ['testone', 'test2'],
+      description: 'TEst description',
+      selected: filter['test2']?.value,
       setSelected: (val, field) => handleFilter(val, field),
       type: 'radio'
     },
@@ -130,11 +183,20 @@ export default function ProductList() {
       ) : error ? (
         <div>{error}</div>
       ) : (
-        <div className="flex flex-col items-center">
-          <div className="w-full bg-background-primary shadow-md rounded-lg mb-4">
-            <Modal name="Filters">
-              <Filter fields={filterFields} />
-            </Modal>
+        <div className="relative flex flex-col items-center md:flex-row md:items-start">
+          <div className="sticky top-16 z-10 w-full bg-white shadow-md rounded-lg mb-4 md:w-[200px] md:max-w-[300px] md:max-h-[90vh]">
+            {windowSizes[windowSize] >= windowSizes.md ? (
+              <div className="p-4">
+                <div className="mb-4">Filters</div>
+                <div className="max-h-[80vh] overflow-y-auto">
+                  <Filter fields={filterFields} />
+                </div>
+              </div>
+            ) : (
+              <Modal name="Filters">
+                <Filter fields={filterFields} />
+              </Modal>
+            )}
           </div>
           <div className="w-full flex flex-wrap gap-6 justify-center">
             {catalog?.objects ? (

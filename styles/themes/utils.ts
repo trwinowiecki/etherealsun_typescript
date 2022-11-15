@@ -11,6 +11,8 @@ export interface ITheme {
   backgroundPrimary?: string;
   backgroundPrimaryDarker?: string;
   backgroundSecondary?: string;
+  whiteOverride?: string;
+  blackOverride?: string;
 }
 
 export interface IThemes {
@@ -32,7 +34,9 @@ export const mapTheme = (variables: ITheme): IMappedTheme => {
     '--color-text-primary': variables.textPrimary || '',
     '--background-primary': variables.backgroundPrimary || '',
     '--background-primary-darker': variables.backgroundPrimaryDarker || '',
-    '--background-sec': variables.backgroundSecondary || ''
+    '--background-sec': variables.backgroundSecondary || '',
+    '--white-override': variables.whiteOverride || '',
+    '--black-override': variables.blackOverride || ''
   };
 };
 

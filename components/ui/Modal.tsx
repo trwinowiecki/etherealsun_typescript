@@ -1,13 +1,12 @@
-import { PropsWithChildren } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
 
 interface ModalProps {
-    children: React.ReactNode;
-    name: string;
+  children: React.ReactNode;
+  name: string;
 }
 
-const Modal = ({name, children }: ModalProps) => {
+const Modal = ({ name, children }: ModalProps) => {
   let [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
@@ -31,7 +30,7 @@ const Modal = ({name, children }: ModalProps) => {
       </div>
 
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+        <Dialog as="div" className="relative z-50" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -41,7 +40,7 @@ const Modal = ({name, children }: ModalProps) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
+            <div className="fixed inset-0 bg-black/25" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -58,13 +57,11 @@ const Modal = ({name, children }: ModalProps) => {
                 <Dialog.Panel className="w-full max-w-md min-h-[75vh] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900"
+                    className="text-lg font-medium leading-6 text-primary-text"
                   >
                     {name}
                   </Dialog.Title>
-                  <div className="mt-2">
-                    {children}
-                  </div>
+                  <div className="mt-2">{children}</div>
 
                   <div className="mt-4">
                     <button

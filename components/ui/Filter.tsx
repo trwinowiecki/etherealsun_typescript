@@ -5,9 +5,9 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 export interface FilterField {
   name: string;
   description?: string;
-  values: {};
+  values: any[];
   selected: any;
-  setSelected: (val: any) => void;
+  setSelected: (val: any, field: FilterField) => void;
   type: 'radio' | 'check' | 'range' | 'color';
 }
 
@@ -43,12 +43,12 @@ const Filter = ({ fields }: FilterProps) => {
                   onChange={e => field.setSelected(field, e)}
                 >
                   {field.values.map(val => (
-                    <RadioGroup.Option key={val} value={val} name={field}>
+                    <RadioGroup.Option key={val} value={val}>
                       {({ checked }) => (
                         <div
                           className={`${
                             checked ? 'bg-primary-background-darker' : ''
-                          } w-full flex gap-2 items-center p-1 rounded-lg`}
+                          } w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer`}
                         >
                           <CheckIcon
                             className={`${

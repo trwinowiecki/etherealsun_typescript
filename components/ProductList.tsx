@@ -1,7 +1,7 @@
 import Filter, { FilterField } from '@ui/Filter';
 import Modal from '@ui/Modal';
 import axios from 'axios';
-import React, { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { CatalogObject, SearchCatalogObjectsResponse } from 'square';
 import { SquareCommands } from '../enums/SquareCommands';
 import { getError } from '../utils/error';
@@ -87,11 +87,9 @@ export default function ProductList() {
   }, []);
 
   const [filter, setFilter] = useState({});
-  const [test, setTest] = useState('');
-  const [category, setCategory] = useState('');
 
   const handleFilter = (event: any, field: FilterField) => {
-    setFilter({ id: field.name, value: event });
+    setFilter({ [field.name]: { value: event } });
   };
 
   const categoryField: FilterField = {
@@ -101,8 +99,8 @@ export default function ProductList() {
       filters
         .filter(obj => obj.type === 'CATEGORY')
         .map(cat => cat.categoryData!.name!),
-    selected: category,
-    setSelected: cat => setCategory(cat),
+    selected: filter['Category'],
+    setSelected: (val, field) => handleFilter(val, field),
     type: 'radio'
   };
 
@@ -110,29 +108,19 @@ export default function ProductList() {
     {
       name: 'test',
       values: ['testone', 'test2'],
-      selected: filter.find(f => f.id === 'test'),
-      setSelected: (event, field) => handleFilter(event, field),
+      selected: filter['test'],
+      setSelected: (val, field) => handleFilter(val, field),
       type: 'radio'
     },
     {
-      name: 'test',
+      name: 'test2',
       values: ['testone', 'test2'],
       description: 'TEst description',
-      selected: test,
-      setSelected: val => setTest(val),
+      selected: filter['test2'],
+      setSelected: (val, field) => handleFilter(val, field),
       type: 'radio'
     },
-    {
-      name: 'Category',
-      values:
-        filters &&
-        filters
-          .filter(obj => obj.type === 'CATEGORY')
-          .map(cat => cat.categoryData!.name!),
-      selected: category,
-      setSelected: cat => setCategory(cat),
-      type: 'radio'
-    }
+    categoryField
   ];
 
   return (

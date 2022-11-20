@@ -1,11 +1,11 @@
 import type { NextPage } from 'next';
+import Link from 'next/link';
 import Layout from '../components/Layout';
-import ProductList from '../components/ProductList';
 
 const Home: NextPage = () => {
   return (
     <Layout>
-      <ProductList></ProductList>
+      <Link href={'/products'}>products page</Link>
     </Layout>
   );
 };

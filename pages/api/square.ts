@@ -23,10 +23,6 @@ const handler = async (req: squareRequest, res: NextApiResponse) => {
       res.status(200).send(data);
       break;
     case SquareCommands.GET_BATCH_CATALOG:
-      console.log(
-        '🚀 ~ file: square.ts ~ line 27 ~ handler ~ req.body.ids',
-        req.body.ids
-      );
       if (req.body.ids) {
         data = await getBatchCatalog(client, req.body.ids);
         res.status(200).send(data);
@@ -55,21 +51,21 @@ const handler = async (req: squareRequest, res: NextApiResponse) => {
   }
 };
 
-const covertToJSON = (data: any) => {
+export function convertToJSON(data: any) {
   return JSON.parse(
     JSON.stringify(
       data.result,
       (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
     )
   );
-};
+}
 
 const getAllCatalog = async (client: Client) => {
   const res = await client.catalogApi.searchCatalogObjects({
     includeRelatedObjects: true
   });
 
-  return covertToJSON(res);
+  return convertToJSON(res);
 };
 
 const getBatchCatalog = async (client: Client, ids: string[]) => {
@@ -78,7 +74,7 @@ const getBatchCatalog = async (client: Client, ids: string[]) => {
     includeRelatedObjects: true
   });
 
-  return covertToJSON(res);
+  return convertToJSON(res);
 };
 
 const getOneCatalog = async (client: Client, id: string) => {
@@ -88,14 +84,14 @@ const getOneCatalog = async (client: Client, id: string) => {
     res = {
       ...res,
       inventory: await client.inventoryApi.retrieveInventoryCount(
-        covertToJSON(res).object.itemData.variations[0].id
+        convertToJSON(res).object.itemData.variations[0].id
       )
     };
   } catch (error) {
     res = error;
   }
 
-  return covertToJSON(res);
+  return convertToJSON(res);
 };
 
 const getOneInventory = async (client: Client, id: string) => {
@@ -106,7 +102,7 @@ const getOneInventory = async (client: Client, id: string) => {
     res = error;
   }
 
-  return covertToJSON(res);
+  return convertToJSON(res);
 };
 
 export default handler;

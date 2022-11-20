@@ -1,13 +1,14 @@
 import Image from '@ui/Image';
-import axios from 'axios';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Link from 'next/link';
 import {
   CatalogObject,
+  Client,
+  Environment,
   RetrieveCatalogObjectResponse,
   SearchCatalogObjectsResponse
 } from 'square';
-import { SquareCommands } from '../enums/SquareCommands';
+import { convertToJSON } from '../pages/api/square';
 import { getImages } from '../utils/images';
 
 interface ProductCardProps {
@@ -50,11 +51,16 @@ function ProductCard({ item, relatedObj }: ProductCardProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async ctx => {
-  const { data }: { data: SearchCatalogObjectsResponse } = await axios({
-    method: 'POST',
-    url: `/api/square`,
-    data: { type: SquareCommands.GET_ALL_CATALOG }
+  const client = new Client({
+    accessToken: process.env.SQUARE_ACCESS_TOKEN_PROD,
+    environment: Environment.Production
   });
+
+  const res = await client.catalogApi.searchCatalogObjects({
+    includeRelatedObjects: true
+  });
+
+  const data: SearchCatalogObjectsResponse = convertToJSON(res);
 
   const paths = data.objects!.map(obj => ({ params: { id: obj.id } }));
 
@@ -65,11 +71,25 @@ export const getStaticPaths: GetStaticPaths = async ctx => {
 };
 
 export const getStaticProps: GetStaticProps = async ctx => {
-  const { data }: { data: RetrieveCatalogObjectResponse } = await axios({
-    method: 'POST',
-    url: `/api/square`,
-    data: { type: SquareCommands.GET_ONE_CATALOG, id: ctx.params!.id }
+  const client = new Client({
+    accessToken: process.env.SQUARE_ACCESS_TOKEN_PROD,
+    environment: Environment.Production
   });
+
+  let res;
+  try {
+    res = await client.catalogApi.retrieveCatalogObject(ctx.params!.id!, true);
+    res = {
+      ...res,
+      inventory: await client.inventoryApi.retrieveInventoryCount(
+        convertToJSON(res).object.itemData.variations[0].id
+      )
+    };
+  } catch (error) {
+    res = error;
+  }
+
+  const data: RetrieveCatalogObjectResponse = convertToJSON(res);
 
   return {
     props: { item: data.object, relatedObj: data.relatedObjects }

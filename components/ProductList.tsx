@@ -11,7 +11,7 @@ export default function ProductList({
   relatedObjs
 }: ProductListProps) {
   return catalog ? (
-    <>
+    <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center">
       {catalog.map(catalogObj => {
         if (catalogObj.type === 'ITEM') {
           return (
@@ -23,7 +23,7 @@ export default function ProductList({
           );
         }
       })}
-    </>
+    </div>
   ) : (
     <div>No Items Found</div>
   );

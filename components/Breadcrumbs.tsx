@@ -30,7 +30,7 @@ function Breadcrumbs({ pages }: BreadcrumbProps) {
                 {page.name}
               </a>
             </Link>
-            <ChevronRightIcon className="h-4" />
+            <ChevronRightIcon className="h-5" />
           </Fragment>
         )
       )}

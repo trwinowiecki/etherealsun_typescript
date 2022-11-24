@@ -1,6 +1,5 @@
 import { Disclosure, RadioGroup } from '@headlessui/react';
-import { ChevronUpIcon } from '@heroicons/react/20/solid';
-import { CheckIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
 export interface FilterField {
   name: string;

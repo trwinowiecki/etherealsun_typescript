@@ -132,7 +132,7 @@ const products = ({ catalog, numItems }: ProductsPageProps) => {
             </Modal>
           )}
         </div>
-        <div className="w-full flex flex-wrap gap-6 justify-center">
+        <div className="w-full flex flex-col gap-6 items-center">
           <ProductList
             catalog={catalog.objects}
             relatedObjs={catalog.relatedObjects}

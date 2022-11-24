@@ -29,7 +29,7 @@ function ProductCard({ item, relatedObj }: ProductCardProps) {
     )
   );
   return (
-    <div className="overflow-hidden w-full max-w-[250px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105  hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10">
+    <div className="overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105  hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10">
       <Link href={`/product/${item.id}`}>
         <a className="text-primary-text hover:text-primary-text">
           <Image

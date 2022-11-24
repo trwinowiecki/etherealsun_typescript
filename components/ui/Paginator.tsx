@@ -37,45 +37,47 @@ const Paginator = ({
   const handleLimitChange = (val: number) => {
     const newMaxPage = Math.ceil(numItems / val);
     if (currentPage > newMaxPage) {
-      onPageChange(-(currentPage - newMaxPage));
+      onPageChange(1);
     }
     onLengthChange(val);
   };
 
   return (
-    <div className="flex items-center gap-2">
-      {firstLastPageVisible ? (
-        <ChevronDoubleLeftIcon
+    <div className="flex flex-wrap justify-center items-center gap-2">
+      <div className="flex items-center gap-2">
+        {firstLastPageVisible ? (
+          <ChevronDoubleLeftIcon
+            className="h-5 cursor-pointer"
+            onClick={() => handlePageChange(1)}
+            aria-label="first page"
+          />
+        ) : null}
+        <ChevronLeftIcon
           className="h-5 cursor-pointer"
-          onClick={() => handlePageChange(1)}
-          aria-label="first page"
+          onClick={() => handlePageChange(currentPage - 1)}
+          aria-label="previous page"
         />
-      ) : null}
-      <ChevronLeftIcon
-        className="h-5 cursor-pointer"
-        onClick={() => handlePageChange(currentPage - 1)}
-        aria-label="previous page"
-      />
-      <div className="w-16 text-center">{`${currentPage} of ${maxPage}`}</div>
-      <ChevronRightIcon
-        className="h-5 cursor-pointer"
-        onClick={() => handlePageChange(currentPage + 1)}
-        aria-label="next page"
-      />
-      {firstLastPageVisible ? (
-        <ChevronDoubleRightIcon
+        <div className="w-16 text-center">{`${currentPage} of ${maxPage}`}</div>
+        <ChevronRightIcon
           className="h-5 cursor-pointer"
-          onClick={() => handlePageChange(maxPage)}
-          aria-label="last page"
+          onClick={() => handlePageChange(currentPage + 1)}
+          aria-label="next page"
         />
-      ) : null}
+        {firstLastPageVisible ? (
+          <ChevronDoubleRightIcon
+            className="h-5 cursor-pointer"
+            onClick={() => handlePageChange(maxPage)}
+            aria-label="last page"
+          />
+        ) : null}
+      </div>
       <CustomListbox
         listOfItems={pageLengthOpts}
         state={selectedLength}
         setState={val => handleLimitChange(val)}
+        label="products per page"
         aria-label="page length options"
       />
-      products per page
     </div>
   );
 };

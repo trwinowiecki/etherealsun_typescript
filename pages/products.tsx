@@ -26,8 +26,7 @@ const products = ({ catalog }: ProductsPageProps) => {
 
   const windowSize = useWindowBreakpoint();
 
-  const handleFilter = (event: any, field: FilterField) => {
-    console.log(filter);
+  const handleFilter = (event: any, field: FilterField<any>) => {
     setFilter(prev => ({ ...prev, [field.name]: { value: event } }));
   };
 
@@ -47,16 +46,14 @@ const products = ({ catalog }: ProductsPageProps) => {
     ],
     defaultValue: 'All',
     selected: filter['Category']?.value,
-    setSelected: (val, field) => handleFilter(val, field),
     type: 'radio'
   };
 
-  const filterFields: FilterField<string>[] = [
+  let filterFields: FilterField<string>[] = [
     {
       name: 'test',
       values: ['testone', 'test2'],
       selected: filter['test']?.value,
-      setSelected: (val, field) => handleFilter(val, field),
       type: 'radio'
     },
     {
@@ -64,61 +61,75 @@ const products = ({ catalog }: ProductsPageProps) => {
       values: ['testone', 'test2'],
       description: 'TEst description',
       selected: filter['test2']?.value,
-      setSelected: (val, field) => handleFilter(val, field),
       type: 'radio'
     },
-    {
-      name: 'test2',
-      values: ['testone', 'test2'],
-      description: 'TEst description',
-      selected: filter['test2']?.value,
-      setSelected: (val, field) => handleFilter(val, field),
-      type: 'radio'
-    },
-    {
-      name: 'test2',
-      values: ['testone', 'test2'],
-      description: 'TEst description',
-      selected: filter['test2']?.value,
-      setSelected: (val, field) => handleFilter(val, field),
-      type: 'radio'
-    },
-    {
-      name: 'test2',
-      values: ['testone', 'test2'],
-      description: 'TEst description',
-      selected: filter['test2']?.value,
-      setSelected: (val, field) => handleFilter(val, field),
-      type: 'radio'
-    },
-    {
-      name: 'test2',
-      values: ['testone', 'test2'],
-      description: 'TEst description',
-      selected: filter['test2']?.value,
-      setSelected: (val, field) => handleFilter(val, field),
-      type: 'radio'
-    },
-    {
-      name: 'test2',
-      values: ['testone', 'test2'],
-      description: 'TEst description',
-      selected: filter['test2']?.value,
-      setSelected: (val, field) => handleFilter(val, field),
-      type: 'radio'
-    },
-    {
-      name: 'test2',
-      values: ['testone', 'test2'],
-      description: 'TEst description',
-      selected: filter['test2']?.value,
-      setSelected: (val, field) => handleFilter(val, field),
-      type: 'radio'
-    },
+    // {
+    //   name: 'test2',
+    //   values: ['testone', 'test2'],
+    //   description: 'TEst description',
+    //   selected: filter['test2']?.value,
+    //   type: 'radio'
+    // },
+    // {
+    //   name: 'test2',
+    //   values: ['testone', 'test2'],
+    //   description: 'TEst description',
+    //   selected: filter['test2']?.value,
+    //   type: 'radio'
+    // },
+    // {
+    //   name: 'test2',
+    //   values: ['testone', 'test2'],
+    //   description: 'TEst description',
+    //   selected: filter['test2']?.value,
+    //   type: 'radio'
+    // },
+    // {
+    //   name: 'test2',
+    //   values: ['testone', 'test2'],
+    //   description: 'TEst description',
+    //   selected: filter['test2']?.value,
+    //   type: 'radio'
+    // },
+    // {
+    //   name: 'test2',
+    //   values: ['testone', 'test2'],
+    //   description: 'TEst description',
+    //   selected: filter['test2']?.value,
+    //   type: 'radio'
+    // },
+    // {
+    //   name: 'test2',
+    //   values: ['testone', 'test2'],
+    //   description: 'TEst description',
+    //   selected: filter['test2']?.value,
+    //   type: 'radio'
+    // },
     categoryField
   ];
 
+  catalog.objects
+    ?.filter(
+      obj =>
+        obj.type === 'CUSTOM_ATTRIBUTE_DEFINITION' &&
+        obj.customAttributeDefinitionData?.type === 'SELECTION'
+    )
+    .forEach(attr => {
+      filterFields.push({
+        name: attr.customAttributeDefinitionData!.name,
+        values:
+          attr.customAttributeDefinitionData!.selectionConfig!.allowedSelections!.map(
+            sel => sel.name
+          ),
+        selected: filter[attr.customAttributeDefinitionData!.name]?.value,
+        type: 'radio'
+      });
+    });
+
   useEffect(() => {
+    const customAttrNames = catalog.objects
+      ?.filter(obj => obj.type === 'CUSTOM_ATTRIBUTE_DEFINITION')
+      .map(attr => attr.customAttributeDefinitionData?.name);
     let tempItems = catalog.objects!.filter(obj => obj.type === 'ITEM');
 
     Object.keys(filter).forEach(fil => {
@@ -130,6 +141,12 @@ const products = ({ catalog }: ProductsPageProps) => {
           item => item.itemData?.categoryId === filter[fil]!.value
         );
       }
+      // todo: Finish implementing custom attribute filter
+      // else if (customAttrNames?.includes( fil)) {
+      //   tempItems = tempItems.filter(
+      //     item => item === filter[fil]!.value
+      //   );
+      // }
     });
 
     setFilteredItems(tempItems);
@@ -147,18 +164,24 @@ const products = ({ catalog }: ProductsPageProps) => {
       {windowSizes[windowSize] >= windowSizes.md && (
         <Breadcrumbs pages={breadcrumbs} />
       )}
-      <div className="relative flex flex-col items-center md:flex-row md:items-start">
-        <div className="sticky top-16 z-10 w-full bg-white shadow-md rounded-lg mb-4 md:w-[200px] md:max-w-[300px] md:max-h-[90vh]">
+      <div className="relative flex flex-col gap-2 items-center md:flex-row md:items-start">
+        <div className="sticky top-16 z-10 w-full bg-white shadow-md rounded-lg mb-4 md:w-[250px] md:max-w-[300px] md:max-h-[90vh]">
           {windowSizes[windowSize] >= windowSizes.md ? (
             <div className="p-4">
               <div className="mb-4">Filters</div>
               <div className="max-h-[80vh] overflow-y-auto">
-                <Filter fields={filterFields} />
+                <Filter
+                  fields={filterFields}
+                  setSelected={(val, field) => handleFilter(val, field)}
+                />
               </div>
             </div>
           ) : (
             <Modal name="Filters">
-              <Filter fields={filterFields} />
+              <Filter
+                fields={filterFields}
+                setSelected={(val, field) => handleFilter(val, field)}
+              />
             </Modal>
           )}
         </div>

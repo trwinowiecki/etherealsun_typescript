@@ -8,18 +8,18 @@ export interface FilterField<FilterType> {
   displayValues?: string[];
   selected: FilterType;
   defaultValue?: FilterType;
-  setSelected: (val: FilterType, field: FilterField<FilterType>) => void;
   type: 'radio' | 'check' | 'range' | 'color';
 }
 
 interface FilterProps {
   fields: FilterField<any>[];
+  setSelected: (val: FilterType, field: FilterField<FilterType>) => void;
 }
 
-const Filter = ({ fields }: FilterProps) => {
+const Filter = ({ fields, setSelected }: FilterProps) => {
   fields.forEach(field => {
     if (!field.selected && field.defaultValue) {
-      field.setSelected(field.defaultValue, field);
+      setSelected(field.defaultValue, field);
     }
   });
   return (
@@ -46,7 +46,7 @@ const Filter = ({ fields }: FilterProps) => {
                 </div>
                 <RadioGroup
                   value={field.selected}
-                  onChange={e => field.setSelected(e, field)}
+                  onChange={e => setSelected(e, field)}
                 >
                   {field.displayValues
                     ? field.displayValues.map((val, i) => (
@@ -65,7 +65,9 @@ const Filter = ({ fields }: FilterProps) => {
                                   checked ? 'inline-flex' : 'invisible'
                                 } h-5`}
                               />
-                              <span>{val}</span>
+                              <div className="overflow-x-auto w-full">
+                                {val}
+                              </div>
                             </div>
                           )}
                         </RadioGroup.Option>
@@ -83,7 +85,9 @@ const Filter = ({ fields }: FilterProps) => {
                                   checked ? 'inline-flex' : 'invisible'
                                 } h-5`}
                               />
-                              <span>{val}</span>
+                              <div className="overflow-x-auto w-full">
+                                {val}
+                              </div>
                             </div>
                           )}
                         </RadioGroup.Option>

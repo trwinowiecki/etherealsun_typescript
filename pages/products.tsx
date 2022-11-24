@@ -19,6 +19,9 @@ const products = ({ catalog, numItems }: ProductsPageProps) => {
   const [filter, setFilter] = useState({});
   const [page, setPage] = useState(1);
 
+  const paginatorLengthOpts = [12, 24, 48, 96];
+  const [pageLength, setPageLength] = useState(paginatorLengthOpts[0]);
+
   const windowSize = useWindowBreakpoint();
 
   const handleFilter = (event: any, field: FilterField) => {
@@ -134,16 +137,18 @@ const products = ({ catalog, numItems }: ProductsPageProps) => {
         </div>
         <div className="w-full flex flex-wrap gap-6 justify-center">
           <ProductList
-            catalog={catalog.objects}
+            catalog={catalog.objects
+              ?.filter(obj => obj.type === 'ITEM')
+              .slice((page - 1) * pageLength, page * pageLength)}
             relatedObjs={catalog.relatedObjects}
           />
           <Paginator
-            limits={[10, 25, 50, 100]}
+            pageLengthOpts={paginatorLengthOpts}
+            selectedLength={pageLength}
             currentPage={page}
-            numItems={
-              catalog.objects?.filter(obj => obj.type === 'ITEM').length
-            }
-            onClick={val => setPage(prev => prev + val)}
+            numItems={numItems}
+            onPageChange={val => setPage(val)}
+            onLengthChange={val => setPageLength(val)}
           />
         </div>
       </div>

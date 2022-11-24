@@ -2,7 +2,7 @@ import Filter, { FilterField } from '@ui/Filter';
 import Modal from '@ui/Modal';
 import Paginator from '@ui/Paginator';
 import { GetStaticProps } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Client, Environment, SearchCatalogObjectsResponse } from 'square';
 import Breadcrumbs, { BreadcrumbPage } from '../components/Breadcrumbs';
 import Layout from '../components/Layout';
@@ -12,12 +12,14 @@ import { convertToJSON } from './api/square';
 
 interface ProductsPageProps {
   catalog: SearchCatalogObjectsResponse;
-  numItems: number;
 }
 
-const products = ({ catalog, numItems }: ProductsPageProps) => {
+const products = ({ catalog }: ProductsPageProps) => {
   const [filter, setFilter] = useState({});
   const [page, setPage] = useState(1);
+  const [filteredItems, setFilteredItems] = useState(catalog.objects || []);
+  const [numItems, setNumItems] = useState(filteredItems!.length);
+  // const [filterFields, setFilterFields] = useState([]);
 
   const paginatorLengthOpts = [12, 24, 48, 96];
   const [pageLength, setPageLength] = useState(paginatorLengthOpts[0]);
@@ -25,25 +27,31 @@ const products = ({ catalog, numItems }: ProductsPageProps) => {
   const windowSize = useWindowBreakpoint();
 
   const handleFilter = (event: any, field: FilterField) => {
+    console.log(filter);
     setFilter(prev => ({ ...prev, [field.name]: { value: event } }));
   };
 
-  const filters = catalog.relatedObjects?.filter(
-    obj => obj.type === 'CATEGORY'
-  );
-  const categoryField: FilterField = {
+  const categoryField: FilterField<string> = {
     name: 'Category',
-    values:
-      filters &&
-      filters
-        .filter(obj => obj.type === 'CATEGORY')
-        .map(cat => cat.categoryData!.name!),
+    values: [
+      'All',
+      ...catalog
+        .objects!.filter(obj => obj.type === 'CATEGORY')
+        .map(cat => cat.id)
+    ],
+    displayValues: [
+      'All',
+      ...catalog
+        .objects!.filter(obj => obj.type === 'CATEGORY')
+        .map(cat => cat.categoryData!.name!)
+    ],
+    defaultValue: 'All',
     selected: filter['Category']?.value,
     setSelected: (val, field) => handleFilter(val, field),
     type: 'radio'
   };
 
-  const filterFields: FilterField[] = [
+  const filterFields: FilterField<string>[] = [
     {
       name: 'test',
       values: ['testone', 'test2'],
@@ -110,6 +118,25 @@ const products = ({ catalog, numItems }: ProductsPageProps) => {
     categoryField
   ];
 
+  useEffect(() => {
+    let tempItems = catalog.objects!.filter(obj => obj.type === 'ITEM');
+
+    Object.keys(filter).forEach(fil => {
+      if (fil.toLowerCase() === 'category') {
+        if (filter[fil]!.value === 'All') {
+          return;
+        }
+        tempItems = tempItems.filter(
+          item => item.itemData?.categoryId === filter[fil]!.value
+        );
+      }
+    });
+
+    setFilteredItems(tempItems);
+    setNumItems(tempItems.length);
+    setPage(1);
+  }, [filter]);
+
   const breadcrumbs: BreadcrumbPage[] = [
     { href: '/', name: 'Home' },
     { href: '/products', name: 'Products', active: true }
@@ -137,9 +164,10 @@ const products = ({ catalog, numItems }: ProductsPageProps) => {
         </div>
         <div className="w-full flex flex-wrap gap-6 justify-center">
           <ProductList
-            catalog={catalog.objects
-              ?.filter(obj => obj.type === 'ITEM')
-              .slice((page - 1) * pageLength, page * pageLength)}
+            catalog={filteredItems.slice(
+              (page - 1) * pageLength,
+              page * pageLength
+            )}
             relatedObjs={catalog.relatedObjects}
           />
           <Paginator
@@ -174,10 +202,8 @@ export const getStaticProps: GetStaticProps = async () => {
     };
   }
 
-  const numItems = data.objects?.filter(obj => obj.type === 'ITEM').length;
-
   return {
-    props: { catalog: data, numItems },
+    props: { catalog: data },
     revalidate: 60
   };
 };

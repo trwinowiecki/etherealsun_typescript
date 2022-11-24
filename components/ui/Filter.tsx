@@ -2,20 +2,27 @@ import { Disclosure, RadioGroup } from '@headlessui/react';
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
 import { CheckIcon } from '@heroicons/react/24/outline';
 
-export interface FilterField {
+export interface FilterField<FilterType> {
   name: string;
   description?: string;
-  values: any[];
-  selected: any;
-  setSelected: (val: any, field: FilterField) => void;
+  values: FilterType[];
+  displayValues?: string[];
+  selected: FilterType;
+  defaultValue?: FilterType;
+  setSelected: (val: FilterType, field: FilterField<FilterType>) => void;
   type: 'radio' | 'check' | 'range' | 'color';
 }
 
 interface FilterProps {
-  fields: FilterField[];
+  fields: FilterField<any>[];
 }
 
 const Filter = ({ fields }: FilterProps) => {
+  fields.forEach(field => {
+    if (!field.selected && field.defaultValue) {
+      field.setSelected(field.defaultValue, field);
+    }
+  });
   return (
     <div className="w-full h-full flex flex-col gap-2 overflow-y-auto">
       {fields.map((field, i) => (
@@ -42,24 +49,46 @@ const Filter = ({ fields }: FilterProps) => {
                   value={field.selected}
                   onChange={e => field.setSelected(e, field)}
                 >
-                  {field.values.map(val => (
-                    <RadioGroup.Option key={val} value={val}>
-                      {({ checked }) => (
-                        <div
-                          className={`${
-                            checked ? 'bg-primary-background-darker' : ''
-                          } w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer`}
+                  {field.displayValues
+                    ? field.displayValues.map((val, i) => (
+                        <RadioGroup.Option
+                          key={field.values[i]}
+                          value={field.values[i]}
                         >
-                          <CheckIcon
-                            className={`${
-                              checked ? 'inline-flex' : 'invisible'
-                            } h-5`}
-                          />
-                          <span>{val}</span>
-                        </div>
-                      )}
-                    </RadioGroup.Option>
-                  ))}
+                          {({ checked }) => (
+                            <div
+                              className={`${
+                                checked ? 'bg-primary-background-darker' : ''
+                              } w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer`}
+                            >
+                              <CheckIcon
+                                className={`${
+                                  checked ? 'inline-flex' : 'invisible'
+                                } h-5`}
+                              />
+                              <span>{val}</span>
+                            </div>
+                          )}
+                        </RadioGroup.Option>
+                      ))
+                    : field.values.map(val => (
+                        <RadioGroup.Option key={val} value={val}>
+                          {({ checked }) => (
+                            <div
+                              className={`${
+                                checked ? 'bg-primary-background-darker' : ''
+                              } w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer`}
+                            >
+                              <CheckIcon
+                                className={`${
+                                  checked ? 'inline-flex' : 'invisible'
+                                } h-5`}
+                              />
+                              <span>{val}</span>
+                            </div>
+                          )}
+                        </RadioGroup.Option>
+                      ))}
                 </RadioGroup>
               </Disclosure.Panel>
             </>

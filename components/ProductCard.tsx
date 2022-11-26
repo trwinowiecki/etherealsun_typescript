@@ -9,7 +9,7 @@ import {
   SearchCatalogObjectsResponse
 } from 'square';
 import { convertToJSON } from '../pages/api/square';
-import { getImages } from '../utils/images';
+import { getImages } from '../utils/squareUtils';
 
 interface ProductCardProps {
   item: CatalogObject;

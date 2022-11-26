@@ -13,7 +13,7 @@ export interface FilterField<FilterType> {
 
 interface FilterProps {
   fields: FilterField<any>[];
-  setSelected: (val: FilterType, field: FilterField<FilterType>) => void;
+  setSelected: (val: any, field: FilterField<any>) => void;
 }
 
 const Filter = ({ fields, setSelected }: FilterProps) => {

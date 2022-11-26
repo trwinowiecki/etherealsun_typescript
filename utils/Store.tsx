@@ -98,6 +98,9 @@ function reducer(state: State, action: Action): State {
           JSON.stringify({ ...state.cart, cartItems })
         );
 
+        console.log(cartItems);
+        console.log(action.payload);
+
         return { ...state, cart: { ...state.cart, cartItems } };
       }
       case CartCommands.RESET: {

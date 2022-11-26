@@ -5,7 +5,6 @@ import { CartCommands } from '../../enums/CartCommands';
 import { CartItem } from '../../types/CartItem';
 import { getImages } from '../../utils/images';
 import { Store } from '../../utils/Store';
-import CustomListbox from '../CustomListbox';
 import Quantity from './Quantity';
 
 interface CartItemProps {
@@ -17,11 +16,11 @@ interface CartItemProps {
 function CartItemComponent({
   item,
   classes = '',
-  children = null,
+  children = null
 }: CartItemProps) {
   const { state, dispatch } = useContext(Store);
   const {
-    cart: { cartItems },
+    cart: { cartItems }
   } = state;
 
   const handleQuantityUpdate = async (
@@ -29,11 +28,10 @@ function CartItemComponent({
     quantity: number
   ) => {
     if (quantity <= 0) {
+      console.log('dispatching remove');
       dispatch({
         type: CartCommands.REMOVE,
-        payload: {
-          selectedItem,
-        },
+        payload: selectedItem
       });
     } else {
       dispatch({
@@ -41,8 +39,8 @@ function CartItemComponent({
         payload: {
           ...selectedItem,
           quantity,
-          relatedObjects: selectedItem.relatedObjects,
-        },
+          relatedObjects: selectedItem.relatedObjects
+        }
       });
     }
   };
@@ -69,9 +67,11 @@ function CartItemComponent({
           </Link>
           <Quantity
             quantity={item.quantity}
-            adjustQuantity={(adjustment) =>
-              handleQuantityUpdate(item, adjustment + item.quantity)
+            adjustQuantity={newQuantity =>
+              handleQuantityUpdate(item, newQuantity)
             }
+            maxQuantity={5}
+            allowDelete
           />
         </div>
       </div>

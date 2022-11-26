@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useContext } from 'react';
 import { CartCommands } from '../../enums/CartCommands';
 import { CartItem } from '../../types/CartItem';
-import { getImages } from '../../utils/images';
+import { getImages } from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
 import Quantity from './Quantity';
 
@@ -28,7 +28,6 @@ function CartItemComponent({
     quantity: number
   ) => {
     if (quantity <= 0) {
-      console.log('dispatching remove');
       dispatch({
         type: CartCommands.REMOVE,
         payload: selectedItem

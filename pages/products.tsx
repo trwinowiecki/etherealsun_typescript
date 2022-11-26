@@ -2,6 +2,7 @@ import Filter, { FilterField } from '@ui/Filter';
 import Modal from '@ui/Modal';
 import Paginator from '@ui/Paginator';
 import { GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Client, Environment, SearchCatalogObjectsResponse } from 'square';
 import Breadcrumbs, { BreadcrumbPage } from '../components/Breadcrumbs';
@@ -15,8 +16,9 @@ interface ProductsPageProps {
 }
 
 const products = ({ catalog }: ProductsPageProps) => {
+  const router = useRouter();
   const [filter, setFilter] = useState({});
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(parseInt(router.query['page'], 10) || 1);
   const [filteredItems, setFilteredItems] = useState(catalog.objects || []);
   const [numItems, setNumItems] = useState(filteredItems!.length);
   // const [filterFields, setFilterFields] = useState([]);
@@ -29,6 +31,10 @@ const products = ({ catalog }: ProductsPageProps) => {
   const handleFilter = (event: any, field: FilterField<any>) => {
     setFilter(prev => ({ ...prev, [field.name]: { value: event } }));
   };
+
+  useEffect(() => {
+    setPage(prev => parseInt(router.query['page']) || prev);
+  }, [router.isReady]);
 
   const categoryField: FilterField<string> = {
     name: 'Category',
@@ -151,8 +157,39 @@ const products = ({ catalog }: ProductsPageProps) => {
 
     setFilteredItems(tempItems);
     setNumItems(tempItems.length);
-    setPage(1);
+    if (Math.ceil(tempItems.length / pageLength) < page) {
+      handlePageChange(1);
+    }
   }, [filter]);
+
+  const handlePageChange = (newPage: number) => {
+    router.push(
+      {
+        pathname: '/products',
+        query: {
+          ...router.query,
+          page: newPage.toString()
+        }
+      },
+      undefined,
+      { shallow: true }
+    );
+    setPage(newPage);
+  };
+
+  const handleProductClicked = (id: string) => {
+    router.push(
+      {
+        pathname: '/products',
+        query: {
+          ...router.query,
+          id
+        }
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   const breadcrumbs: BreadcrumbPage[] = [
     { href: '/', name: 'Home' },
@@ -192,13 +229,14 @@ const products = ({ catalog }: ProductsPageProps) => {
               page * pageLength
             )}
             relatedObjs={catalog.relatedObjects}
+            onClick={(id: string) => handleProductClicked(id)}
           />
           <Paginator
             pageLengthOpts={paginatorLengthOpts}
             selectedLength={pageLength}
             currentPage={page}
             numItems={numItems}
-            onPageChange={val => setPage(val)}
+            onPageChange={val => handlePageChange(val)}
             onLengthChange={val => setPageLength(val)}
           />
         </div>

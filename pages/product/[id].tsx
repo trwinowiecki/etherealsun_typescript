@@ -10,7 +10,7 @@ import CustomListbox from '../../components/CustomListbox';
 import Layout from '../../components/Layout';
 import { CartCommands } from '../../enums/CartCommands';
 import { SquareCommands } from '../../enums/SquareCommands';
-import { DEFAULT_IMAGE, getImages } from '../../utils/images';
+import { DEFAULT_IMAGE, getImages } from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
 import useWindowBreakpoint, { windowSizes } from '../../utils/windowDimensions';
 

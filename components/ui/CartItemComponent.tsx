@@ -77,9 +77,11 @@ function CartItemComponent({
       {children}
       <span className="">
         $
-        {Number(
+        {(Number(
           item.itemData?.variations![0].itemVariationData?.priceMoney?.amount
-        ) / 100}
+        ) *
+          item.quantity) /
+          100}
       </span>
     </div>
   );

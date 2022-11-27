@@ -89,16 +89,16 @@ function ProductPage(props: ProductPageProps) {
           <Breadcrumbs pages={breadcrumbs} />
         )}
         <div className="flex flex-col md:flex-row gap-2">
-          <div className="w-full md:w-1/2 shrink-0">
+          <div className="w-full md:flex-1 shrink-0">
             {itemImages.length > 1 ? (
               <div className="flex flex-col-reverse md:flex-row gap-2">
-                <div className="w-full h-12 md:w-12 md:h-full overflow-auto flex md:flex-col gap-2">
+                <div className="w-full h-12 md:w-12 md:h-full md:flex-1 overflow-auto flex md:flex-col gap-2">
                   {itemImages.map((image, i) => (
                     <div
                       key={image.id + i}
                       className={`${
                         selectedImage.id === image.id ? 'border-2' : ''
-                      } border-primary-background-darker hover:cursor-pointer w-12 md:w-auto`}
+                      } border-primary hover:cursor-pointer w-12 md:w-auto`}
                       onClick={() => setSelectedImage(image)}
                     >
                       <Image
@@ -108,7 +108,7 @@ function ProductPage(props: ProductPageProps) {
                     </div>
                   ))}
                 </div>
-                <div className="w-full">
+                <div className="w-full flex-[6]">
                   <Image
                     src={selectedImage.imageData?.url!}
                     alt={catalogObjects.object?.itemData?.name!}
@@ -124,7 +124,7 @@ function ProductPage(props: ProductPageProps) {
               />
             )}
           </div>
-          <div className="flex flex-col gap-2 items-start">
+          <div className="flex flex-col gap-2 items-start md:flex-1">
             <span className="text-2xl font-semibold">
               {catalogObjects.object?.itemData?.name}
             </span>

@@ -11,7 +11,7 @@ function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
     <SessionProvider session={pageProps.session}>
       <StoreProvider>
         {/* {Component.auth ? (
-          <Auth> */}
+        <Auth> */}
         <Component {...pageProps} />
         {/* </Auth>
         ) : (

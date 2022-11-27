@@ -1,6 +1,6 @@
 import Image from '@ui/Image';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import {
   CatalogObject,
   Client,
@@ -14,9 +14,17 @@ import { getImages } from '../utils/squareUtils';
 interface ProductCardProps {
   item: CatalogObject;
   relatedObj: SearchCatalogObjectsResponse['relatedObjects'];
+  onClick?: (id: string) => void;
 }
 
-function ProductCard({ item, relatedObj }: ProductCardProps) {
+function ProductCard({ item, relatedObj, onClick }: ProductCardProps) {
+  const router = useRouter();
+  const handleClick = onClick
+    ? onClick
+    : (id: string) => {
+        router.push(`/product/${id}`);
+      };
+
   const itemImages = getImages(item, relatedObj!);
 
   const prices = Array.from(
@@ -28,24 +36,26 @@ function ProductCard({ item, relatedObj }: ProductCardProps) {
       )
     )
   );
+
   return (
-    <div className="overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105  hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10">
-      <Link href={`/product/${item.id}`}>
-        <a className="text-primary-text hover:text-primary-text">
-          <Image
-            alt={item.itemData?.name!}
-            src={itemImages[0].imageData?.url!}
-          />
-          <div className="p-2 text-center">
-            <div className="font-semibold">{item.itemData?.name}</div>
-            <div>
-              {prices.length > 1
-                ? `$${Math.min(...prices)} - $${Math.max(...prices)}`
-                : `$${prices[0]}`}
-            </div>
+    <div
+      id={item.id}
+      className="overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105  hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10"
+    >
+      <div
+        className="text-primary-text hover:text-primary-text cursor-pointer"
+        onClick={() => handleClick(item.id)}
+      >
+        <Image alt={item.itemData?.name!} src={itemImages[0].imageData?.url!} />
+        <div className="p-2 text-center">
+          <div className="font-semibold">{item.itemData?.name}</div>
+          <div>
+            {prices.length > 1
+              ? `$${Math.min(...prices)} - $${Math.max(...prices)}`
+              : `$${prices[0]}`}
           </div>
-        </a>
-      </Link>
+        </div>
+      </div>
     </div>
   );
 }

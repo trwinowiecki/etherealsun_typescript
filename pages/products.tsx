@@ -34,6 +34,9 @@ const products = ({ catalog }: ProductsPageProps) => {
 
   useEffect(() => {
     setPage(prev => parseInt(router.query['page']) || prev);
+    if (router.query['id']) {
+      router.replace(`#${router.query['id']}`);
+    }
   }, [router.isReady]);
 
   const categoryField: FilterField<string> = {
@@ -172,7 +175,7 @@ const products = ({ catalog }: ProductsPageProps) => {
         }
       },
       undefined,
-      { shallow: true }
+      { shallow: true, scroll: true }
     );
     setPage(newPage);
   };
@@ -183,12 +186,13 @@ const products = ({ catalog }: ProductsPageProps) => {
         pathname: '/products',
         query: {
           ...router.query,
-          id
+          id: id
         }
       },
       undefined,
       { shallow: true }
     );
+    router.push(`/product/${id}`);
   };
 
   const breadcrumbs: BreadcrumbPage[] = [

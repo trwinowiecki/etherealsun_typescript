@@ -37,16 +37,16 @@ function Navbar() {
   } = state;
 
   return (
-    <nav className="nav z-50 sticky top-0 flex w-full justify-between items-center h-12 px-4 shadow-md bg-primary-background">
+    <nav className="sticky top-0 z-20 flex items-center justify-between w-full h-12 px-4 shadow-md nav bg-primary-background">
       <Link href="/">
         <a className="text-lg font-bold">Ethereal Sun</a>
       </Link>
-      <div className="nav-items flex h-full justify-end items-center gap-4">
+      <div className="flex items-center justify-end h-full gap-4 nav-items">
         <div className="">
           <Link href="/cart">
-            <div className="w-full h-full relative">
+            <div className="relative w-full h-full">
               <ShoppingBagIcon
-                className="p-2 h-10 w-10"
+                className="w-10 h-10 p-2"
                 aria-label="shopping bag"
               />
               <div
@@ -65,14 +65,14 @@ function Navbar() {
           </Link>
         </div>
         <Menu as="div" className="z-10">
-          <Menu.Button className="flex h-full items-center">
+          <Menu.Button className="flex items-center h-full">
             {status === 'loading'
               ? 'Loading'
               : session?.user
               ? session.user.name
               : ''}
             <UserCircleIcon
-              className="p-2 h-10 w-10"
+              className="w-10 h-10 p-2"
               aria-label="account options"
             />
           </Menu.Button>
@@ -85,7 +85,7 @@ function Navbar() {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="menu-items absolute flex flex-col right-0 mt-2 mr-2 w-auto origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
+            <Menu.Items className="absolute right-0 flex flex-col w-auto mt-2 mr-2 origin-top-right rounded-md shadow-lg menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
               {status === 'loading' ? (
                 'Loading'
               ) : session?.user ? (

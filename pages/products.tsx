@@ -34,9 +34,9 @@ const products = ({ catalog }: ProductsPageProps) => {
 
   useEffect(() => {
     setPage(prev => parseInt(router.query['page']) || prev);
-    if (router.query['id']) {
-      router.replace(`#${router.query['id']}`);
-    }
+    // if (router.query['id']) {
+    //   router.replace(`#${router.query['id']}`);
+    // }
   }, [router.isReady]);
 
   const categoryField: FilterField<string> = {
@@ -172,7 +172,8 @@ const products = ({ catalog }: ProductsPageProps) => {
         query: {
           ...router.query,
           page: newPage.toString()
-        }
+        },
+        hash: router.asPath.split('#')[1]
       },
       undefined,
       { shallow: true, scroll: true }
@@ -184,10 +185,8 @@ const products = ({ catalog }: ProductsPageProps) => {
     router.push(
       {
         pathname: '/products',
-        query: {
-          ...router.query,
-          id: id
-        }
+        query: router.query,
+        hash: id
       },
       undefined,
       { shallow: true }
@@ -205,8 +204,8 @@ const products = ({ catalog }: ProductsPageProps) => {
       {windowSizes[windowSize] >= windowSizes.md && (
         <Breadcrumbs pages={breadcrumbs} />
       )}
-      <div className="relative flex flex-col gap-2 items-center md:flex-row md:items-start">
-        <div className="sticky top-16 z-10 w-full bg-white shadow-md rounded-lg mb-4 md:w-[250px] md:max-w-[300px] md:max-h-[90vh]">
+      <div className="relative flex flex-col items-center gap-2 md:flex-row md:items-start">
+        <div className="sticky top-16 z-20 w-full bg-white shadow-md rounded-lg mb-4 md:w-[250px] md:max-w-[300px] md:max-h-[90vh]">
           {windowSizes[windowSize] >= windowSizes.md ? (
             <div className="p-4">
               <div className="mb-4">Filters</div>
@@ -226,7 +225,7 @@ const products = ({ catalog }: ProductsPageProps) => {
             </Modal>
           )}
         </div>
-        <div className="w-full flex flex-col gap-6 items-center">
+        <div className="flex flex-col items-center w-full gap-6">
           <ProductList
             catalog={filteredItems.slice(
               (page - 1) * pageLength,

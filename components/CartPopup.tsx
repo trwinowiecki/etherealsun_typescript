@@ -50,7 +50,7 @@ function CartPopup() {
         leave="transition transform duration-150"
         leaveFrom="translate-y-0"
         leaveTo="translate-y-full"
-        className="absolute bottom-0 left-0 right-0 max-h-[50vh] rounded-t-lg p-4 overflow-y-hidden overflow-x-auto z-50 bg-primary-background "
+        className="absolute bottom-0 left-0 right-0 max-h-[50vh] rounded-t-lg p-4 z-50 bg-primary-background"
       >
         <div>
           <XMarkIcon className="h-6 cursor-pointer" onClick={handleClose} />
@@ -58,9 +58,11 @@ function CartPopup() {
             Go to Cart
           </Button>
         </div>
-        {cartItems.map(item => (
-          <CartItemComponent key={item.id} item={item} />
-        ))}
+        <div className="overflow-y-scroll">
+          {cartItems.map(item => (
+            <CartItemComponent key={item.id} item={item} />
+          ))}
+        </div>
       </Transition>
     </>
   );

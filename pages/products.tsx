@@ -172,8 +172,7 @@ const products = ({ catalog }: ProductsPageProps) => {
         query: {
           ...router.query,
           page: newPage.toString()
-        },
-        hash: router.asPath.split('#')[1]
+        }
       },
       undefined,
       { shallow: true, scroll: true }
@@ -185,7 +184,10 @@ const products = ({ catalog }: ProductsPageProps) => {
     router.push(
       {
         pathname: '/products',
-        query: router.query,
+        query: {
+          ...router.query,
+          page: page
+        },
         hash: id
       },
       undefined,

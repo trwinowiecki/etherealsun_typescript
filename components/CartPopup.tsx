@@ -1,3 +1,4 @@
+import { Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import Button from '@ui/Button';
 import CartItemComponent from '@ui/CartItemComponent';
@@ -30,19 +31,29 @@ function CartPopup() {
 
   return (
     <>
-      <div
-        className={`${
-          popUp ? 'absolute' : 'hidden'
-        } top-0 bottom-0 left-0 right-0 bg-black bg-opacity-25 z-50`}
+      <Transition
+        show={popUp}
+        enter="transition duration-75"
+        enterFrom="opacity-0"
+        enterTo="opacity-25"
+        leave="transition duration-150"
+        leaveFrom="opacity-25"
+        leaveTo="opacity-0"
+        className="absolute top-0 bottom-0 left-0 right-0 z-40 bg-black"
         onClick={handleClose}
       />
-      <div
-        className={`${
-          popUp ? 'sticky bottom-0' : 'hidden '
-        } left-0 right-0 max-h-[50vh] rounded-t-lg p-4 overflow-y-hidden overflow-x-auto z-50 bg-primary-background transition-all`}
+      <Transition
+        show={popUp}
+        enter="transition transform duration-75"
+        enterFrom="translate-y-full"
+        enterTo="translate-y-0"
+        leave="transition transform duration-150"
+        leaveFrom="translate-y-0"
+        leaveTo="translate-y-full"
+        className="absolute bottom-0 left-0 right-0 max-h-[50vh] rounded-t-lg p-4 overflow-y-hidden overflow-x-auto z-50 bg-primary-background "
       >
         <div>
-          <XMarkIcon className="cursor-pointer h-6" onClick={handleClose} />
+          <XMarkIcon className="h-6 cursor-pointer" onClick={handleClose} />
           <Button intent={'primary'} onClick={() => handleRoute('/cart')}>
             Go to Cart
           </Button>
@@ -50,7 +61,7 @@ function CartPopup() {
         {cartItems.map(item => (
           <CartItemComponent key={item.id} item={item} />
         ))}
-      </div>
+      </Transition>
     </>
   );
 }

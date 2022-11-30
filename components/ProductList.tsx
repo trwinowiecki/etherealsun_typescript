@@ -21,7 +21,7 @@ export default function ProductList({
       };
 
   return catalog ? (
-    <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center">
+    <div className="flex flex-wrap justify-center overflow-y-auto gap-x-4 gap-y-2">
       {catalog.map(catalogObj => {
         if (catalogObj.type === 'ITEM') {
           return (

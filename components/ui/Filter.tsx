@@ -23,7 +23,7 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
     }
   });
   return (
-    <div className="w-full h-full flex flex-col gap-2 overflow-y-auto">
+    <div className="z-20 flex flex-col w-full h-full gap-2 overflow-y-auto">
       {fields.map((field, i) => (
         <Disclosure
           key={i}
@@ -65,7 +65,7 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
                                   checked ? 'inline-flex' : 'invisible'
                                 } h-5`}
                               />
-                              <div className="overflow-x-auto w-full">
+                              <div className="w-full overflow-x-auto">
                                 {val}
                               </div>
                             </div>
@@ -85,7 +85,7 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
                                   checked ? 'inline-flex' : 'invisible'
                                 } h-5`}
                               />
-                              <div className="overflow-x-auto w-full">
+                              <div className="w-full overflow-x-auto">
                                 {val}
                               </div>
                             </div>

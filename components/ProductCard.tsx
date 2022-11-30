@@ -40,10 +40,10 @@ function ProductCard({ item, relatedObj, onClick }: ProductCardProps) {
   return (
     <div
       id={item.id}
-      className="overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105  hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10"
+      className="overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105 hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32"
     >
       <div
-        className="text-primary-text hover:text-primary-text cursor-pointer"
+        className="cursor-pointer text-primary-text hover:text-primary-text"
         onClick={() => handleClick(item.id)}
       >
         <Image alt={item.itemData?.name!} src={itemImages[0].imageData?.url!} />

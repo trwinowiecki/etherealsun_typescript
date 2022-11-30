@@ -51,9 +51,9 @@ export default function Layout({ title, children }: LayoutProps) {
 
       <ToastContainer position="bottom-center" limit={1} />
 
-      <div className="wrapper flex min-h-screen flex-col justify-between">
+      <div className="flex flex-col justify-between min-h-screen wrapper snap-y snap-mandatory">
         <Navbar />
-        <div className="flex-1 w-full flex justify-center">
+        <div className="flex justify-center flex-1 w-full">
           <main className="mt-4 px-4 w-full lg:w-[1200px]">{children}</main>
         </div>
         <Footer />

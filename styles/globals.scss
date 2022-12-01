@@ -48,7 +48,7 @@ a {
 
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-  @apply w-2;
+  @apply w-1 h-1;
 }
 
 *::-webkit-scrollbar-track {

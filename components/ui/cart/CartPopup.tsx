@@ -65,7 +65,7 @@ function CartPopup() {
             Go to Cart
           </Button>
         </div>
-        <div className="flex gap-2 px-2 py-4 overflow-x-auto md:flex-col md:gap-0 md:rounded-md md:bg-primary-background-darker md:my-4 md:shadow-md md:overflow-y-auto md:max-h-[80%] md:w-[30vw]">
+        <div className="flex gap-4 px-2 overflow-x-auto my-4 md:py-4 md:flex-col md:gap-0 md:rounded-md md:bg-primary-background-darker md:my-4 md:shadow-md md:overflow-y-auto md:max-h-[80%] md:w-[30vw]">
           {cartItems.map(item => (
             <div className="rounded-md shadow-lg md:rounded-none min-w-fit bg-primary-background-darker md:shadow-none">
               <CartItemComponent key={item.id} item={item} />

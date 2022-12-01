@@ -8,9 +8,9 @@ import { CartCommands } from '../enums/CartCommands';
 import { DEFAULT_THEME } from '../styles/themes';
 import { applyTheme } from '../styles/themes/utils';
 import { Store } from '../utils/Store';
-import CartPopup from './CartPopup';
 import Footer from './Footer';
 import Navbar from './Navbar';
+import CartPopup from './ui/cart/CartPopup';
 
 type LayoutProps = {
   children: React.ReactNode;

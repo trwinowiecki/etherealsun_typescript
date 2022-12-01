@@ -49,12 +49,12 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
-export const Auth = createContext<AuthContextInterface>({
+export const FirebaseAuth = createContext<AuthContextInterface>({
   state: initialState,
   dispatch: () => null
 });
 
-export const AuthProvider = ({ children }: React.PropsWithChildren) => {
+export const FirebaseAuthProvider = ({ children }: React.PropsWithChildren) => {
   let user: User | null = null;
   let error = null;
   useEffect(() => {
@@ -76,12 +76,14 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  if (user && state.user?.uid !== user.uid) {
+  if (user && user.uid !== state.user?.uid) {
     state.user = user;
   } else if (error && error !== state.error) {
     state.error = error;
   }
 
   const value = { state, dispatch };
-  return <Auth.Provider value={value}>{children}</Auth.Provider>;
+  return (
+    <FirebaseAuth.Provider value={value}>{children}</FirebaseAuth.Provider>
+  );
 };

@@ -1,6 +1,5 @@
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { forwardRef, useContext } from 'react';
@@ -30,7 +29,6 @@ const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
 });
 
 function Navbar() {
-  const { status, data: session } = useSession();
   const { state, dispatch } = useContext(Store);
   const {
     cart: { cartItems }
@@ -109,7 +107,7 @@ function Navbar() {
                 <>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/api/auth/signin" active={active}>
+                      <MyLink href="/login" active={active}>
                         Sign In
                       </MyLink>
                     )}

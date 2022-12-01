@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import Head from 'next/head';
 import React, { useContext, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
@@ -19,7 +19,6 @@ type LayoutProps = {
 };
 
 export default function Layout({ title, children }: LayoutProps) {
-  const { status, data: session } = useSession();
   const { state, dispatch } = useContext(Store);
   const cart = state.cart;
   const [cartItemsCount, setcartItemsCount] = useState(0);

@@ -1,11 +1,11 @@
 import Image from '@ui/Image';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { CartCommands } from '../../enums/CartCommands';
-import { CartItem } from '../../types/CartItem';
-import { getImages } from '../../utils/squareUtils';
-import { Store } from '../../utils/Store';
-import Quantity from './Quantity';
+import { CartCommands } from '../../../enums/CartCommands';
+import { CartItem } from '../../../types/CartItem';
+import { getImages } from '../../../utils/squareUtils';
+import { Store } from '../../../utils/Store';
+import Quantity from '../Quantity';
 
 interface CartItemProps {
   item: CartItem;
@@ -49,7 +49,7 @@ function CartItemComponent({
       key={item.id}
       className={`flex justify-between items-center gap-2 p-2 px-4 ${classes}`}
     >
-      <div key={item.id} className="flex items-center gap-4 flex-1">
+      <div key={item.id} className="flex items-center flex-1 gap-4">
         <Link href={`/product/${item.id}`}>
           <a className="w-14 min-w-[3.5rem]">
             <Image

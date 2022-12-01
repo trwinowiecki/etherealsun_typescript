@@ -1,4 +1,5 @@
-import CartItemComponent from '@ui/CartItemComponent';
+import CartItemComponent from '@ui/cart/CartItemComponent';
+import Subtotal from '@ui/cart/Subtotal';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -33,45 +34,24 @@ const Cart: NextPage<Props> = ({}) => {
   return (
     <Layout title="Cart">
       <>
-        <h1 className="text-4xl tracking-wide mb-4">Your bag</h1>
+        <h1 className="mb-4 text-4xl tracking-wide">Your bag</h1>
         {!cartItems || cartItems.length === 0 ? (
-          <div className="w-full h-full bg-primary-background-darker rounded-md shadow-md p-4">
+          <div className="w-full h-full p-4 rounded-md shadow-md bg-primary-background-darker">
             <span className="text-2xl">No treasures here yet!</span>
             <div className="text-2xl font-bold">
               <Link href="/">Go hunting!</Link>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-4 md:items-start md:flex-row">
+          <div className="relative flex flex-col gap-4 mb-4 md:items-start md:flex-row">
             <div className="w-full flex-[3] flex flex-col bg-primary-background-darker rounded-md overflow-hidden shadow-md">
               {cartItems.slice().map(item => {
                 return <CartItemComponent key={item.id} item={item} />;
               })}
             </div>
-            <div className="flex-1 flex flex-col gap-4">
-              <div className="w-full bg-primary-background-darker rounded-md shadow-md p-4">
-                <div className="flex justify-between items-center">
-                  <h1 className="text-2xl">Subtotal</h1>
-                  <div>
-                    $
-                    {cartItems.reduce(
-                      (acc, item) =>
-                        (acc +=
-                          (Number(
-                            item.itemData?.variations![0].itemVariationData
-                              ?.priceMoney?.amount
-                          ) *
-                            item.quantity) /
-                          100),
-                      0
-                    )}
-                  </div>
-                </div>
-                <div className="text-xs">
-                  Taxes and shipping calculated at checkout
-                </div>
-              </div>
-              <div className="w-full bg-primary-background-darker rounded-md shadow-md p-4">
+            <div className="flex flex-col flex-1 gap-4 md:sticky md:top-16">
+              <Subtotal cartItems={cartItems} />
+              <div className="w-full p-4 rounded-md shadow-md bg-primary-background-darker">
                 <h1 className="text-2xl">Checkout</h1>
                 <div>checkout options</div>
                 <div>checkout options</div>

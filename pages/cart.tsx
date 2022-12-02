@@ -4,6 +4,7 @@ import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useContext } from 'react';
+
 import Layout from '../components/Layout';
 import { CartCommands } from '../enums/CartCommands';
 import { CartItem } from '../types/CartItem';

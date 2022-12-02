@@ -1,88 +1,67 @@
+/* eslint-disable react/jsx-no-constructed-context-values */
 import {
+  FacebookAuthProvider,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  User
+  signInWithPopup,
+  signOut,
+  User,
+  UserCredential
 } from 'firebase/auth';
-import { createContext, useEffect, useReducer } from 'react';
-import { AuthCommands } from './AuthCommands';
-import { auth } from './firebase';
+import { createContext, useContext, useEffect, useState } from 'react';
 
-interface AuthContextInterface {
-  state: State;
-  dispatch: React.Dispatch<any>;
+import { auth } from '../../pages/api/firebase';
+
+interface FirebaseAuthContext {
+  user?: User | null;
+  signIn?: (email: string, password: string) => Promise<UserCredential>;
+  logout?: () => Promise<void>;
+  signInProvider?: (providerId: string) => Promise<UserCredential>;
 }
 
-type State = {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
+export const useFirebaseAuth = () => {
+  return useContext(FirebaseAuth);
 };
 
-const initialState: State = {
-  user: null,
-  loading: true,
-  error: null
-};
-
-type Action = {
-  type: AuthCommands.LOGIN_EMAIL_PASSWORD;
-  payload: { email: string; password: string };
-};
-
-const reducer = (state: State, action: Action): State => {
-  if (typeof window !== undefined) {
-    switch (action.type) {
-      case AuthCommands.LOGIN_EMAIL_PASSWORD: {
-        const { email, password } = action.payload;
-        let user = null;
-        let error = null;
-        signInWithEmailAndPassword(auth, email, password)
-          .then(
-            userCredential => (user = userCredential),
-            rejected => (error = rejected)
-          )
-          .catch(error => (error = error));
-
-        return { user, loading: false, error };
-      }
-    }
-  }
-};
-
-export const FirebaseAuth = createContext<AuthContextInterface>({
-  state: initialState,
-  dispatch: () => null
-});
+export const FirebaseAuth = createContext<FirebaseAuthContext>({});
 
 export const FirebaseAuthProvider = ({ children }: React.PropsWithChildren) => {
-  let user: User | null = null;
-  let error = null;
-  useEffect(() => {
-    const sub = onAuthStateChanged(auth, user => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        user = user;
-        // ...
-      } else {
-        // User is signed out
-        // ...
-        error = 'Logged out';
-      }
-    });
+  const [user, setUser] = useState<User | null>(null);
 
-    return sub;
+  const signIn = (email: string, password: string) => {
+    return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const signInProvider = (providerId: string) => {
+    let provider;
+    switch (providerId) {
+      case 'google': {
+        provider = new GoogleAuthProvider();
+        break;
+      }
+      case 'facebook': {
+        provider = new FacebookAuthProvider();
+        break;
+      }
+      default: {
+        throw { code: 'Unkown Provider' };
+      }
+    }
+
+    return signInWithPopup(auth, provider);
+  };
+
+  const logout = () => {
+    return signOut(auth);
+  };
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, newUser => setUser(newUser));
   }, []);
 
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const value = { user, signIn, logout, signInProvider };
 
-  if (user && user.uid !== state.user?.uid) {
-    state.user = user;
-  } else if (error && error !== state.error) {
-    state.error = error;
-  }
-
-  const value = { state, dispatch };
   return (
     <FirebaseAuth.Provider value={value}>{children}</FirebaseAuth.Provider>
   );

@@ -5,8 +5,10 @@ import CartItemComponent from '@ui/cart/CartItemComponent';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
+
 import { CartCommands } from '../../../enums/CartCommands';
 import { Store } from '../../../utils/Store';
+
 import Subtotal from './Subtotal';
 
 interface Props {}
@@ -61,14 +63,17 @@ function CartPopup() {
       >
         <div className="flex items-center justify-between">
           <XMarkIcon className="h-6 cursor-pointer" onClick={handleClose} />
-          <Button intent={'primary'} onClick={() => handleRoute('/cart')}>
+          <Button intent="primary" onClick={() => handleRoute('/cart')}>
             Go to Cart
           </Button>
         </div>
         <div className="flex gap-4 px-2 overflow-x-auto my-4 md:py-4 md:flex-col md:gap-0 md:rounded-md md:bg-primary-background-darker md:my-4 md:shadow-md md:overflow-y-auto md:max-h-[80%] md:w-[30vw]">
           {cartItems.map(item => (
-            <div className="rounded-md shadow-lg md:rounded-none min-w-fit bg-primary-background-darker md:shadow-none">
-              <CartItemComponent key={item.id} item={item} />
+            <div
+              key={item.id}
+              className="rounded-md shadow-lg md:rounded-none min-w-fit bg-primary-background-darker md:shadow-none"
+            >
+              <CartItemComponent item={item} />
             </div>
           ))}
         </div>

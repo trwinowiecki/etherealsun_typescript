@@ -1,19 +1,23 @@
+/* eslint-disable @shopify/jsx-no-complex-expressions */
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import React, { forwardRef, useContext } from 'react';
+import { useRouter } from 'next/router';
+import React, { forwardRef, useContext, useEffect } from 'react';
+
+import { useFirebaseAuth } from '../utils/firebase/firebaseAuth';
 import { Store } from '../utils/Store';
 
-type myLinkProps = {
+interface myLinkProps {
   children: React.ReactNode;
   href: string;
   active: boolean;
-};
+}
 
 // eslint-disable-next-line react/display-name
 const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
-  let { href, active, children, ...rest } = props;
+  const { href, active, children, ...rest } = props;
 
   return (
     <Link href={href}>
@@ -28,11 +32,43 @@ const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
   );
 });
 
+interface myButtonProps {
+  children: React.ReactNode;
+  onClick: () => void;
+  active: boolean;
+}
+
+const MyButton = forwardRef<HTMLButtonElement, myButtonProps>((props, ref) => {
+  const { onClick, active, children } = props;
+
+  return (
+    <button
+      onClick={onClick}
+      className={`${active && 'bg-primary-background-darker'} py-2 px-4`}
+    >
+      {children}
+    </button>
+  );
+});
+
 function Navbar() {
   const { state, dispatch } = useContext(Store);
+  const { user, logout } = useFirebaseAuth();
+  const router = useRouter();
+
   const {
     cart: { cartItems }
   } = state;
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {}, [user]);
 
   return (
     <nav className="sticky top-0 z-20 flex items-center justify-between w-full h-12 px-4 shadow-md nav bg-primary-background">
@@ -53,10 +89,7 @@ function Navbar() {
                 } top-1 right-1`}
               >
                 <div className="flex justify-center items-center text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1">
-                  {cartItems.reduce(
-                    (acc, item) => (acc = acc + item.quantity),
-                    0
-                  )}
+                  {cartItems.reduce((acc, item) => (acc += item.quantity), 0)}
                 </div>
               </div>
             </div>
@@ -64,11 +97,7 @@ function Navbar() {
         </div>
         <Menu as="div" className="z-10">
           <Menu.Button className="flex items-center h-full">
-            {status === 'loading'
-              ? 'Loading'
-              : session?.user
-              ? session.user.name
-              : ''}
+            {user ? user.displayName : ''}
             <UserCircleIcon
               className="w-10 h-10 p-2"
               aria-label="account options"
@@ -84,22 +113,20 @@ function Navbar() {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute right-0 flex flex-col w-auto mt-2 mr-2 origin-top-right rounded-md shadow-lg menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
-              {status === 'loading' ? (
-                'Loading'
-              ) : session?.user ? (
+              {user ? (
                 <>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/account-settings" active>
+                      <MyLink href="/account-settings" active={active}>
                         Account settings
                       </MyLink>
                     )}
                   </Menu.Item>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/signout" active={active}>
+                      <MyButton onClick={handleSignOut} active={active}>
                         Logout
-                      </MyLink>
+                      </MyButton>
                     )}
                   </Menu.Item>
                 </>

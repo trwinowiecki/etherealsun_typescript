@@ -2,11 +2,12 @@ import React from 'react';
 
 interface DividerProps {
   children?: React.ReactNode;
+  width?: string;
 }
 
-const Divider = ({ children }: DividerProps) => {
+const Divider = ({ children, width }: DividerProps) => {
   return (
-    <div className="relative flex items-center w-full py-5">
+    <div className={`${width || 'w-full'} relative flex items-center py-5`}>
       {children ? (
         <>
           <div className="flex-grow border-t border-opacity-50 border-primary-text" />

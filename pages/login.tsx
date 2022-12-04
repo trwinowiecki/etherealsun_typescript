@@ -82,7 +82,7 @@ const login = ({ callbackUrl }: LoginProps) => {
       id: 'google',
       icon: faGoogle,
       iconColor: 'white',
-      bgColor: '#DB4437'
+      bgColor: '#dB4437'
     },
     {
       name: 'Facebook',

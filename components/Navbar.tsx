@@ -1,4 +1,3 @@
-/* eslint-disable @shopify/jsx-no-complex-expressions */
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import dynamic from 'next/dynamic';
@@ -44,7 +43,9 @@ const MyButton = forwardRef<HTMLButtonElement, myButtonProps>((props, ref) => {
   return (
     <button
       onClick={onClick}
-      className={`${active && 'bg-primary-background-darker'} py-2 px-4`}
+      className={`${
+        active && 'bg-primary-background-darker'
+      } py-2 px-4 text-left`}
     >
       {children}
     </button>
@@ -97,7 +98,7 @@ function Navbar() {
         </div>
         <Menu as="div" className="z-10">
           <Menu.Button className="flex items-center h-full">
-            {user ? user.displayName : ''}
+            <span className="pl-2">{user ? user.displayName : ''}</span>
             <UserCircleIcon
               className="w-10 h-10 p-2"
               aria-label="account options"
@@ -112,12 +113,12 @@ function Navbar() {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-0 flex flex-col w-auto mt-2 mr-2 origin-top-right rounded-md shadow-lg menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
+            <Menu.Items className="absolute flex flex-col justify-start w-auto mt-4 origin-top-right rounded-md shadow-lg right-4 menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
               {user ? (
                 <>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/account-settings" active={active}>
+                      <MyLink href="/account" active={active}>
                         Account settings
                       </MyLink>
                     )}

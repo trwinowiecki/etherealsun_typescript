@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '@ui/Button';
@@ -6,6 +5,7 @@ import Divider from '@ui/Divider';
 import { FirebaseError } from 'firebase/app';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 import Layout from '../components/Layout';
@@ -46,6 +46,15 @@ const login = ({ callbackUrl }: LoginProps) => {
   const { signIn, user, signInProvider } = useFirebaseAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors }
+  } = useForm();
+  const onSubmit = data => console.log(data);
+  const emailRegex =
+    '?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+*|"?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\]';
 
   if (user) {
     router.push('/');
@@ -58,15 +67,15 @@ const login = ({ callbackUrl }: LoginProps) => {
     }));
   };
 
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
-    try {
-      await signIn!(formData.email, formData.password);
-      router.push(callbackUrl || '/');
-    } catch (error: any) {
-      toast.error(`Failed: ${(error as FirebaseError).code}`);
-    }
-  };
+  // const handleSubmit = async (event: any) => {
+  //   event.preventDefault();
+  //   try {
+  //     await signIn!(formData.email, formData.password);
+  //     router.push(callbackUrl || '/');
+  //   } catch (error: any) {
+  //     toast.error(`Failed: ${(error as FirebaseError).code}`);
+  //   }
+  // };
 
   const handleProviderLogin = async (providerId: string) => {
     try {
@@ -98,38 +107,48 @@ const login = ({ callbackUrl }: LoginProps) => {
     <Layout title="Login">
       <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-4rem)]">
         <div className="flex flex-col items-center justify-center w-full sm:max-w-md">
-          <form className="w-[90%] flex flex-col gap-2" onSubmit={handleSubmit}>
+          <form
+            className="flex flex-col w-full gap-2"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <label
               htmlFor="email"
               className="flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md"
             >
               Email
               <input
-                type="email"
-                name="email"
-                id="email"
-                value={formData.email}
-                onChange={event => handleChange(event)}
-                required
+                {...register('email', { required: true })}
+                // type="email"
+                // name="email"
+                // id="email"
+                // value={formData.email}
+                // onChange={event => handleChange(event)}
+                // required
                 autoComplete="true"
                 className="flex-1 py-1 pl-2 bg-transparent"
+                // pattern={emailRegex}
               />
             </label>
             <label
               htmlFor="password"
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md "
+              className="flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md"
             >
               Password
               <input
-                type="password"
-                name="password"
-                id="password"
-                value={formData.password}
-                onChange={event => handleChange(event)}
-                required
+                {...register('password', { required: true })}
+                // type="password"
+                // name="password"
+                // id="password"
+                // value={formData.password}
+                // onChange={event => handleChange(event)}
+                // required
                 autoComplete="true"
                 className="flex-1 py-1 pl-2 bg-transparent"
               />
+            </label>
+            <label htmlFor="submit">
+              Login
+              <input type="submit" name="submit" id="submit" />
             </label>
             <Button
               onClick={() => null}

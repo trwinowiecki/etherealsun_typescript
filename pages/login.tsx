@@ -1,7 +1,9 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '@ui/Button';
 import Divider from '@ui/Divider';
+import { FirebaseError } from 'firebase/app';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -18,7 +20,6 @@ const GoogleIconSvg = (
     height="100%"
     viewBox="0 0 20 20"
     width="100%"
-    fit=""
     preserveAspectRatio="xMidYMid meet"
     focusable="false"
   >
@@ -60,10 +61,10 @@ const login = ({ callbackUrl }: LoginProps) => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
-      await signIn(formData.email, formData.password);
+      await signIn!(formData.email, formData.password);
       router.push(callbackUrl || '/');
-    } catch (error) {
-      toast.error(`Failed: ${error.code}`);
+    } catch (error: any) {
+      toast.error(`Failed: ${(error as FirebaseError).code}`);
     }
   };
 
@@ -72,7 +73,7 @@ const login = ({ callbackUrl }: LoginProps) => {
       await signInProvider(providerId);
       router.push(callbackUrl || '/');
     } catch (error) {
-      toast.error(`Failed: ${error.code}`);
+      toast.error(`Failed: ${(error as FirebaseError).code}`);
     }
   };
 
@@ -108,7 +109,7 @@ const login = ({ callbackUrl }: LoginProps) => {
                 name="email"
                 id="email"
                 value={formData.email}
-                onChange={e => handleChange(e)}
+                onChange={event => handleChange(event)}
                 required
                 autoComplete="true"
                 className="flex-1 py-1 pl-2 bg-transparent"
@@ -124,7 +125,7 @@ const login = ({ callbackUrl }: LoginProps) => {
                 name="password"
                 id="password"
                 value={formData.password}
-                onChange={e => handleChange(e)}
+                onChange={event => handleChange(event)}
                 required
                 autoComplete="true"
                 className="flex-1 py-1 pl-2 bg-transparent"
@@ -141,7 +142,7 @@ const login = ({ callbackUrl }: LoginProps) => {
           <Divider>OR</Divider>
           <div className="flex justify-center w-full gap-4 px-4">
             {loginProviders.map(provider => (
-              <div
+              <button
                 key={provider.id}
                 className={`flex justify-center flex-1 p-2 text-center rounded-md shadow-md cursor-pointer bg-[${provider.bgColor}]`}
                 onClick={() => handleProviderLogin(provider.id)}
@@ -153,7 +154,7 @@ const login = ({ callbackUrl }: LoginProps) => {
                   className="w-8"
                   color={provider.iconColor}
                 />
-              </div>
+              </button>
             ))}
           </div>
           <Divider>Don&apos;t have an account?</Divider>

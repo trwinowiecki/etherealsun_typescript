@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
+import { FirebaseError } from 'firebase/app';
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -14,26 +15,24 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../../pages/api/firebase';
 
 interface FirebaseAuthContext {
-  user?: User | null;
-  signIn?: (email: string, password: string) => Promise<UserCredential>;
-  logout?: () => Promise<void>;
-  signInProvider?: (providerId: string) => Promise<UserCredential>;
+  user: User | null;
+  signIn: (email: string, password: string) => Promise<UserCredential>;
+  signInProvider: (providerId: string) => Promise<UserCredential>;
+  logout: () => Promise<void>;
 }
 
 export const useFirebaseAuth = () => {
   return useContext(FirebaseAuth);
 };
 
-export const FirebaseAuth = createContext<FirebaseAuthContext>({});
+export const FirebaseAuth = createContext<FirebaseAuthContext>({
+  user: null,
 
-export const FirebaseAuthProvider = ({ children }: React.PropsWithChildren) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  const signIn = (email: string, password: string) => {
+  signIn: (email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
-  };
+  },
 
-  const signInProvider = (providerId: string) => {
+  signInProvider: (providerId: string) => {
     let provider;
     switch (providerId) {
       case 'google': {
@@ -45,19 +44,24 @@ export const FirebaseAuthProvider = ({ children }: React.PropsWithChildren) => {
         break;
       }
       default: {
-        throw { code: 'Unkown Provider' };
+        throw new FirebaseError('Unknown Provider', 'Unknown Provider');
       }
     }
 
     return signInWithPopup(auth, provider);
-  };
+  },
 
-  const logout = () => {
+  logout: () => {
     return signOut(auth);
-  };
+  }
+});
+
+export const FirebaseAuthProvider = ({ children }: React.PropsWithChildren) => {
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, newUser => setUser(newUser));
+    const unSubscribe = onAuthStateChanged(auth, newUser => setUser(newUser));
+    return () => unSubscribe();
   }, []);
 
   const value = { user, signIn, logout, signInProvider };

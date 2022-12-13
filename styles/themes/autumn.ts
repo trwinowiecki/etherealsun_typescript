@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import base from './base';
 import { extend } from './utils';
 

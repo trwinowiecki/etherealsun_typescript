@@ -1,11 +1,12 @@
+/* eslint-disable import/no-cycle */
 import autumn from './autumn';
 import base from './base';
 import dark from './dark';
-import { IThemes } from './utils';
+import { Themes } from './types';
 
-export const DEFAULT_THEME: string = 'base';
+export const DEFAULT_THEME = 'base';
 
-export const themes: IThemes = {
+export const themes: Themes = {
   base,
   autumn,
   dark

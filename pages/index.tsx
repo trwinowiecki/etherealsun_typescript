@@ -1,5 +1,4 @@
 import Featured from '@ui/Featured';
-import type { NextPage } from 'next';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 import { Client, Environment, SearchCatalogObjectsResponse } from 'square';

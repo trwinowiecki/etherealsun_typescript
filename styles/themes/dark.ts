@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import base from './base';
 import { extend } from './utils';
 
@@ -8,5 +9,5 @@ export default extend(base, {
   secondaryDarker: '#62BD72',
   textPrimary: '#ddd',
   backgroundPrimary: '#F0E0C5',
-  backgroundPrimaryDarker: '#FAF1E2',
+  backgroundPrimaryDarker: '#FAF1E2'
 });

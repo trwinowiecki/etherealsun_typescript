@@ -1,47 +1,28 @@
+/* eslint-disable import/no-cycle */
+/* eslint-disable @typescript-eslint/naming-convention */
+import { MappedTheme, Theme } from './types';
+
 import { themes } from './index';
 
-export interface ITheme {
-  primary?: string;
-  primaryDarker?: string;
-  secondary?: string;
-  secondaryDarker?: string;
-  negative?: string;
-  positive?: string;
-  textPrimary?: string;
-  backgroundPrimary?: string;
-  backgroundPrimaryDarker?: string;
-  backgroundSecondary?: string;
-  whiteOverride?: string;
-  blackOverride?: string;
-}
-
-export interface IThemes {
-  [key: string]: ITheme;
-}
-
-export interface IMappedTheme {
-  [key: string]: string | null;
-}
-
-export const mapTheme = (variables: ITheme): IMappedTheme => {
+export const mapTheme = (variables: Theme): MappedTheme => {
   return {
-    '--color-primary': variables.primary || '',
-    '--color-primary-darker': variables.primaryDarker || '',
-    '--color-secondary': variables.secondary || '',
-    '--color-secondary-darker': variables.secondaryDarker || '',
-    '--color-positive': variables.positive || '',
-    '--color-negative': variables.negative || '',
-    '--color-text-primary': variables.textPrimary || '',
-    '--background-primary': variables.backgroundPrimary || '',
-    '--background-primary-darker': variables.backgroundPrimaryDarker || '',
-    '--background-sec': variables.backgroundSecondary || '',
-    '--white-override': variables.whiteOverride || '',
-    '--black-override': variables.blackOverride || ''
+    '--color-primary': variables.primary ?? '',
+    '--color-primary-darker': variables.primaryDarker ?? '',
+    '--color-secondary': variables.secondary ?? '',
+    '--color-secondary-darker': variables.secondaryDarker ?? '',
+    '--color-positive': variables.positive ?? '',
+    '--color-negative': variables.negative ?? '',
+    '--color-text-primary': variables.textPrimary ?? '',
+    '--background-primary': variables.backgroundPrimary ?? '',
+    '--background-primary-darker': variables.backgroundPrimaryDarker ?? '',
+    '--background-sec': variables.backgroundSecondary ?? '',
+    '--white-override': variables.whiteOverride ?? '',
+    '--black-override': variables.blackOverride ?? ''
   };
 };
 
 export const applyTheme = (theme: string): void => {
-  const themeObject: IMappedTheme = mapTheme(themes[theme]);
+  const themeObject: MappedTheme = mapTheme(themes[theme]);
   if (!themeObject) return;
 
   const root = document.documentElement;
@@ -55,6 +36,6 @@ export const applyTheme = (theme: string): void => {
   });
 };
 
-export const extend = (extending: ITheme, newTheme: ITheme): ITheme => {
+export const extend = (extending: Theme, newTheme: Theme): Theme => {
   return { ...extending, ...newTheme };
 };

@@ -76,32 +76,32 @@ function Navbar() {
         <a className="text-lg font-bold">Ethereal Sun</a>
       </Link>
       <div className="flex items-center justify-end h-full gap-4 nav-items">
-        <div className="">
-          <Link href="/cart">
-            <div className="relative w-full h-full">
-              <ShoppingBagIcon
-                className="w-10 h-10 p-2"
-                aria-label="shopping bag"
-              />
-              <div
-                className={`${
-                  cartItems.length > 0 ? 'absolute' : 'hidden'
-                } top-1 right-1`}
-              >
-                <div className="flex justify-center items-center text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1">
-                  {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-                </div>
+        <Link href="/cart">
+          <button className="relative" type="button">
+            <ShoppingBagIcon
+              className="w-10 h-10 p-2"
+              aria-label="shopping bag"
+            />
+            <div
+              className={`${
+                cartItems.length > 0 ? 'absolute' : 'hidden'
+              } top-1 right-1`}
+            >
+              <div className="flex justify-center items-center text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1">
+                {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
               </div>
             </div>
-          </Link>
-        </div>
-        <Menu as="div" className="z-10">
+          </button>
+        </Link>
+        <Menu as="div" className="z-50">
           <Menu.Button className="flex items-center h-full">
-            <span className="pl-2">{user ? user.displayName : ''}</span>
-            <UserCircleIcon
-              className="w-10 h-10 p-2"
-              aria-label="account options"
-            />
+            <>
+              {user && <span className="pl-2">{user.displayName}</span>}
+              <UserCircleIcon
+                className="w-10 h-10 p-2"
+                aria-label="account options"
+              />
+            </>
           </Menu.Button>
           <Transition
             as={React.Fragment}
@@ -112,7 +112,7 @@ function Navbar() {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute flex flex-col justify-start w-auto mt-4 origin-top-right rounded-md shadow-lg right-4 menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
+            <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 origin-top-right rounded-md shadow-lg right-4 menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
               {user ? (
                 <>
                   <Menu.Item>

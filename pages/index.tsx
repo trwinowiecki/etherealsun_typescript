@@ -17,7 +17,11 @@ const Home = ({ catalog }: HomeProps) => {
     .map(obj => obj.id);
 
   const mockFeatured = catalog?.objects?.filter(
-    obj => obj.type === 'ITEM' && obj.itemData?.categoryId === catIds![0]
+    obj => obj.type === 'ITEM' && obj.itemData?.categoryId === catIds![2]
+  );
+
+  const mockFeatured2 = catalog?.objects?.filter(
+    obj => obj.type === 'ITEM' && obj.itemData?.categoryId === catIds![3]
   );
 
   return (
@@ -26,11 +30,20 @@ const Home = ({ catalog }: HomeProps) => {
         <section className="p-4">
           <Link href="/products">products page</Link>
         </section>
-        <Featured
-          name="Necklaces"
-          products={mockFeatured ?? []}
-          relatedObjs={catalog.relatedObjects ?? []}
-        />
+        <section className="p-4 rounded bg-primary-background-darker">
+          <Featured
+            name="Necklaces"
+            products={mockFeatured ?? []}
+            relatedObjs={catalog.relatedObjects ?? []}
+          />
+        </section>
+        <section className="p-4 mt-4 rounded bg-primary-background-darker">
+          <Featured
+            name="Accessories"
+            products={mockFeatured2 ?? []}
+            relatedObjs={catalog.relatedObjects ?? []}
+          />
+        </section>
       </div>
     </Layout>
   );

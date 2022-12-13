@@ -18,10 +18,11 @@ a {
 
 * {
   box-sizing: border-box;
+  @apply focus:outline-none focus:rounded focus-visible:ring-4 focus-visible:ring-secondary focus-visible:ring-opacity-75;
 }
 
 .nav {
-  .nav-items > * {
+  .nav-items button {
     @apply rounded-md;
     
     &:hover {
@@ -43,7 +44,7 @@ a {
 /* Firefox */
 * {
   scrollbar-width: auto;
-  scrollbar-color: rgb(var(--color-secondary)) rgb(var(--background-primary-darker));
+  scrollbar-color: rgb(var(--color-secondary)) rgba(var(--black-override), .1);
 }
 
 /* Chrome, Edge, and Safari */
@@ -52,7 +53,7 @@ a {
 }
 
 *::-webkit-scrollbar-track {
-  @apply bg-primary-background-darker
+  @apply bg-black bg-opacity-10;
 }
 
 *::-webkit-scrollbar-thumb {

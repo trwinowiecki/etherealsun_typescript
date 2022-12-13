@@ -5,7 +5,7 @@ import {
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
 
-import CustomListbox from '../CustomListbox';
+import Listbox from './CustomListbox';
 
 interface PaginatorProps {
   pageLengthOpts: number[];
@@ -72,7 +72,7 @@ const Paginator = ({
           />
         ) : null}
       </div>
-      <CustomListbox
+      <Listbox
         listOfItems={pageLengthOpts}
         state={selectedLength}
         setState={val => handleLimitChange(val)}

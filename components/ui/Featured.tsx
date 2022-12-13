@@ -10,7 +10,7 @@ interface FeaturedProps {
 
 const Featured = ({ name, products, relatedObjs }: FeaturedProps) => {
   return (
-    <section className="p-4 bg-primary-background-darker">
+    <>
       <h2 className="tracking-widest">{name.toUpperCase()}</h2>
       <div className="flex w-full max-w-full gap-4 pt-4 overflow-y-auto">
         {products.map(product => (
@@ -19,7 +19,7 @@ const Featured = ({ name, products, relatedObjs }: FeaturedProps) => {
           </div>
         ))}
       </div>
-    </section>
+    </>
   );
 };
 

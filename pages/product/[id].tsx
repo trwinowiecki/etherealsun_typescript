@@ -6,8 +6,8 @@ import { useContext, useState } from 'react';
 import { CatalogObject, RetrieveCatalogObjectResponse } from 'square';
 
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
-import CustomListbox from '../../components/CustomListbox';
 import Layout from '../../components/Layout';
+import Listbox from '../../components/ui/CustomListbox';
 import { CartCommand } from '../../enums/CartCommands';
 import { SquareCommand } from '../../enums/SquareCommands';
 import { DEFAULT_IMAGE, getImages } from '../../utils/squareUtils';
@@ -126,7 +126,7 @@ function ProductPage(props: ProductPageProps) {
             </span>
             <div>{catalogObjects.object?.itemData?.description}</div>
             <div className="flex items-center gap-4">
-              <CustomListbox
+              <Listbox
                 listOfItems={[1, 2, 3, 4, 5]}
                 state={quantity}
                 setState={setQuantity}

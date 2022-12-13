@@ -53,7 +53,7 @@ export default function Layout({
           <main
             className={`${
               overridePadding ? '' : 'px-4 mt-4'
-            } w-full lg:w-[1200px]`}
+            } w-full xl:w-[1200px]`}
           >
             {children}
           </main>

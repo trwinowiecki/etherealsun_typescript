@@ -1,15 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Client, Environment } from 'square';
-import { SquareCommands } from '../../enums/SquareCommands';
 
-interface squareRequest extends NextApiRequest {
-  body: { type: SquareCommands; id?: string; ids?: string[] };
+import { SquareCommand } from '../../enums/SquareCommands';
+
+interface SquareRequest extends NextApiRequest {
+  body: { type: SquareCommand; id?: string; ids?: string[] };
 }
 
 const locationId = 'LQC4A379XHYGD';
 const merchantId = 'MLQSF7HKN6S30';
 
-const handler = async (req: squareRequest, res: NextApiResponse) => {
+const handler = async (req: SquareRequest, res: NextApiResponse) => {
   const client = new Client({
     accessToken: process.env.SQUARE_ACCESS_TOKEN_PROD,
     environment: Environment.Production
@@ -18,11 +19,11 @@ const handler = async (req: squareRequest, res: NextApiResponse) => {
   let data;
 
   switch (req.body.type) {
-    case SquareCommands.GET_ALL_CATALOG:
+    case SquareCommand.GET_ALL_CATALOG:
       data = await getAllCatalog(client);
       res.status(200).send(data);
       break;
-    case SquareCommands.GET_BATCH_CATALOG:
+    case SquareCommand.GET_BATCH_CATALOG:
       if (req.body.ids) {
         data = await getBatchCatalog(client, req.body.ids);
         res.status(200).send(data);
@@ -30,7 +31,7 @@ const handler = async (req: squareRequest, res: NextApiResponse) => {
         res.status(400).send({ message: 'No search IDs provided' });
       }
       break;
-    case SquareCommands.GET_ONE_CATALOG:
+    case SquareCommand.GET_ONE_CATALOG:
       if (req.body.id) {
         data = await getOneCatalog(client, req.body.id);
         res.status(200).send(data);
@@ -38,7 +39,7 @@ const handler = async (req: squareRequest, res: NextApiResponse) => {
         res.status(400).send({ message: 'Invalid ID' });
       }
       break;
-    case SquareCommands.GET_ONE_INVENTORY:
+    case SquareCommand.GET_ONE_INVENTORY:
       if (req.body.id) {
         data = await getOneInventory(client, req.body.id);
         res.status(200).send(data);
@@ -55,7 +56,8 @@ export function convertToJSON(data: any) {
   return JSON.parse(
     JSON.stringify(
       data.result,
-      (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+      (key, value) => (typeof value === 'bigint' ? value.toString() : value)
+      // return everything else unchanged
     )
   );
 }

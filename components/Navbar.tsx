@@ -1,21 +1,22 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { FirebaseError } from 'firebase/app';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, { forwardRef, useContext, useEffect } from 'react';
+import React, { forwardRef, useContext } from 'react';
+import { toast } from 'react-toastify';
 
 import { useFirebaseAuth } from '../utils/firebase/firebaseAuth';
 import { Store } from '../utils/Store';
 
-interface myLinkProps {
+interface MyLinkProps {
   children: React.ReactNode;
   href: string;
   active: boolean;
 }
 
-// eslint-disable-next-line react/display-name
-const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
+const MyLink = forwardRef<HTMLAnchorElement, MyLinkProps>((props, ref) => {
   const { href, active, children, ...rest } = props;
 
   return (
@@ -23,7 +24,7 @@ const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
       <a
         ref={ref}
         {...rest}
-        className={`${active && 'bg-primary-background-darker'} py-2 px-4`}
+        className={`${active ? 'bg-primary-background-darker' : ''} py-2 px-4`}
       >
         {children}
       </a>
@@ -31,21 +32,22 @@ const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
   );
 });
 
-interface myButtonProps {
+interface MyButtonProps {
   children: React.ReactNode;
   onClick: () => void;
   active: boolean;
 }
 
-const MyButton = forwardRef<HTMLButtonElement, myButtonProps>((props, ref) => {
+const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>(props => {
   const { onClick, active, children } = props;
 
   return (
     <button
       onClick={onClick}
       className={`${
-        active && 'bg-primary-background-darker'
+        active ? 'bg-primary-background-darker' : ''
       } py-2 px-4 text-left`}
+      type="button"
     >
       {children}
     </button>
@@ -53,9 +55,8 @@ const MyButton = forwardRef<HTMLButtonElement, myButtonProps>((props, ref) => {
 });
 
 function Navbar() {
-  const { state, dispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const { user, logout } = useFirebaseAuth();
-  const router = useRouter();
 
   const {
     cart: { cartItems }
@@ -63,13 +64,11 @@ function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      await logout();
+      await logout!();
     } catch (error) {
-      console.log(error);
+      toast.error((error as FirebaseError).message);
     }
   };
-
-  useEffect(() => {}, [user]);
 
   return (
     <nav className="sticky top-0 z-20 flex items-center justify-between w-full h-12 px-4 shadow-md nav bg-primary-background">
@@ -90,7 +89,7 @@ function Navbar() {
                 } top-1 right-1`}
               >
                 <div className="flex justify-center items-center text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1">
-                  {cartItems.reduce((acc, item) => (acc += item.quantity), 0)}
+                  {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
                 </div>
               </div>
             </div>

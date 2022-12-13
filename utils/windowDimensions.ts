@@ -1,6 +1,7 @@
+/* eslint-disable @shopify/typescript/prefer-pascal-case-enums */
 import { useEffect, useState } from 'react';
 
-export enum windowSizes {
+export enum WindowSize {
   DEFAULT = 0,
   xs = 480,
   sm = 640,
@@ -18,15 +19,15 @@ export default function useWindowBreakpoint() {
 
     let windowSize = 'DEFAULT';
     if (width) {
-      if (width >= windowSizes.xxl) {
+      if (width >= WindowSize.xxl) {
         windowSize = 'xxl';
-      } else if (width >= windowSizes.xl) {
+      } else if (width >= WindowSize.xl) {
         windowSize = 'xl';
-      } else if (width >= windowSizes.lg) {
+      } else if (width >= WindowSize.lg) {
         windowSize = 'lg';
-      } else if (width >= windowSizes.md) {
+      } else if (width >= WindowSize.md) {
         windowSize = 'md';
-      } else if (width >= windowSizes.sm) {
+      } else if (width >= WindowSize.sm) {
         windowSize = 'sm';
       } else {
         windowSize = 'DEFAULT';

@@ -1,5 +1,6 @@
-import { createContext, useReducer } from 'react';
-import { CartCommands } from '../enums/CartCommands';
+import { createContext, useMemo, useReducer } from 'react';
+
+import { CartCommand } from '../enums/CartCommands';
 import { Cart, ShippingAddress } from '../types/Cart.model';
 import { CartItem } from '../types/CartItem';
 
@@ -8,35 +9,33 @@ interface StoreContextInterface {
   dispatch: React.Dispatch<any>;
 }
 
-type State = {
+interface State {
   cart: Cart;
-};
+}
 
 type Action =
-  | { type: CartCommands.ADD; payload: CartItem }
-  | { type: CartCommands.UPDATE; payload: CartItem }
-  | { type: CartCommands.REMOVE; payload: CartItem }
-  | { type: CartCommands.RESET }
-  | { type: CartCommands.CLEAR; payload: CartItem }
+  | { type: CartCommand.ADD; payload: CartItem }
+  | { type: CartCommand.UPDATE; payload: CartItem }
+  | { type: CartCommand.REMOVE; payload: CartItem }
+  | { type: CartCommand.RESET }
+  | { type: CartCommand.CLEAR; payload: CartItem }
   | {
-      type: CartCommands.SAVE_SHIPPING_ADDRESS;
+      type: CartCommand.SAVE_SHIPPING_ADDRESS;
       payload: ShippingAddress;
     }
-  | { type: CartCommands.SAVE_PAYMENT_METHOD; payload: string }
-  | { type: CartCommands.POP_UP; payload: boolean };
+  | { type: CartCommand.SAVE_PAYMENT_METHOD; payload: string }
+  | { type: CartCommand.POP_UP; payload: boolean };
 
 const initialState: State = {
   cart:
-    typeof window !== 'undefined'
-      ? localStorage.getItem('cart')
-        ? JSON.parse(localStorage.getItem('cart')!)
-        : {
-            cartItems: [],
-            shippingAddress: {},
-            paymentMethod: '',
-            popUp: false
-          }
-      : { cartItems: [], shippingAddress: {}, paymentMethod: '', popUp: false }
+    typeof window !== 'undefined' ?? localStorage.getItem('cart')
+      ? JSON.parse(localStorage.getItem('cart')!)
+      : {
+          cartItems: [],
+          shippingAddress: {},
+          paymentMethod: '',
+          popUp: false
+        }
 };
 
 export const Store = createContext<StoreContextInterface>({
@@ -45,9 +44,11 @@ export const Store = createContext<StoreContextInterface>({
 });
 
 function reducer(state: State, action: Action): State {
-  if (typeof window !== undefined) {
+  if (typeof window === undefined) {
+    return initialState;
+  } else {
     switch (action.type) {
-      case CartCommands.ADD: {
+      case CartCommand.ADD: {
         const newItem = action.payload;
         const existItem = state.cart.cartItems.find(
           (item: CartItem) => item.id === newItem.id
@@ -68,7 +69,7 @@ function reducer(state: State, action: Action): State {
 
         return { ...state, cart: { ...state.cart, cartItems } };
       }
-      case CartCommands.UPDATE: {
+      case CartCommand.UPDATE: {
         const updatedItem = action.payload;
         const existItem = state.cart.cartItems.find(
           (item: CartItem) => item.id === updatedItem.id
@@ -89,7 +90,7 @@ function reducer(state: State, action: Action): State {
 
         return { ...state, cart: { ...state.cart, cartItems } };
       }
-      case CartCommands.REMOVE: {
+      case CartCommand.REMOVE: {
         const cartItems = state.cart.cartItems.filter(
           item => item.id !== action.payload.id
         );
@@ -100,7 +101,7 @@ function reducer(state: State, action: Action): State {
 
         return { ...state, cart: { ...state.cart, cartItems } };
       }
-      case CartCommands.RESET: {
+      case CartCommand.RESET: {
         return {
           ...state,
           cart: {
@@ -111,7 +112,7 @@ function reducer(state: State, action: Action): State {
           }
         };
       }
-      case CartCommands.CLEAR: {
+      case CartCommand.CLEAR: {
         localStorage.setItem(
           'cart',
           JSON.stringify({ ...state.cart, cartItems: [] as CartItem[] })
@@ -125,7 +126,7 @@ function reducer(state: State, action: Action): State {
           }
         };
       }
-      case CartCommands.SAVE_SHIPPING_ADDRESS: {
+      case CartCommand.SAVE_SHIPPING_ADDRESS: {
         return {
           ...state,
           cart: {
@@ -137,7 +138,7 @@ function reducer(state: State, action: Action): State {
           }
         };
       }
-      case CartCommands.SAVE_PAYMENT_METHOD: {
+      case CartCommand.SAVE_PAYMENT_METHOD: {
         return {
           ...state,
           cart: {
@@ -146,7 +147,7 @@ function reducer(state: State, action: Action): State {
           }
         };
       }
-      case CartCommands.POP_UP: {
+      case CartCommand.POP_UP: {
         return {
           ...state,
           cart: {
@@ -158,13 +159,11 @@ function reducer(state: State, action: Action): State {
       default:
         return state;
     }
-  } else {
-    return initialState;
   }
 }
 
 export const StoreProvider = ({ children }: React.PropsWithChildren) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const value = { state, dispatch };
+  const value = useMemo(() => ({ state, dispatch }), [state]);
   return <Store.Provider value={value}>{children}</Store.Provider>;
 };

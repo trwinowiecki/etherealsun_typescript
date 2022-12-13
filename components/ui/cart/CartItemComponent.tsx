@@ -1,7 +1,7 @@
 import Image from '@ui/Image';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { CartCommands } from '../../../enums/CartCommands';
+import { CartCommand } from '../../../enums/CartCommands';
 import { CartItem } from '../../../types/CartItem';
 import { getImages } from '../../../utils/squareUtils';
 import { Store } from '../../../utils/Store';
@@ -29,12 +29,12 @@ function CartItemComponent({
   ) => {
     if (quantity <= 0) {
       dispatch({
-        type: CartCommands.REMOVE,
+        type: CartCommand.REMOVE,
         payload: selectedItem
       });
     } else {
       dispatch({
-        type: CartCommands.UPDATE,
+        type: CartCommand.UPDATE,
         payload: {
           ...selectedItem,
           quantity,

@@ -1,13 +1,13 @@
 import { Disclosure, RadioGroup } from '@headlessui/react';
 import { CheckIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
-export interface FilterField<FilterType> {
+export interface FilterField<TFilterType> {
   name: string;
   description?: string;
-  values: FilterType[];
+  values: TFilterType[];
   displayValues?: string[];
-  selected: FilterType;
-  defaultValue?: FilterType;
+  selected: TFilterType;
+  defaultValue?: TFilterType;
   type: 'radio' | 'check' | 'range' | 'color';
 }
 
@@ -24,29 +24,27 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
   });
   return (
     <div className="z-20 flex flex-col w-full h-full gap-2 overflow-y-auto">
-      {fields.map((field, i) => (
+      {fields.map(field => (
         <Disclosure
-          key={i}
-          as={'div'}
-          className={'bg-primary-background px-4 py-2 rounded-xl'}
+          key={field.name}
+          as="div"
+          className="px-4 py-2 bg-primary-background rounded-xl"
         >
           {({ open }) => (
             <>
-              <Disclosure.Button
-                className={'w-full flex justify-between items-center'}
-              >
+              <Disclosure.Button className="flex items-center justify-between w-full">
                 <span>{field.name}</span>
                 <ChevronUpIcon
                   className={`${open ? 'transform rotate-180' : ''} w-5 h-5`}
                 />
               </Disclosure.Button>
-              <Disclosure.Panel className={'pt-2'}>
+              <Disclosure.Panel className="pt-2">
                 <div className={field.description ? 'pb-2 text-xs' : 'hidden'}>
                   {field.description}
                 </div>
                 <RadioGroup
                   value={field.selected}
-                  onChange={e => setSelected(e, field)}
+                  onChange={event => setSelected(event, field)}
                 >
                   {field.displayValues
                     ? field.displayValues.map((val, i) => (

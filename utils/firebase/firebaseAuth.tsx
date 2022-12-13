@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-constructed-context-values */
 import { FirebaseError } from 'firebase/app';
 import {
   FacebookAuthProvider,
@@ -10,7 +9,7 @@ import {
   User,
   UserCredential
 } from 'firebase/auth';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { auth } from '../../pages/api/firebase';
 
@@ -25,13 +24,10 @@ export const useFirebaseAuth = () => {
   return useContext(FirebaseAuth);
 };
 
-export const FirebaseAuth = createContext<FirebaseAuthContext>({
-  user: null,
-
+const AuthCommands = {
   signIn: (email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
   },
-
   signInProvider: (providerId: string) => {
     let provider;
     switch (providerId) {
@@ -47,13 +43,16 @@ export const FirebaseAuth = createContext<FirebaseAuthContext>({
         throw new FirebaseError('Unknown Provider', 'Unknown Provider');
       }
     }
-
     return signInWithPopup(auth, provider);
   },
-
   logout: () => {
     return signOut(auth);
   }
+};
+
+export const FirebaseAuth = createContext<FirebaseAuthContext>({
+  user: null,
+  ...AuthCommands
 });
 
 export const FirebaseAuthProvider = ({ children }: React.PropsWithChildren) => {
@@ -64,7 +63,7 @@ export const FirebaseAuthProvider = ({ children }: React.PropsWithChildren) => {
     return () => unSubscribe();
   }, []);
 
-  const value = { user, signIn, logout, signInProvider };
+  const value = useMemo(() => ({ user, ...AuthCommands }), [user]);
 
   return (
     <FirebaseAuth.Provider value={value}>{children}</FirebaseAuth.Provider>

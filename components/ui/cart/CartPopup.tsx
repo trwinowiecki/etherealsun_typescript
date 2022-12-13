@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 
-import { CartCommands } from '../../../enums/CartCommands';
+import { CartCommand } from '../../../enums/CartCommands';
 import { Store } from '../../../utils/Store';
 
 import Subtotal from './Subtotal';
@@ -27,7 +27,7 @@ function CartPopup() {
 
   const handleClose = () => {
     dispatch({
-      type: CartCommands.POP_UP,
+      type: CartCommand.POP_UP,
       payload: false
     });
   };

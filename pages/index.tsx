@@ -12,27 +12,25 @@ interface HomeProps {
   catalog: SearchCatalogObjectsResponse;
 }
 
-const Home: NextPage = ({ catalog }: HomeProps) => {
-  const catIds = catalog.objects.reduce([acc, obj] => {
-    if (obj.type === 'CATEGORY') {
-      acc.push(obj.id);
-    }
-  }, []);
-  console.log('🚀 ~ file: index.tsx ~ line 21 ~ catIds ~ catIds', catIds);
+const Home = ({ catalog }: HomeProps) => {
+  const catIds = catalog?.objects
+    ?.filter(obj => obj.type === 'CATEGORY')
+    .map(obj => obj.id);
 
-  const mockFeatured = catalog?.objects.filter(
-    obj => obj.type === 'ITEM' && obj.itemData?.categoryId === catIds[1]
+  const mockFeatured = catalog?.objects?.filter(
+    obj => obj.type === 'ITEM' && obj.itemData?.categoryId === catIds![0]
   );
-  console.log('🚀 ~ file: index.tsx ~ line 25 ~ mockFeatured', mockFeatured);
 
   return (
-    <Layout>
+    <Layout overridePadding>
       <div className="wrapper">
-        <Link href="/products">products page</Link>
+        <section className="p-4">
+          <Link href="/products">products page</Link>
+        </section>
         <Featured
           name="Necklaces"
-          products={mockFeatured}
-          relatedObjs={catalog.relatedObjects}
+          products={mockFeatured ?? []}
+          relatedObjs={catalog.relatedObjects ?? []}
         />
       </div>
     </Layout>

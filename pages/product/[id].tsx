@@ -2,17 +2,17 @@ import Button from '@ui/Button';
 import Image from '@ui/Image';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { CatalogObject, RetrieveCatalogObjectResponse } from 'square';
+
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
 import CustomListbox from '../../components/CustomListbox';
 import Layout from '../../components/Layout';
-import { CartCommands } from '../../enums/CartCommands';
-import { SquareCommands } from '../../enums/SquareCommands';
+import { CartCommand } from '../../enums/CartCommands';
+import { SquareCommand } from '../../enums/SquareCommands';
 import { DEFAULT_IMAGE, getImages } from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
-import useWindowBreakpoint, { windowSizes } from '../../utils/windowDimensions';
+import useWindowBreakpoint, { WindowSize } from '../../utils/windowDimensions';
 
 interface ProductPageProps {
   catalogObjects: RetrieveCatalogObjectResponse;
@@ -20,10 +20,8 @@ interface ProductPageProps {
 
 function ProductPage(props: ProductPageProps) {
   const { catalogObjects } = props;
-  const router = useRouter();
   const windowSize = useWindowBreakpoint();
-  const { state, dispatch } = useContext(Store);
-  const { cart } = state;
+  const { dispatch } = useContext(Store);
   const [quantity, setQuantity] = useState(1);
 
   if (catalogObjects.errors) {
@@ -38,8 +36,8 @@ function ProductPage(props: ProductPageProps) {
     { href: '/', name: 'Home' },
     { href: '/products', name: 'Products' },
     {
-      href: `/product/${catalogObjects.object?.id}`,
-      name: `${catalogObjects.object?.itemData?.name}`,
+      href: `/product/${catalogObjects.object!.id}`,
+      name: `${catalogObjects.object!.itemData!.name!}`,
       active: true
     }
   ];
@@ -61,7 +59,6 @@ function ProductPage(props: ProductPageProps) {
     ];
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [selectedImage, setSelectedImage] = useState<CatalogObject>(
     itemImages[0]
   );
@@ -71,72 +68,71 @@ function ProductPage(props: ProductPageProps) {
     relatedObjects: CatalogObject[]
   ) => {
     dispatch({
-      type: CartCommands.ADD,
+      type: CartCommand.ADD,
       payload: { ...product, quantity, relatedObjects }
     });
     dispatch({
-      type: CartCommands.POP_UP,
+      type: CartCommand.POP_UP,
       payload: true
     });
-
-    // toast.success('Product added to the cart');
   };
 
   return (
     <Layout title={catalogObjects.object?.itemData?.name}>
       <div className="flex flex-col gap-2">
-        {windowSizes[windowSize] >= windowSizes.md && (
+        {WindowSize[windowSize] >= WindowSize.md && (
           <Breadcrumbs pages={breadcrumbs} />
         )}
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col gap-2 md:flex-row">
           <div className="w-full md:flex-1 shrink-0">
             {itemImages.length > 1 ? (
-              <div className="flex flex-col-reverse md:flex-row gap-2">
-                <div className="w-full h-12 md:w-12 md:h-full md:flex-1 overflow-auto flex md:flex-col gap-2">
+              <div className="flex flex-col-reverse gap-2 md:flex-row">
+                <div className="flex w-full h-12 gap-2 overflow-auto md:w-12 md:h-full md:flex-1 md:flex-col">
                   {itemImages.map((image, i) => (
-                    <div
-                      key={image.id + i}
+                    <button
+                      key={image.id}
                       className={`${
                         selectedImage.id === image.id ? 'border-2' : ''
                       } border-primary hover:cursor-pointer w-12 md:w-auto`}
+                      type="button"
                       onClick={() => setSelectedImage(image)}
                     >
                       <Image
-                        src={image.imageData?.url!}
-                        alt={catalogObjects.object?.itemData?.name!}
+                        src={image.imageData!.url!}
+                        alt={catalogObjects.object!.itemData!.name!}
                       />
-                    </div>
+                    </button>
                   ))}
                 </div>
                 <div className="w-full flex-[6]">
                   <Image
-                    src={selectedImage.imageData?.url!}
-                    alt={catalogObjects.object?.itemData?.name!}
+                    src={selectedImage.imageData!.url!}
+                    alt={catalogObjects.object!.itemData!.name!}
                   />
                 </div>
               </div>
             ) : (
               <Image
                 src={
-                  itemImages.length > 0 ? itemImages[0].imageData?.url! : '/'
+                  itemImages.length > 0 ? itemImages[0].imageData!.url! : '/'
                 }
-                alt={catalogObjects.object?.itemData?.name!}
+                alt={catalogObjects.object!.itemData!.name!}
               />
             )}
           </div>
-          <div className="flex flex-col gap-2 items-start md:flex-1">
+          <div className="flex flex-col items-start gap-2 md:flex-1">
             <span className="text-2xl font-semibold">
               {catalogObjects.object?.itemData?.name}
             </span>
             <div>{catalogObjects.object?.itemData?.description}</div>
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-4">
               <CustomListbox
                 listOfItems={[1, 2, 3, 4, 5]}
                 state={quantity}
                 setState={setQuantity}
               />
               <Button
-                intent={'primary'}
+                intent="primary"
                 onClick={() =>
                   addToCartHandler(
                     catalogObjects.object!,
@@ -159,8 +155,8 @@ export const getServerSideProps: GetServerSideProps = async context => {
 
   const { data } = await axios({
     method: 'POST',
-    url: `${process.env.BASE_URL}/api/square`,
-    data: { type: SquareCommands.GET_ONE_CATALOG, id: id }
+    url: `${process.env.BASE_URL!}/api/square`,
+    data: { type: SquareCommand.GET_ONE_CATALOG, id }
   });
 
   return {

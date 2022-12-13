@@ -4,6 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
+
 import CustomListbox from '../CustomListbox';
 
 interface PaginatorProps {
@@ -43,7 +44,7 @@ const Paginator = ({
   };
 
   return (
-    <div className="flex flex-wrap justify-center items-center gap-2">
+    <div className="flex flex-wrap items-center justify-center gap-2">
       <div className="flex items-center gap-2">
         {firstLastPageVisible ? (
           <ChevronDoubleLeftIcon

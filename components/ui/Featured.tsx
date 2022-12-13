@@ -10,9 +10,9 @@ interface FeaturedProps {
 
 const Featured = ({ name, products, relatedObjs }: FeaturedProps) => {
   return (
-    <section className="">
-      <h2>{name.toUpperCase()}</h2>
-      <div className="flex w-full gap-2 overflow-y-auto">
+    <section className="p-4 bg-primary-background-darker">
+      <h2 className="tracking-widest">{name.toUpperCase()}</h2>
+      <div className="flex w-full max-w-full gap-4 pt-4 overflow-y-auto">
         {products.map(product => (
           <div key={product.id}>
             <ProductCard item={product} relatedObj={relatedObjs} />

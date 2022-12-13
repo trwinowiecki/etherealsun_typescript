@@ -1,4 +1,5 @@
 import { CatalogObject } from 'square';
+
 import { CartItem } from '../types/CartItem';
 
 export const DEFAULT_IMAGE: CatalogObject = {
@@ -21,7 +22,7 @@ export function getImages(
   return itemImages.length >= 1 ? itemImages : [DEFAULT_IMAGE];
 }
 
-interface filterItemsProps {
+interface FilterItemsProps {
   items: CatalogObject[] | CartItem[];
   filters: {
     type: 'CUSTOM_ATTRIBUTE_DEFINITION' | 'CATEGORY';
@@ -29,7 +30,7 @@ interface filterItemsProps {
   }[];
 }
 
-export const filterItems = ({ items, filters }: filterItemsProps) => {
+export const filterItems = ({ items, filters }: FilterItemsProps) => {
   let filteredItems = items.filter(item => item.type === 'ITEM');
   filters.forEach(filter => {
     if (filter.type.toUpperCase() === 'CATEGORY') {

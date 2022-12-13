@@ -40,6 +40,7 @@ function Button({
       className={`${buttonStyles({ intent, fullWidth })} ${extraClasses}`}
       onClick={onClick}
       {...props}
+      type="button"
     >
       {children}
     </button>

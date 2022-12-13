@@ -1,36 +1,17 @@
 import CartItemComponent from '@ui/cart/CartItemComponent';
 import Subtotal from '@ui/cart/Subtotal';
-import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useContext } from 'react';
 
 import Layout from '../components/Layout';
-import { CartCommands } from '../enums/CartCommands';
-import { CartItem } from '../types/CartItem';
 import { Store } from '../utils/Store';
 
-interface Props {}
-
-const Cart: NextPage<Props> = ({}) => {
+const Cart = () => {
   const { state, dispatch } = useContext(Store);
   const {
     cart: { cartItems }
   } = state;
-
-  const handleQuantityUpdate = async (
-    selectedItem: CartItem,
-    quantity: number
-  ) => {
-    dispatch({
-      type: CartCommands.UPDATE,
-      payload: {
-        ...selectedItem,
-        quantity,
-        relatedObjects: selectedItem.relatedObjects
-      }
-    });
-  };
 
   return (
     <Layout title="Cart">

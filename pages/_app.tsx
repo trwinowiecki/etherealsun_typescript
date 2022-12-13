@@ -1,4 +1,5 @@
 import { AppProps } from 'next/app';
+
 import '../styles/globals.scss';
 import { FirebaseAuthProvider } from '../utils/firebase/firebaseAuth';
 import { StoreProvider } from '../utils/Store';

@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { CatalogObject } from 'square';
+
 import ProductCard from './ProductCard';
 
 interface ProductListProps {
@@ -14,11 +15,11 @@ export default function ProductList({
   onClick
 }: ProductListProps) {
   const router = useRouter();
-  const handleClick = onClick
-    ? onClick
-    : (id: string) => {
-        router.push(`/product/${id}`);
-      };
+  const handleClick =
+    onClick ??
+    ((id: string) => {
+      router.push(`/product/${id}`);
+    });
 
   return catalog ? (
     <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">

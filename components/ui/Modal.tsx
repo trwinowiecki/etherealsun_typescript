@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
+
 import Button from './Button';
 
 interface ModalProps {
@@ -8,7 +9,7 @@ interface ModalProps {
 }
 
 const Modal = ({ name, children }: ModalProps) => {
-  let [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
     setIsOpen(false);
@@ -24,7 +25,7 @@ const Modal = ({ name, children }: ModalProps) => {
         <button
           type="button"
           onClick={openModal}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+          className="px-4 py-2 text-sm font-medium text-white rounded-md bg-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
         >
           {name}
         </button>
@@ -45,7 +46,7 @@ const Modal = ({ name, children }: ModalProps) => {
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="flex items-center justify-center min-h-full p-4 text-center">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"

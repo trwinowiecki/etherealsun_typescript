@@ -5,10 +5,12 @@ import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Client, Environment, SearchCatalogObjectsResponse } from 'square';
+
 import Breadcrumbs, { BreadcrumbPage } from '../components/Breadcrumbs';
 import Layout from '../components/Layout';
 import ProductList from '../components/ProductList';
-import useWindowBreakpoint, { windowSizes } from '../utils/windowDimensions';
+import useWindowBreakpoint, { WindowSize } from '../utils/windowDimensions';
+
 import { convertToJSON } from './api/square';
 
 interface ProductsPageProps {
@@ -17,9 +19,13 @@ interface ProductsPageProps {
 
 const products = ({ catalog }: ProductsPageProps) => {
   const router = useRouter();
-  const [filter, setFilter] = useState({});
-  const [page, setPage] = useState(parseInt(router.query['page'], 10) || 1);
-  const [filteredItems, setFilteredItems] = useState(catalog.objects || []);
+  const [filter, setFilter] = useState(
+    {} as { [name: string]: { value: string } }
+  );
+  const [page, setPage] = useState(
+    router.query.page ? parseInt(router.query.page as string, 10) : 1
+  );
+  const [filteredItems, setFilteredItems] = useState(catalog.objects ?? []);
   const [numItems, setNumItems] = useState(filteredItems!.length);
   // const [filterFields, setFilterFields] = useState([]);
 
@@ -33,10 +39,10 @@ const products = ({ catalog }: ProductsPageProps) => {
   };
 
   useEffect(() => {
-    setPage(prev => parseInt(router.query['page']) || prev);
-    // if (router.query['id']) {
-    //   router.replace(`#${router.query['id']}`);
-    // }
+    setPage(prev =>
+      router.query.page ? parseInt(router.query.page as string, 10) : prev
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
 
   const categoryField: FilterField<string> = {
@@ -54,22 +60,22 @@ const products = ({ catalog }: ProductsPageProps) => {
         .map(cat => cat.categoryData!.name!)
     ],
     defaultValue: 'All',
-    selected: filter['Category']?.value,
+    selected: filter.Category?.value,
     type: 'radio'
   };
 
-  let filterFields: FilterField<string>[] = [
+  const filterFields: FilterField<string>[] = [
     {
       name: 'test',
       values: ['testone', 'test2'],
-      selected: filter['test']?.value,
+      selected: filter.test?.value,
       type: 'radio'
     },
     {
       name: 'test2',
       values: ['testone', 'test2'],
       description: 'TEst description',
-      selected: filter['test2']?.value,
+      selected: filter.test2?.value,
       type: 'radio'
     },
     // {
@@ -163,7 +169,8 @@ const products = ({ catalog }: ProductsPageProps) => {
     if (Math.ceil(tempItems.length / pageLength) < page) {
       handlePageChange(1);
     }
-  }, [filter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catalog.objects?.length, filter]);
 
   const handlePageChange = (newPage: number) => {
     router.push(
@@ -186,7 +193,7 @@ const products = ({ catalog }: ProductsPageProps) => {
         pathname: '/products',
         query: {
           ...router.query,
-          page: page
+          page
         },
         hash: id
       },
@@ -203,12 +210,12 @@ const products = ({ catalog }: ProductsPageProps) => {
 
   return (
     <Layout title="Products">
-      {windowSizes[windowSize] >= windowSizes.md && (
+      {WindowSize[windowSize] >= WindowSize.md && (
         <Breadcrumbs pages={breadcrumbs} />
       )}
       <div className="relative flex flex-col items-center gap-2 md:flex-row md:items-start">
         <div className="sticky top-16 z-20 w-full bg-white shadow-md rounded-lg mb-4 md:w-[250px] md:max-w-[300px] md:max-h-[90vh]">
-          {windowSizes[windowSize] >= windowSizes.md ? (
+          {WindowSize[windowSize] >= WindowSize.md ? (
             <div className="p-4">
               <div className="mb-4">Filters</div>
               <div className="max-h-[80vh] overflow-y-auto">

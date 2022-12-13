@@ -22,6 +22,8 @@
     "react/react-in-jsx-scope": "off",
     "@shopify/jsx-no-hardcoded-content": "off",
     "react-hooks/rules-of-hooks": "off",
-    "@shopify/jsx-no-complex-expressions": "off"
+    "@shopify/jsx-no-complex-expressions": "off",
+    "react/display-name": "off",
+    "no-process-env": "off"
   }
 }

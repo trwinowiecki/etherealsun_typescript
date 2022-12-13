@@ -147,6 +147,7 @@ const login = ({ callbackUrl }: LoginProps) => {
                 className={`flex justify-center flex-1 p-2 text-center rounded-md shadow-md cursor-pointer bg-[${provider.bgColor}]`}
                 onClick={() => handleProviderLogin(provider.id)}
                 aria-label={provider.name}
+                type="button"
                 title={provider.name}
               >
                 <FontAwesomeIcon

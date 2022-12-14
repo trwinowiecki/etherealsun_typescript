@@ -37,7 +37,10 @@ function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`${buttonStyles({ intent, fullWidth })} ${extraClasses}`}
+      className={`${buttonStyles({
+        intent,
+        fullWidth
+      })} ${extraClasses} disabled:bg-slate-400`}
       onClick={onClick}
       {...props}
       type="button"

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '@ui/Button';
@@ -5,7 +6,7 @@ import Divider from '@ui/Divider';
 import { FirebaseError } from 'firebase/app';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 import Layout from '../components/Layout';
@@ -42,40 +43,42 @@ const GoogleIconSvg = (
   </svg>
 );
 
+interface LoginForm {
+  email: string;
+  password: string;
+}
+
 const login = ({ callbackUrl }: LoginProps) => {
   const { signIn, user, signInProvider } = useFirebaseAuth();
   const router = useRouter();
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [routerActive, setRouterActive] = useState(false);
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors }
-  } = useForm();
-  const onSubmit = data => console.log(data);
+  } = useForm<LoginForm>();
   const emailRegex =
     '?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+*|"?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\]';
 
-  if (user) {
+  if (user && !routerActive) {
+    setRouterActive(true);
     router.push('/');
   }
 
-  const handleChange = (event: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [event.target.name]: event.target.value
-    }));
+  const onSubmit: SubmitHandler<LoginForm> = async data => {
+    setRouterActive(true);
+    setLoading(true);
+    try {
+      await signIn!(data.email, data.password);
+      router.push(callbackUrl || '/');
+    } catch (error: any) {
+      setRouterActive(false);
+      setLoading(false);
+      toast.error(`Failed: ${(error as FirebaseError).code}`);
+    }
   };
-
-  // const handleSubmit = async (event: any) => {
-  //   event.preventDefault();
-  //   try {
-  //     await signIn!(formData.email, formData.password);
-  //     router.push(callbackUrl || '/');
-  //   } catch (error: any) {
-  //     toast.error(`Failed: ${(error as FirebaseError).code}`);
-  //   }
-  // };
 
   const handleProviderLogin = async (providerId: string) => {
     try {
@@ -113,49 +116,46 @@ const login = ({ callbackUrl }: LoginProps) => {
           >
             <label
               htmlFor="email"
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md"
+              className={`${
+                errors.email ? 'border-negative border-2' : ''
+              } flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md`}
             >
               Email
               <input
-                {...register('email', { required: true })}
-                // type="email"
-                // name="email"
-                // id="email"
-                // value={formData.email}
-                // onChange={event => handleChange(event)}
-                // required
+                {...register('email', {
+                  required: true,
+                  validate: value => value.length > 0,
+                  pattern:
+                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                })}
+                type="email"
                 autoComplete="true"
                 className="flex-1 py-1 pl-2 bg-transparent"
-                // pattern={emailRegex}
               />
             </label>
             <label
               htmlFor="password"
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md"
+              className={`${
+                errors.password ? 'border-negative border-2' : ''
+              } flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md`}
             >
               Password
               <input
-                {...register('password', { required: true })}
-                // type="password"
-                // name="password"
-                // id="password"
-                // value={formData.password}
-                // onChange={event => handleChange(event)}
-                // required
+                {...register('password', {
+                  required: true,
+                  validate: value => value.length > 0
+                })}
+                type="password"
                 autoComplete="true"
                 className="flex-1 py-1 pl-2 bg-transparent"
               />
             </label>
-            <label htmlFor="submit">
-              Login
-              <input type="submit" name="submit" id="submit" />
-            </label>
             <Button
+              disabled={loading}
               onClick={() => null}
               extraClasses="shadow-md mt-2"
-              type="submit"
             >
-              Login
+              <input type="submit" name="submit" id="submit" value="Login" />
             </Button>
           </form>
           <Divider>OR</Divider>

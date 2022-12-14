@@ -7,6 +7,7 @@ import Link from 'next/link';
 import React, { forwardRef, useContext } from 'react';
 import { toast } from 'react-toastify';
 
+import { CartCommand } from '../enums/CartCommands';
 import { useFirebaseAuth } from '../utils/firebase/firebaseAuth';
 import { Store } from '../utils/Store';
 
@@ -55,7 +56,7 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>(props => {
 });
 
 function Navbar() {
-  const { state } = useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const { user, logout } = useFirebaseAuth();
 
   const {
@@ -65,6 +66,9 @@ function Navbar() {
   const handleSignOut = async () => {
     try {
       await logout!();
+      dispatch({
+        type: CartCommand.CLEAR
+      });
     } catch (error) {
       toast.error((error as FirebaseError).message);
     }
@@ -96,7 +100,9 @@ function Navbar() {
         <Menu as="div" className="z-50">
           <Menu.Button className="flex items-center h-full">
             <>
-              {user && <span className="pl-2">{user.displayName}</span>}
+              {user?.displayName && (
+                <span className="pl-2">{user.displayName}</span>
+              )}
               <UserCircleIcon
                 className="w-10 h-10 p-2"
                 aria-label="account options"

@@ -77,9 +77,7 @@ function CartPopup() {
             </div>
           ))}
         </div>
-        <div>
-          <Subtotal cartItems={cartItems} />
-        </div>
+        <Subtotal cartItems={cartItems} />
       </Transition>
     </>
   );

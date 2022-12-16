@@ -29,6 +29,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.40.0",
     "react-square-web-payments-sdk": "^3.2.1",
+    "react-stepper-horizontal": "^1.0.11",
     "react-toastify": "^9.0.8",
     "sass": "^1.55.0",
     "sharp": "^0.31.2",

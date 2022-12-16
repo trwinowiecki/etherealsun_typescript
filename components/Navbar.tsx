@@ -33,13 +33,12 @@ const MyLink = forwardRef<HTMLAnchorElement, MyLinkProps>((props, ref) => {
   );
 });
 
-interface MyButtonProps {
-  children: React.ReactNode;
+interface MyButtonProps extends React.HTMLProps<HTMLButtonElement> {
   onClick: () => void;
   active: boolean;
 }
 
-const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>(props => {
+const MyButton = (props: MyButtonProps) => {
   const { onClick, active, children } = props;
 
   return (
@@ -53,7 +52,7 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>(props => {
       {children}
     </button>
   );
-});
+};
 
 function Navbar() {
   const { state, dispatch } = useContext(Store);
@@ -98,64 +97,69 @@ function Navbar() {
           </button>
         </Link>
         <Menu as="div" className="z-50">
-          <Menu.Button className="flex items-center h-full">
+          {({ open }) => (
             <>
-              {user?.displayName && (
-                <span className="pl-2">{user.displayName}</span>
-              )}
-              <UserCircleIcon
-                className="w-10 h-10 p-2"
-                aria-label="account options"
-              />
+              <Menu.Button className="flex items-center h-full">
+                <>
+                  {user?.displayName && (
+                    <span className="pl-2">{user.displayName}</span>
+                  )}
+                  <UserCircleIcon
+                    className="w-10 h-10 p-2"
+                    aria-label="account options"
+                  />
+                </>
+              </Menu.Button>
+              <Transition
+                show={open}
+                as={React.Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 origin-top-right rounded-md shadow-lg right-4 menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
+                  {user ? (
+                    <>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <MyLink href="/account" active={active}>
+                            Account settings
+                          </MyLink>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <MyButton onClick={handleSignOut} active={active}>
+                            Logout
+                          </MyButton>
+                        )}
+                      </Menu.Item>
+                    </>
+                  ) : (
+                    <>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <MyLink href="/login" active={active}>
+                            Sign In
+                          </MyLink>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <MyLink href="/signup" active={active}>
+                            Create Account
+                          </MyLink>
+                        )}
+                      </Menu.Item>
+                    </>
+                  )}
+                </Menu.Items>
+              </Transition>
             </>
-          </Menu.Button>
-          <Transition
-            as={React.Fragment}
-            enter="transition ease-out duration-100"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition ease-in duration-75"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95"
-          >
-            <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 origin-top-right rounded-md shadow-lg right-4 menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
-              {user ? (
-                <>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <MyLink href="/account" active={active}>
-                        Account settings
-                      </MyLink>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <MyButton onClick={handleSignOut} active={active}>
-                        Logout
-                      </MyButton>
-                    )}
-                  </Menu.Item>
-                </>
-              ) : (
-                <>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <MyLink href="/login" active={active}>
-                        Sign In
-                      </MyLink>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <MyLink href="/signup" active={active}>
-                        Create Account
-                      </MyLink>
-                    )}
-                  </Menu.Item>
-                </>
-              )}
-            </Menu.Items>
-          </Transition>
+          )}
         </Menu>
       </div>
     </nav>

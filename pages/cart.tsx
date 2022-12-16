@@ -1,6 +1,6 @@
 import Button from '@ui/Button';
 import CartItemComponent from '@ui/cart/CartItemComponent';
-import Subtotal from '@ui/cart/Subtotal';
+import Subtotal, { calcSubtotal } from '@ui/cart/Subtotal';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -9,6 +9,7 @@ import { GooglePay } from 'react-square-web-payments-sdk';
 
 import Layout from '../components/Layout';
 import SquarePaymentForm from '../components/SquarePaymentForm';
+import { getImages } from '../utils/squareUtils';
 import { Store } from '../utils/Store';
 
 const Cart = () => {
@@ -44,31 +45,21 @@ const Cart = () => {
                   createPaymentRequest={() => ({
                     countryCode: 'US',
                     currencyCode: 'USD',
-                    lineItems: [
-                      {
-                        amount: '22.15',
-                        label: 'Item to be purchased',
-                        id: 'SKU-12345',
-                        imageUrl: 'https://url-cdn.com/123ABC',
-                        pending: true,
-                        productUrl: 'https://my-company.com/product-123ABC'
-                      }
-                    ],
-                    taxLineItems: [
-                      {
-                        label: 'State Tax',
-                        amount: '8.95',
-                        pending: true
-                      }
-                    ],
-                    discounts: [
-                      {
-                        label: 'Holiday Discount',
-                        amount: '5.00',
-                        pending: true
-                      }
-                    ],
-                    requestBillingContact: false,
+                    lineItems: cartItems.map(item => ({
+                      amount: (
+                        (Number(
+                          item.itemData?.variations![0].itemVariationData
+                            ?.priceMoney?.amount
+                        ) *
+                          item.quantity) /
+                        100
+                      ).toString(),
+                      label: `${item.itemData?.name} x ${item.quantity}`,
+                      id: item.id,
+                      imageUrl: getImages(item, item.relatedObjects)[0]
+                        .imageData?.url,
+                      productUrl: ``
+                    })),
                     requestShippingContact: true,
                     shippingOptions: [
                       {
@@ -84,7 +75,7 @@ const Cart = () => {
                     ],
                     // pending is only required if it's true.
                     total: {
-                      amount: '41.79',
+                      amount: calcSubtotal(cartItems).toString(),
                       label: 'Total'
                     }
                   })}

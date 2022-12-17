@@ -1,15 +1,14 @@
-/* eslint-disable @shopify/typescript/prefer-pascal-case-enums */
 import { useEffect, useState } from 'react';
 
-export enum WindowSize {
-  DEFAULT = 0,
-  xs = 480,
-  sm = 640,
-  md = 768,
-  lg = 1024,
-  xl = 1280,
-  xxl = 1536
-}
+export const WindowSize: { [id: string]: number } = {
+  DEFAULT: 0,
+  xs: 480,
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  xxl: 1536
+};
 
 export default function useWindowBreakpoint() {
   const [windowBreakpoint, setWindowBreakpoint] = useState('DEFAULT');

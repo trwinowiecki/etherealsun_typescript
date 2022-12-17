@@ -54,7 +54,7 @@ const Cart = () => {
                           item.quantity) /
                         100
                       ).toString(),
-                      label: `${item.itemData?.name} x ${item.quantity}`,
+                      label: `${item.itemData!.name!} x ${item.quantity}`,
                       id: item.id,
                       imageUrl: getImages(item, item.relatedObjects)[0]
                         .imageData?.url,

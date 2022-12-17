@@ -1,6 +1,8 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import Image from '@ui/Image';
 import Link from 'next/link';
 import { useContext } from 'react';
+
 import { CartCommand } from '../../../enums/CartCommands';
 import { CartItem } from '../../../types/CartItem';
 import { getImages } from '../../../utils/squareUtils';
@@ -53,8 +55,8 @@ function CartItemComponent({
         <Link href={`/product/${item.id}`}>
           <a className="w-14 min-w-[3.5rem]">
             <Image
-              src={getImages(item, item.relatedObjects)[0].imageData?.url!}
-              alt={item.itemData?.name!}
+              src={getImages(item, item.relatedObjects)[0].imageData!.url!}
+              alt={item.itemData!.name!}
             />
           </a>
         </Link>

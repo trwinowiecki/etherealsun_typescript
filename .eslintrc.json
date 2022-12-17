@@ -24,6 +24,8 @@
     "react-hooks/rules-of-hooks": "off",
     "@shopify/jsx-no-complex-expressions": "off",
     "react/display-name": "off",
-    "no-process-env": "off"
+    "no-process-env": "off",
+    "no-warning-comments": "warn",
+    "no-console": "warn"
   }
 }

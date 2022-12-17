@@ -1,4 +1,5 @@
 import Button from '@ui/Button';
+import Listbox from '@ui/CustomListbox';
 import Image from '@ui/Image';
 import axios from 'axios';
 import { GetServerSideProps } from 'next';
@@ -7,7 +8,6 @@ import { CatalogObject, RetrieveCatalogObjectResponse } from 'square';
 
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
 import Layout from '../../components/Layout';
-import Listbox from '../../components/ui/CustomListbox';
 import { CartCommand } from '../../enums/CartCommands';
 import { SquareCommand } from '../../enums/SquareCommands';
 import { DEFAULT_IMAGE, getImages } from '../../utils/squareUtils';

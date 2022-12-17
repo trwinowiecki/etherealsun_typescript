@@ -28,7 +28,7 @@ type Action =
 
 const initialState: State = {
   cart:
-    typeof window !== 'undefined' ?? localStorage.getItem('cart')
+    typeof window !== 'undefined' && localStorage.getItem('cart')
       ? JSON.parse(localStorage.getItem('cart')!)
       : {
           cartItems: [],

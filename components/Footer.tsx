@@ -1,7 +1,12 @@
+import Divider from '@ui/Divider';
+
 function Footer() {
   return (
-    <footer className="footer flex justify-center items-center h-10">
-      <p>Copyright &copy; {new Date().getFullYear()} EtherealSunDesigns</p>
+    <footer className="flex flex-col items-center justify-center footer">
+      <Divider width="w-[95vw]" />
+      <div className="h-10">
+        Copyright &copy; {new Date().getFullYear()} EtherealSunDesigns
+      </div>
     </footer>
   );
 }

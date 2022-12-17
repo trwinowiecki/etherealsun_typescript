@@ -1,4 +1,5 @@
-export enum CartCommands {
+/* eslint-disable @shopify/typescript/prefer-pascal-case-enums */
+export enum CartCommand {
   ADD = 'CART_ADD_ITEM',
   UPDATE = 'CART_UPDATE_ITEM',
   REMOVE = 'CART_REMOVE_ITEM',

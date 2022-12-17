@@ -1,8 +1,9 @@
 import { Error } from 'square';
 
 const getError = (err: any) =>
-  err.response && err.response.data && err.response.data.message
-    ? `${err.response.status} - ${err.code}: ${err.response.data.message}`
+  err.response?.data?.message
+    ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      `${err.response.status} - ${err.code}: ${err.response.data.message}`
     : err.message;
 
 const getErrorSquare = (err: Error) =>

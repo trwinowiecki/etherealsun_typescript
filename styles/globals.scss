@@ -8,7 +8,7 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  @apply bg-primary-background;
+  @apply bg-primary-background text-primary-text scroll-smooth ;
 }
 
 a {
@@ -18,10 +18,11 @@ a {
 
 * {
   box-sizing: border-box;
+  @apply focus:outline-none focus:rounded focus-visible:ring-4 focus-visible:ring-secondary focus-visible:ring-opacity-75;
 }
 
 .nav {
-  .nav-items > * {
+  .nav-items button {
     @apply rounded-md;
     
     &:hover {
@@ -39,12 +40,34 @@ a {
   }
 }
 
-/* @media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+label.input-field {
+  @apply flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md;
+
+  &.error {
+    @apply border-negative border-2;
   }
-  body {
-    color: white;
-    background: black;
+
+  input {
+    @apply flex-1 py-1 pl-2 bg-transparent;
   }
-} */
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: rgb(var(--color-secondary)) rgba(var(--black-override), .1);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  @apply w-1 h-1;
+}
+
+*::-webkit-scrollbar-track {
+  @apply bg-black bg-opacity-10;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply border-2 border-secondary border-solid bg-secondary rounded-full;
+}

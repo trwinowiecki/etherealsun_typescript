@@ -1,11 +1,13 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import Image from '@ui/Image';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { CartCommands } from '../../enums/CartCommands';
-import { CartItem } from '../../types/CartItem';
-import { getImages } from '../../utils/images';
-import { Store } from '../../utils/Store';
-import CustomListbox from '../CustomListbox';
+
+import { CartCommand } from '../../../enums/CartCommands';
+import { CartItem } from '../../../types/CartItem';
+import { getImages } from '../../../utils/squareUtils';
+import { Store } from '../../../utils/Store';
+import Quantity from '../Quantity';
 
 interface CartItemProps {
   item: CartItem;
@@ -27,14 +29,21 @@ function CartItemComponent({
     selectedItem: CartItem,
     quantity: number
   ) => {
-    dispatch({
-      type: CartCommands.UPDATE,
-      payload: {
-        ...selectedItem,
-        quantity,
-        relatedObjects: selectedItem.relatedObjects
-      }
-    });
+    if (quantity <= 0) {
+      dispatch({
+        type: CartCommand.REMOVE,
+        payload: selectedItem
+      });
+    } else {
+      dispatch({
+        type: CartCommand.UPDATE,
+        payload: {
+          ...selectedItem,
+          quantity,
+          relatedObjects: selectedItem.relatedObjects
+        }
+      });
+    }
   };
 
   return (
@@ -42,12 +51,12 @@ function CartItemComponent({
       key={item.id}
       className={`flex justify-between items-center gap-2 p-2 px-4 ${classes}`}
     >
-      <div key={item.id} className="flex items-center gap-4 flex-1">
+      <div key={item.id} className="flex items-center flex-1 gap-4">
         <Link href={`/product/${item.id}`}>
           <a className="w-14 min-w-[3.5rem]">
             <Image
-              src={getImages(item, item.relatedObjects)[0].imageData?.url!}
-              alt={item.itemData?.name!}
+              src={getImages(item, item.relatedObjects)[0].imageData!.url!}
+              alt={item.itemData!.name!}
             />
           </a>
         </Link>
@@ -57,21 +66,24 @@ function CartItemComponent({
               <span>{item.itemData?.name}</span>
             </a>
           </Link>
-          <CustomListbox
-            listOfItems={['remove', 1, 2, 3, 4, 5]}
-            state={item.quantity}
-            setState={(newQuantity: number) =>
+          <Quantity
+            quantity={item.quantity}
+            adjustQuantity={newQuantity =>
               handleQuantityUpdate(item, newQuantity)
             }
+            maxQuantity={5}
+            allowDelete
           />
         </div>
       </div>
       {children}
       <span className="">
         $
-        {Number(
+        {(Number(
           item.itemData?.variations![0].itemVariationData?.priceMoney?.amount
-        ) / 100}
+        ) *
+          item.quantity) /
+          100}
       </span>
     </div>
   );

@@ -1,12 +1,13 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Fragment } from 'react';
 
-export type BreadcrumbPage = {
+export interface BreadcrumbPage {
   href: string;
   name: string;
   active?: boolean;
-};
+}
 
 interface BreadcrumbProps {
   pages: BreadcrumbPage[];
@@ -14,7 +15,7 @@ interface BreadcrumbProps {
 
 function Breadcrumbs({ pages }: BreadcrumbProps) {
   return (
-    <div className="flex gap-1 items-center">
+    <div className="flex items-center gap-1">
       {pages.map((page, i, { length }) =>
         length - 1 === i ? (
           <span
@@ -30,7 +31,7 @@ function Breadcrumbs({ pages }: BreadcrumbProps) {
                 {page.name}
               </a>
             </Link>
-            <ChevronRightIcon className="h-4" />
+            <ChevronRightIcon className="h-5" />
           </Fragment>
         )
       )}

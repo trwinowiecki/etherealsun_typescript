@@ -19,7 +19,9 @@ const buttonStyles = cva(
   }
 );
 
-export interface ButtonProps extends VariantProps<typeof buttonStyles> {
+export interface ButtonProps
+  extends VariantProps<typeof buttonStyles>,
+    React.HTMLProps<HTMLButtonElement> {
   children: React.ReactNode;
   extraClasses?: string;
   onClick: () => void;
@@ -30,10 +32,19 @@ function Button({
   extraClasses = '',
   onClick,
   intent,
-  fullWidth
+  fullWidth,
+  ...props
 }: ButtonProps) {
   return (
-    <button className={buttonStyles({ intent, fullWidth })} onClick={onClick}>
+    <button
+      className={`${buttonStyles({
+        intent,
+        fullWidth
+      })} ${extraClasses} disabled:bg-slate-400`}
+      onClick={onClick}
+      {...props}
+      type="button"
+    >
       {children}
     </button>
   );

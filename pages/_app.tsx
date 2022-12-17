@@ -1,40 +1,38 @@
-import type { Session } from 'next-auth';
-import { SessionProvider, useSession } from 'next-auth/react';
-import type { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
-import type { PropsWithChildren } from 'react';
+import { AppProps } from 'next/app';
+
 import '../styles/globals.scss';
+import { FirebaseAuthProvider } from '../utils/firebase/firebaseAuth';
 import { StoreProvider } from '../utils/Store';
 
-function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SessionProvider session={pageProps.session}>
+    <FirebaseAuthProvider>
       <StoreProvider>
         {/* {Component.auth ? (
-          <Auth> */}
+        <Auth> */}
         <Component {...pageProps} />
         {/* </Auth>
         ) : (
           <Component {...pageProps} />
         )} */}
       </StoreProvider>
-    </SessionProvider>
+    </FirebaseAuthProvider>
   );
 }
 
-function Auth({ children }: PropsWithChildren) {
-  const router = useRouter();
-  const { status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      router.push('/unauthorized?message=login required');
-    }
-  });
-  if (status === 'loading') {
-    return <div>Loading...</div>;
-  }
+// function Auth({ children }: PropsWithChildren) {
+//   const router = useRouter();
+//   const { status } = useSession({
+//     required: true,
+//     onUnauthenticated() {
+//       router.push('/unauthorized?message=login required');
+//     }
+//   });
+//   if (status === 'loading') {
+//     return <div>Loading...</div>;
+//   }
 
-  return children;
-}
+//   return children;
+// }
 
 export default MyApp;

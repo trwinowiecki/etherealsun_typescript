@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 
-export enum windowSizes {
-  DEFAULT = 0,
-  xs = 480,
-  sm = 640,
-  md = 768,
-  lg = 1024,
-  xl = 1280,
-  xxl = 1536
-}
+export const WindowSize: { [id: string]: number } = {
+  DEFAULT: 0,
+  xs: 480,
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  xxl: 1536
+};
 
 export default function useWindowBreakpoint() {
   const [windowBreakpoint, setWindowBreakpoint] = useState('DEFAULT');
@@ -18,15 +18,15 @@ export default function useWindowBreakpoint() {
 
     let windowSize = 'DEFAULT';
     if (width) {
-      if (width >= windowSizes.xxl) {
+      if (width >= WindowSize.xxl) {
         windowSize = 'xxl';
-      } else if (width >= windowSizes.xl) {
+      } else if (width >= WindowSize.xl) {
         windowSize = 'xl';
-      } else if (width >= windowSizes.lg) {
+      } else if (width >= WindowSize.lg) {
         windowSize = 'lg';
-      } else if (width >= windowSizes.md) {
+      } else if (width >= WindowSize.md) {
         windowSize = 'md';
-      } else if (width >= windowSizes.sm) {
+      } else if (width >= WindowSize.sm) {
         windowSize = 'sm';
       } else {
         windowSize = 'DEFAULT';

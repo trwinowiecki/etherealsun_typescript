@@ -1,5 +1,6 @@
 import NextImage from 'next/image';
-import { windowSizes } from '../../utils/windowDimensions';
+
+import { WindowSize } from '../../utils/windowDimensions';
 
 export interface ImageProps {
   alt: string;
@@ -10,7 +11,7 @@ export interface ImageProps {
 export default function Image({
   alt,
   src,
-  sizes = `(max-width: ${windowSizes.sm}px) 100vw, (max-width: ${windowSizes.lg}) 50vw, 33vw `
+  sizes = `(max-width: ${WindowSize.sm}px) 100vw, (max-width: ${WindowSize.lg}) 50vw, 33vw `
 }: ImageProps) {
   return (
     <NextImage

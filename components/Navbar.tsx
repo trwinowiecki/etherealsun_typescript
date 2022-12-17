@@ -1,27 +1,31 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import { useSession } from 'next-auth/react';
+import { FirebaseError } from 'firebase/app';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { forwardRef, useContext } from 'react';
+import { toast } from 'react-toastify';
+
+import { CartCommand } from '../enums/CartCommands';
+import { useFirebaseAuth } from '../utils/firebase/firebaseAuth';
 import { Store } from '../utils/Store';
 
-type myLinkProps = {
+interface MyLinkProps {
   children: React.ReactNode;
   href: string;
   active: boolean;
-};
+}
 
-// eslint-disable-next-line react/display-name
-const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
-  let { href, active, children, ...rest } = props;
+const MyLink = forwardRef<HTMLAnchorElement, MyLinkProps>((props, ref) => {
+  const { href, active, children, ...rest } = props;
 
   return (
     <Link href={href}>
       <a
         ref={ref}
         {...rest}
-        className={`${active && 'bg-primary-background-darker'} py-2 px-4`}
+        className={`${active ? 'bg-primary-background-darker' : ''} py-2 px-4`}
       >
         {children}
       </a>
@@ -29,52 +33,80 @@ const MyLink = forwardRef<HTMLAnchorElement, myLinkProps>((props, ref) => {
   );
 });
 
+interface MyButtonProps extends React.HTMLProps<HTMLButtonElement> {
+  onClick: () => void;
+  active: boolean;
+}
+
+const MyButton = (props: MyButtonProps) => {
+  const { onClick, active, children } = props;
+
+  return (
+    <button
+      onClick={onClick}
+      className={`${
+        active ? 'bg-primary-background-darker' : ''
+      } py-2 px-4 text-left`}
+      type="button"
+    >
+      {children}
+    </button>
+  );
+};
+
 function Navbar() {
-  const { status, data: session } = useSession();
   const { state, dispatch } = useContext(Store);
+  const { user, logout } = useFirebaseAuth();
+
   const {
     cart: { cartItems }
   } = state;
 
+  const handleSignOut = async () => {
+    try {
+      await logout!();
+      dispatch({
+        type: CartCommand.CLEAR
+      });
+    } catch (error) {
+      toast.error((error as FirebaseError).message);
+    }
+  };
+
   return (
-    <nav className="nav z-50 sticky top-0 flex w-full justify-between items-center h-12 px-4 shadow-lg bg-primary-background">
+    <nav className="sticky top-0 z-20 flex items-center justify-between w-full h-12 px-4 shadow-md nav bg-primary-background">
       <Link href="/">
         <a className="text-lg font-bold">Ethereal Sun</a>
       </Link>
-      <div className="nav-items flex h-full justify-end items-center gap-4">
-        <div className="">
-          <Link href="/cart">
-            <div className="w-full h-full relative">
-              <ShoppingBagIcon
-                className="p-2 h-10 w-10"
-                aria-label="shopping bag"
-              />
-              <div
-                className={`${
-                  cartItems.length > 0 ? 'absolute' : 'hidden'
-                } top-1 right-1`}
-              >
-                <div className="flex justify-center items-center text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1">
-                  {cartItems.reduce(
-                    (acc, item) => (acc = acc + item.quantity),
-                    0
-                  )}
-                </div>
+      <div className="flex items-center justify-end h-full gap-4 nav-items">
+        <Link href="/cart">
+          <button className="relative" type="button">
+            <ShoppingBagIcon
+              className="w-10 h-10 p-2"
+              aria-label="shopping bag"
+            />
+            <div
+              className={`${
+                cartItems.length > 0 ? 'absolute' : 'hidden'
+              } top-1 right-1`}
+            >
+              <div className="flex justify-center items-center text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1">
+                {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
               </div>
             </div>
-          </Link>
-        </div>
-        <Menu as="div" className="z-10">
-          <Menu.Button className="flex h-full items-center">
-            {status === 'loading'
-              ? 'Loading'
-              : session?.user
-              ? session.user.name
-              : ''}
-            <UserCircleIcon
-              className="p-2 h-10 w-10"
-              aria-label="account options"
-            />
+          </button>
+        </Link>
+        <Menu as="div" className="z-50">
+          <Menu.Button className="flex items-center h-full">
+            <>
+              {user?.displayName && (
+                <span className="pl-2">{user.displayName}</span>
+              )}
+              <UserCircleIcon
+                className="w-10 h-10 p-2"
+                aria-label="account options"
+              />
+            </>
           </Menu.Button>
           <Transition
             as={React.Fragment}
@@ -85,23 +117,21 @@ function Navbar() {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="menu-items absolute flex flex-col right-0 mt-2 mr-2 w-auto origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
-              {status === 'loading' ? (
-                'Loading'
-              ) : session?.user ? (
+            <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 origin-top-right rounded-md shadow-lg right-4 menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
+              {user ? (
                 <>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/account-settings" active>
+                      <MyLink href="/account" active={active}>
                         Account settings
                       </MyLink>
                     )}
                   </Menu.Item>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/signout" active={active}>
+                      <MyButton onClick={handleSignOut} active={active}>
                         Logout
-                      </MyLink>
+                      </MyButton>
                     )}
                   </Menu.Item>
                 </>
@@ -109,7 +139,7 @@ function Navbar() {
                 <>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/api/auth/signin" active={active}>
+                      <MyLink href="/login" active={active}>
                         Sign In
                       </MyLink>
                     )}

@@ -116,9 +116,7 @@ const login = ({ callbackUrl }: LoginProps) => {
           >
             <label
               htmlFor="email"
-              className={`${
-                errors.email ? 'border-negative border-2' : ''
-              } flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md`}
+              className={`${errors.email ? 'error' : ''} input-field`}
             >
               Email
               <input
@@ -130,14 +128,11 @@ const login = ({ callbackUrl }: LoginProps) => {
                 })}
                 type="email"
                 autoComplete="true"
-                className="flex-1 py-1 pl-2 bg-transparent"
               />
             </label>
             <label
               htmlFor="password"
-              className={`${
-                errors.password ? 'border-negative border-2' : ''
-              } flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md`}
+              className={`${errors.password ? 'error' : ''} input-field`}
             >
               Password
               <input
@@ -147,7 +142,6 @@ const login = ({ callbackUrl }: LoginProps) => {
                 })}
                 type="password"
                 autoComplete="true"
-                className="flex-1 py-1 pl-2 bg-transparent"
               />
             </label>
             <Button

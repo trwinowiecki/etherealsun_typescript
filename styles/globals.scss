@@ -40,6 +40,18 @@ a {
   }
 }
 
+label.input-field {
+  @apply flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-md;
+
+  &.error {
+    @apply border-negative border-2;
+  }
+
+  input {
+    @apply flex-1 py-1 pl-2 bg-transparent;
+  }
+}
+
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
 * {

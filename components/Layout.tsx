@@ -1,3 +1,4 @@
+import CartPopup from '@ui/cart/CartPopup';
 import Head from 'next/head';
 import React, { useContext, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
@@ -9,7 +10,6 @@ import { Store } from '../utils/Store';
 
 import Footer from './Footer';
 import Navbar from './Navbar';
-import CartPopup from './ui/cart/CartPopup';
 
 interface LayoutProps {
   children: React.ReactNode;

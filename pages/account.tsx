@@ -2,6 +2,7 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
+import AddressForm from '../components/AddressForm';
 import Layout from '../components/Layout';
 import { useFirebaseAuth } from '../utils/firebase/firebaseAuth';
 
@@ -10,12 +11,17 @@ const account = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.uid) {
       router.push('/');
     }
-  }, [user]);
+  }, [user?.uid]);
 
-  return <Layout title="Account Settings">account</Layout>;
+  return (
+    <Layout title="Account Settings">
+      <h1>{user?.displayName ? `Hi, ${user.displayName}!` : 'Hi!'}</h1>
+      <AddressForm />
+    </Layout>
+  );
 };
 
 export default account;

@@ -3,8 +3,8 @@ import { Client, Environment } from 'square';
 
 import { SquareCommand } from '../../enums/SquareCommands';
 
-interface SquareRequest extends NextApiRequest {
-  body: { type: SquareCommand; id?: string; ids?: string[] };
+export interface SquareRequest extends NextApiRequest {
+  body: { type: SquareCommand; id?: string; ids?: string[]; email?: string };
 }
 
 const locationId = 'LQC4A379XHYGD';
@@ -45,6 +45,14 @@ const handler = async (req: SquareRequest, res: NextApiResponse) => {
         res.status(200).send(data);
       } else {
         res.status(400).send({ message: 'Invalid ID' });
+      }
+      break;
+    case SquareCommand.SEARCH_FOR_USER:
+      if (req.body.email) {
+        data = await searchForUser(client, req.body.email);
+        res.status(200).send(data);
+      } else {
+        res.status(400).send({ message: 'Invalid email' });
       }
       break;
     default:
@@ -100,6 +108,25 @@ const getOneInventory = async (client: Client, id: string) => {
   let res;
   try {
     res = await client.inventoryApi.retrieveInventoryCount(id);
+  } catch (error) {
+    res = error;
+  }
+
+  return convertToJSON(res);
+};
+
+const searchForUser = async (client: Client, email: string) => {
+  let res;
+  try {
+    res = await client.customersApi.searchCustomers({
+      query: {
+        filter: {
+          emailAddress: {
+            exact: email
+          }
+        }
+      }
+    });
   } catch (error) {
     res = error;
   }

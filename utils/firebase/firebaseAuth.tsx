@@ -1,3 +1,4 @@
+import axios, { AxiosResponse } from 'axios';
 import { FirebaseError } from 'firebase/app';
 import {
   FacebookAuthProvider,
@@ -10,11 +11,17 @@ import {
   UserCredential
 } from 'firebase/auth';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { Customer, SearchCustomersResponse } from 'square';
 
+import { SquareCommand } from '../../enums/SquareCommands';
 import { auth } from '../../pages/api/firebase';
 
+export interface CustomUser extends User {
+  squareCustomer?: Customer | null;
+}
+
 interface FirebaseAuthContext {
-  user: User | null;
+  user: CustomUser | null;
   signIn: (email: string, password: string) => Promise<UserCredential>;
   signInProvider: (providerId: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
@@ -57,13 +64,36 @@ export const FirebaseAuth = createContext<FirebaseAuthContext>({
 
 export const FirebaseAuthProvider = ({ children }: React.PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
+  const [squareCustomer, setSquareCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, newUser => setUser(newUser));
+    const unSubscribe = onAuthStateChanged(auth, async newUser => {
+      if (newUser?.email) {
+        const squareRes: AxiosResponse<SearchCustomersResponse> = await axios({
+          method: 'POST',
+          url: `api/square`,
+          data: { type: SquareCommand.SEARCH_FOR_USER, email: newUser?.email }
+        });
+
+        setSquareCustomer(prev =>
+          squareRes.data.customers?.length === 1
+            ? squareRes.data.customers[0]
+            : prev
+        );
+      }
+
+      setUser(newUser);
+    });
     return () => unSubscribe();
   }, []);
 
-  const value = useMemo(() => ({ user, ...AuthCommands }), [user]);
+  const value: FirebaseAuthContext = useMemo(
+    () => ({
+      user: user ? { ...user, squareCustomer } : null,
+      ...AuthCommands
+    }),
+    [user, squareCustomer]
+  );
 
   return (
     <FirebaseAuth.Provider value={value}>{children}</FirebaseAuth.Provider>

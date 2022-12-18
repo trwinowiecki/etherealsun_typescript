@@ -1,8 +1,12 @@
+/* eslint-disable jsx-a11y/label-has-for */
+import { Combobox, Transition } from '@headlessui/react';
 import axios, { CancelTokenSource } from 'axios';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { Address } from 'square';
 
+import { GeoApifyAutocompleteResult, GeoApifyFeature } from '../types/GeoApify';
 import { CustomUser } from '../utils/firebase/firebaseAuth';
 
 interface AddressFormProps {
@@ -11,7 +15,10 @@ interface AddressFormProps {
 
 const AddressForm = ({ user }: AddressFormProps) => {
   const [defaultAddress, setDefaultAddress] = useState<Address>({});
-  const [autocomplete, setAutocomplete] = useState({});
+  const [autocompleteRes, setAutocompleteRes] =
+    useState<GeoApifyAutocompleteResult | null>();
+  const [autocompleteSelected, setAutocompleteSelected] =
+    useState<GeoApifyFeature | null>();
 
   if (user) {
     setDefaultAddress(user.squareCustomer?.address ?? {});
@@ -34,31 +41,76 @@ const AddressForm = ({ user }: AddressFormProps) => {
       cancelSource: CancelTokenSource,
       query: string
     ) => {
-      const res = await axios({
-        method: 'GET',
-        url: `https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&apiKey=5c6ba5019b3b450a839e5988d5757976`,
-        cancelToken: cancelSource.token
-      });
-      console.log(res.data);
+      try {
+        const res = await axios({
+          method: 'GET',
+          url: `https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&apiKey=5c6ba5019b3b450a839e5988d5757976`,
+          cancelToken: cancelSource.token
+        });
+        setAutocompleteRes(res.data);
+      } catch (error) {
+        if (!axios.isCancel(error)) {
+          toast(error);
+        }
+      }
     };
     if (queryValue && queryValue.length > 2) {
       console.log(queryValue);
       fetchData(source, queryValue);
     }
 
-    return () => source.cancel();
+    return () => source.cancel('cleanup');
   }, [queryValue]);
 
+  console.log(autocompleteRes?.features);
+
   return (
-    <form>
-      {JSON.stringify(autocomplete)}
+    <form className="flex flex-col gap-2">
       <label
+        htmlFor="addressLine1"
+        className={`${errors.addressLine1 ? 'error' : ''} input-field`}
+      >
+        <Combobox
+          value={autocompleteSelected}
+          onChange={setAutocompleteSelected}
+        >
+          <Combobox.Label>Address Line 1</Combobox.Label>
+
+          <div className="relative flex flex-col flex-1">
+            <Combobox.Input {...register('addressLine1')} />
+
+            <Transition
+              as={Fragment}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Combobox.Options className="absolute w-full py-1 mt-10 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 sm:text-sm">
+                {!autocompleteRes || autocompleteRes.features.length == 0 ? (
+                  <div>Nothing here</div>
+                ) : (
+                  autocompleteRes?.features.map(feature => (
+                    <Combobox.Option
+                      key={feature.properties.placeId}
+                      value={feature}
+                      className="px-2"
+                    >
+                      {feature.properties.formatted}
+                    </Combobox.Option>
+                  ))
+                )}
+              </Combobox.Options>
+            </Transition>
+          </div>
+        </Combobox>
+      </label>
+      {/* <label
         htmlFor="addressLine1"
         className={`${errors.addressLine1 ? 'error' : ''} input-field`}
       >
         Address Line 1
         <input type="text" {...register('addressLine1')} autoComplete="true" />
-      </label>
+      </label> */}
       <label
         htmlFor="addressLine2"
         className={`${errors.addressLine2 ? 'error' : ''} input-field`}

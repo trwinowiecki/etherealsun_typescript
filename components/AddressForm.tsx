@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { Address } from 'square';
 
 import { GeoApifyAutocompleteResult, GeoApifyFeature } from '../types/GeoApify';
+import { getError } from '../utils/error';
 import { CustomUser } from '../utils/firebase/firebaseAuth';
 
 interface AddressFormProps {
@@ -43,14 +44,15 @@ const AddressForm = ({ user }: AddressFormProps) => {
     ) => {
       try {
         const res = await axios({
-          method: 'GET',
-          url: `https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&apiKey=5c6ba5019b3b450a839e5988d5757976`,
+          method: 'POST',
+          url: 'api/geoapify',
+          data: { query, cancelToken: cancelSource.token },
           cancelToken: cancelSource.token
         });
         setAutocompleteRes(res.data);
       } catch (error) {
         if (!axios.isCancel(error)) {
-          toast(error);
+          toast(getError(error));
         }
       }
     };
@@ -86,7 +88,7 @@ const AddressForm = ({ user }: AddressFormProps) => {
               leaveTo="opacity-0"
             >
               <Combobox.Options className="absolute w-full py-1 mt-10 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 sm:text-sm">
-                {!autocompleteRes || autocompleteRes.features.length == 0 ? (
+                {!autocompleteRes || autocompleteRes.features.length === 0 ? (
                   <div>Nothing here</div>
                 ) : (
                   autocompleteRes?.features.map(feature => (

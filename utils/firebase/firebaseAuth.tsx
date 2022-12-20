@@ -14,7 +14,8 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Customer, SearchCustomersResponse } from 'square';
 
 import { SquareCommand } from '../../enums/SquareCommands';
-import { auth } from '../../pages/api/firebase';
+
+import { auth } from './firebase';
 
 export interface CustomUser extends User {
   squareCustomer?: Customer | null;

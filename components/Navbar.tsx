@@ -38,7 +38,7 @@ interface MyButtonProps extends React.HTMLProps<HTMLButtonElement> {
   active: boolean;
 }
 
-const MyButton = (props: MyButtonProps) => {
+const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
   const { onClick, active, children } = props;
 
   return (
@@ -52,7 +52,7 @@ const MyButton = (props: MyButtonProps) => {
       {children}
     </button>
   );
-};
+});
 
 function Navbar() {
   const { state, dispatch } = useContext(Store);

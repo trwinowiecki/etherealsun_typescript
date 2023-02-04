@@ -1,12 +1,23 @@
+import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { Session, SessionContextProvider } from '@supabase/auth-helpers-react';
 import { AppProps } from 'next/app';
-
+import { useState } from 'react';
 import '../styles/globals.scss';
-import { FirebaseAuthProvider } from '../utils/firebase/firebaseAuth';
+
 import { StoreProvider } from '../utils/Store';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({
+  Component,
+  pageProps
+}: AppProps<{ initialSession: Session }>) {
+  const [supabase] = useState(() => createBrowserSupabaseClient());
+
   return (
-    <FirebaseAuthProvider>
+    <SessionContextProvider
+      supabaseClient={supabase}
+      initialSession={pageProps.initialSession}
+    >
+      {/* <FirebaseAuthProvider> */}
       <StoreProvider>
         {/* {Component.auth ? (
         <Auth> */}
@@ -16,7 +27,8 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         )} */}
       </StoreProvider>
-    </FirebaseAuthProvider>
+      {/* </FirebaseAuthProvider> */}
+    </SessionContextProvider>
   );
 }
 

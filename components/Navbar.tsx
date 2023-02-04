@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { useSession } from '@supabase/auth-helpers-react';
 import { FirebaseError } from 'firebase/app';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -57,6 +58,7 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
 function Navbar() {
   const { state, dispatch } = useContext(Store);
   const { user, logout } = useFirebaseAuth();
+  const session = useSession();
 
   const {
     cart: { cartItems }
@@ -99,7 +101,7 @@ function Navbar() {
         <Menu as="div" className="z-50">
           <Menu.Button className="flex items-center h-full">
             <>
-              {user?.displayName && (
+              {session?.user?.displayName && (
                 <span className="pl-2">{user.displayName}</span>
               )}
               <UserCircleIcon

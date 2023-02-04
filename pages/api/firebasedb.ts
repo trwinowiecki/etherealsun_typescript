@@ -57,6 +57,8 @@ export default async function handler(
         res.status(400).send({ message: 'User not set' });
       }
       break;
+    case FirebaseCommand.UPDATE_USER_ID:
+      break;
     default:
       res.status(404).send({ message: 'Request not found' });
   }

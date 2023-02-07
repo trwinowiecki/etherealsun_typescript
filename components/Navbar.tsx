@@ -1,15 +1,15 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import { useSession } from '@supabase/auth-helpers-react';
-import { FirebaseError } from 'firebase/app';
+import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import React, { forwardRef, useContext } from 'react';
+import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { CartCommand } from '../enums/CartCommands';
-import { useFirebaseAuth } from '../utils/firebase/firebaseAuth';
+import { UserProfile } from '../types/Supabase';
 import { Store } from '../utils/Store';
 
 interface MyLinkProps {
@@ -57,8 +57,25 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
 
 function Navbar() {
   const { state, dispatch } = useContext(Store);
-  const { user, logout } = useFirebaseAuth();
   const session = useSession();
+  const supabaseClient = useSupabaseClient();
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const res: PostgrestSingleResponse<UserProfile> = await supabaseClient
+        .from('profiles')
+        .select()
+        .eq('id', session?.user.id)
+        .single();
+
+      setUser(res.data);
+      console.log(res.data);
+    };
+    if (session?.user.id) {
+      getUser();
+    }
+  }, [session?.user.id]);
 
   const {
     cart: { cartItems }
@@ -66,12 +83,13 @@ function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      await logout!();
+      // TODO add logout for supabase auth
+      supabaseClient.auth.signOut();
       dispatch({
         type: CartCommand.CLEAR
       });
-    } catch (error) {
-      toast.error((error as FirebaseError).message);
+    } catch (error: any) {
+      toast.error(error);
     }
   };
 
@@ -101,8 +119,8 @@ function Navbar() {
         <Menu as="div" className="z-50">
           <Menu.Button className="flex items-center h-full">
             <>
-              {session?.user?.displayName && (
-                <span className="pl-2">{user.displayName}</span>
+              {user?.full_name && (
+                <span className="pl-2">{user.full_name}</span>
               )}
               <UserCircleIcon
                 className="w-10 h-10 p-2"

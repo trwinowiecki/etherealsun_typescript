@@ -7,11 +7,11 @@ import { toast } from 'react-toastify';
 import { Address } from 'square';
 
 import { GeoApifyAutocompleteResult, GeoApifyFeature } from '../types/GeoApify';
+import { UserProfile } from '../types/Supabase';
 import { getError } from '../utils/error';
-import { CustomUser } from '../utils/firebase/firebaseAuth';
 
 interface AddressFormProps {
-  user?: CustomUser;
+  user?: UserProfile;
 }
 
 const AddressForm = ({ user }: AddressFormProps) => {
@@ -22,7 +22,7 @@ const AddressForm = ({ user }: AddressFormProps) => {
     useState<GeoApifyFeature | null>();
 
   if (user) {
-    setDefaultAddress(user.squareCustomer?.address ?? {});
+    setDefaultAddress(user.square_customer?.address ?? {});
   }
 
   const {

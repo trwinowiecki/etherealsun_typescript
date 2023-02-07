@@ -1,14 +1,10 @@
 import Featured from '@ui/Featured';
-import axios from 'axios';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
-import { useEffect } from 'react';
 import { Client, Environment, SearchCatalogObjectsResponse } from 'square';
 
 import Layout from '../components/Layout';
-import { useFirebaseAuth } from '../utils/firebase/firebaseAuth';
 
-import { FirebaseCommand } from './api/firebasedb';
 import { convertToJSON } from './api/square';
 
 interface HomeProps {
@@ -16,8 +12,6 @@ interface HomeProps {
 }
 
 const Home = ({ catalog }: HomeProps) => {
-  const { user } = useFirebaseAuth();
-
   const catIds = catalog?.objects
     ?.filter(obj => obj.type === 'CATEGORY')
     .map(obj => obj.id);
@@ -30,20 +24,20 @@ const Home = ({ catalog }: HomeProps) => {
     obj => obj.type === 'ITEM' && obj.itemData?.categoryId === catIds![3]
   );
 
-  useEffect(() => {
-    const getUser = async () => {
-      const res = await axios({
-        method: 'POST',
-        url: 'api/firebasedb',
-        data: { type: FirebaseCommand.GET_USER_ID, firebaseUser: user?.uid }
-      });
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const res = await axios({
+  //       method: 'POST',
+  //       url: 'api/firebasedb',
+  //       data: { type: FirebaseCommand.GET_USER_ID, firebaseUser: user?.uid }
+  //     });
 
-      console.log(res);
-    };
-    if (user?.uid) {
-      getUser();
-    }
-  }, [user?.uid]);
+  //     console.log(res);
+  //   };
+  //   if (user?.uid) {
+  //     getUser();
+  //   }
+  // }, [user?.uid]);
 
   return (
     <Layout overridePadding>

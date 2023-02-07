@@ -1,9 +1,8 @@
-import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import Layout from '../components/Layout';
 
@@ -54,58 +53,63 @@ const login = ({ callbackUrl }: LoginProps) => {
     formState: { errors }
   } = useForm<LoginForm>();
   const session = useSession();
-  const supabase = useSupabaseClient();
+  const supabaseClient = useSupabaseClient();
 
   const emailRegex =
     '?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+*|"?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\]';
 
-  // if (user && !routerActive) {
+  // if (session?.user.id && !routerActive) {
   //   setRouterActive(true);
   //   router.push('/');
   // }
 
-  const onSubmit: SubmitHandler<LoginForm> = async data => {
-    setRouterActive(true);
-    setLoading(true);
-    try {
-      // await signIn!(data.email, data.password);
-      router.push(callbackUrl || '/');
-    } catch (error: any) {
-      setRouterActive(false);
-      setLoading(false);
-      // toast.error(`Failed: ${(error as FirebaseError).code}`);
-    }
-  };
+  // const onSubmit: SubmitHandler<LoginForm> = async data => {
+  //   setRouterActive(true);
+  //   setLoading(true);
+  //   try {
+  //     // await signIn!(data.email, data.password);
+  //     router.push(callbackUrl || '/');
+  //   } catch (error: any) {
+  //     setRouterActive(false);
+  //     setLoading(false);
+  //     // toast.error(`Failed: ${(error as FirebaseError).code}`);
+  //   }
+  // };
 
-  const handleProviderLogin = async (providerId: string) => {
-    try {
-      // await signInProvider(providerId);
-      router.push(callbackUrl || '/');
-    } catch (error) {
-      // toast.error(`Failed: ${(error as FirebaseError).code}`);
-    }
-  };
+  // const handleProviderLogin = async (providerId: string) => {
+  //   try {
+  //     // await signInProvider(providerId);
+  //     router.push(callbackUrl || '/');
+  //   } catch (error) {
+  //     // toast.error(`Failed: ${(error as FirebaseError).code}`);
+  //   }
+  // };
 
-  const loginProviders = [
-    {
-      name: 'Google',
-      id: 'google',
-      icon: faGoogle,
-      iconColor: 'white',
-      bgColor: '#dB4437'
-    },
-    {
-      name: 'Facebook',
-      id: 'facebook',
-      icon: faFacebook,
-      iconColor: '#4267B2',
-      bgColor: 'white'
-    }
-  ];
+  // const loginProviders = [
+  //   {
+  //     name: 'Google',
+  //     id: 'google',
+  //     icon: faGoogle,
+  //     iconColor: 'white',
+  //     bgColor: '#dB4437'
+  //   },
+  //   {
+  //     name: 'Facebook',
+  //     id: 'facebook',
+  //     icon: faFacebook,
+  //     iconColor: '#4267B2',
+  //     bgColor: 'white'
+  //   }
+  // ];
 
   return (
     <Layout title="Login">
-      <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+      <Auth
+        supabaseClient={supabaseClient}
+        redirectTo="/"
+        appearance={{ theme: ThemeSupa }}
+        providers={['apple', 'facebook', 'google']}
+      />
       {/* <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-4rem)]">
         <div className="flex flex-col items-center justify-center w-full sm:max-w-md">
           <form

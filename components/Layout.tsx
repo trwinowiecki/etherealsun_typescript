@@ -1,17 +1,17 @@
 import CartPopup from '@ui/cart/CartPopup';
 import Head from 'next/head';
-import React, { useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import { DEFAULT_THEME } from '../styles/themes';
 import { applyTheme } from '../styles/themes/utils';
+import { UserProfile } from '../types/Supabase';
 
 import Footer from './Footer';
 import Navbar from './Navbar';
 
 interface LayoutProps {
-  children: React.ReactNode;
   title?: string;
   overridePadding?: boolean;
 }
@@ -20,12 +20,19 @@ export default function Layout({
   title,
   children,
   overridePadding = false
-}: LayoutProps) {
+}: PropsWithChildren<LayoutProps>) {
   // const { state, dispatch } = useContext(Store);
   // const cart = state.cart;
   // const [cartItemsCount, setCartItemsCount] = useState(0);
   const [theme, setTheme] = useState(DEFAULT_THEME);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
+  const childrenWithProps = React.Children.map(children, child => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, { userProfile });
+    }
+    return child;
+  });
   // useEffect(() => {
   //   setCartItemsCount(
   //     cart?.cartItems.reduce((acc, item) => acc + item.quantity, 0)
@@ -54,7 +61,7 @@ export default function Layout({
               overridePadding ? '' : 'px-4 mt-4'
             } w-full xl:w-[1200px]`}
           >
-            {children}
+            {childrenWithProps}
           </main>
         </div>
         <Footer />

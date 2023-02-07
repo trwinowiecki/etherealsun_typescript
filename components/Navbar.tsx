@@ -1,8 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
-import { PostgrestSingleResponse } from '@supabase/supabase-js';
+import {
+  useSession,
+  useSupabaseClient,
+  useUser
+} from '@supabase/auth-helpers-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { forwardRef, useContext, useEffect, useState } from 'react';
@@ -58,24 +61,46 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
 function Navbar() {
   const { state, dispatch } = useContext(Store);
   const session = useSession();
+  const user = useUser();
   const supabaseClient = useSupabaseClient();
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const getUser = async () => {
-      const res: PostgrestSingleResponse<UserProfile> = await supabaseClient
+    const controller = new AbortController();
+
+    if (user) {
+      getProfile(controller.signal);
+    }
+
+    return () => controller.abort();
+  }, [session]);
+
+  async function getProfile(signal: AbortSignal) {
+    try {
+      setLoading(true);
+
+      const { data, error, status } = await supabaseClient
         .from('profiles')
         .select()
-        .eq('id', session?.user.id)
+        .eq('id', user?.id)
+        .abortSignal(signal)
         .single();
 
-      setUser(res.data);
-      console.log(res.data);
-    };
-    if (session?.user.id) {
-      getUser();
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setUserProfile(data);
+      }
+    } catch (error) {
+      toast.error('Error loading user data!');
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-  }, [session?.user.id]);
+  }
 
   const {
     cart: { cartItems }
@@ -83,8 +108,7 @@ function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      // TODO add logout for supabase auth
-      supabaseClient.auth.signOut();
+      supabaseClient.auth.signOut().catch(err => toast.error(err));
       dispatch({
         type: CartCommand.CLEAR
       });
@@ -119,8 +143,8 @@ function Navbar() {
         <Menu as="div" className="z-50">
           <Menu.Button className="flex items-center h-full">
             <>
-              {user?.full_name && (
-                <span className="pl-2">{user.full_name}</span>
+              {userProfile?.full_name && (
+                <span className="pl-2">{userProfile.full_name}</span>
               )}
               <UserCircleIcon
                 className="w-10 h-10 p-2"
@@ -138,7 +162,7 @@ function Navbar() {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 origin-top-right rounded-md shadow-lg right-4 menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
-              {user ? (
+              {userProfile ? (
                 <>
                   <Menu.Item>
                     {({ active }) => (

@@ -61,6 +61,16 @@ enable_confirmations = false
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `twitch`,
 # `twitter`, `slack`, `spotify`, `workos`, `zoom`.
+[auth.external.facebook]
+enabled = true
+client_id = "599212391766662"
+secret = "de2f74bb0ec2daba7d2f78fb77dcb35f"
+
+[auth.external.google]
+enabled = true
+client_id = "812001406649-4s2odqvs3cac5gsjlnl4dn01h0bg6n7s.apps.googleusercontent.com"
+secret = "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"
+
 [auth.external.apple]
 enabled = false
 client_id = ""

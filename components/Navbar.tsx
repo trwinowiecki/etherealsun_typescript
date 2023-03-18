@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { CartCommand } from '../enums/CartCommands';
 import { UserProfile } from '../types/Supabase';
 import { Store } from '../utils/Store';
+import Layout from './Layout';
 
 interface MyLinkProps {
   children: React.ReactNode;
@@ -84,7 +85,6 @@ function Navbar() {
         .from('profiles')
         .select()
         .eq('id', user?.id)
-        .abortSignal(signal)
         .single();
 
       if (error && status !== 406) {

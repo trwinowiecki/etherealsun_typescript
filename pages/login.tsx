@@ -1,8 +1,7 @@
-import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 
 import Layout from '../components/Layout';
 
@@ -46,61 +45,7 @@ const login = ({ callbackUrl }: LoginProps) => {
   const router = useRouter();
   const [routerActive, setRouterActive] = useState(false);
   const [loading, setLoading] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors }
-  } = useForm<LoginForm>();
-  const session = useSession();
   const supabaseClient = useSupabaseClient();
-
-  const emailRegex =
-    '?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+*|"?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\]';
-
-  // if (session?.user.id && !routerActive) {
-  //   setRouterActive(true);
-  //   router.push('/');
-  // }
-
-  // const onSubmit: SubmitHandler<LoginForm> = async data => {
-  //   setRouterActive(true);
-  //   setLoading(true);
-  //   try {
-  //     // await signIn!(data.email, data.password);
-  //     router.push(callbackUrl || '/');
-  //   } catch (error: any) {
-  //     setRouterActive(false);
-  //     setLoading(false);
-  //     // toast.error(`Failed: ${(error as FirebaseError).code}`);
-  //   }
-  // };
-
-  // const handleProviderLogin = async (providerId: string) => {
-  //   try {
-  //     // await signInProvider(providerId);
-  //     router.push(callbackUrl || '/');
-  //   } catch (error) {
-  //     // toast.error(`Failed: ${(error as FirebaseError).code}`);
-  //   }
-  // };
-
-  // const loginProviders = [
-  //   {
-  //     name: 'Google',
-  //     id: 'google',
-  //     icon: faGoogle,
-  //     iconColor: 'white',
-  //     bgColor: '#dB4437'
-  //   },
-  //   {
-  //     name: 'Facebook',
-  //     id: 'facebook',
-  //     icon: faFacebook,
-  //     iconColor: '#4267B2',
-  //     bgColor: 'white'
-  //   }
-  // ];
 
   return (
     <Layout title="Login">
@@ -110,80 +55,6 @@ const login = ({ callbackUrl }: LoginProps) => {
         appearance={{ theme: ThemeSupa }}
         providers={['apple', 'facebook', 'google']}
       />
-      {/* <div className="flex flex-col items-center justify-center w-full h-[calc(100vh-4rem)]">
-        <div className="flex flex-col items-center justify-center w-full sm:max-w-md">
-          <form
-            className="flex flex-col w-full gap-2"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <label
-              htmlFor="email"
-              className={`${errors.email ? 'error' : ''} input-field`}
-            >
-              Email
-              <input
-                {...register('email', {
-                  required: true,
-                  validate: value => value.length > 0,
-                  pattern:
-                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                })}
-                type="email"
-                autoComplete="true"
-              />
-            </label>
-            <label
-              htmlFor="password"
-              className={`${errors.password ? 'error' : ''} input-field`}
-            >
-              Password
-              <input
-                {...register('password', {
-                  required: true,
-                  validate: value => value.length > 0
-                })}
-                type="password"
-                autoComplete="true"
-              />
-            </label>
-            <Button
-              disabled={loading}
-              onClick={() => null}
-              extraClasses="shadow-md mt-2"
-            >
-              <input type="submit" name="submit" id="submit" value="Login" />
-            </Button>
-          </form>
-          <Divider>OR</Divider>
-          <div className="flex justify-center w-full gap-4 px-4">
-            {loginProviders.map(provider => (
-              <button
-                key={provider.id}
-                className={`flex justify-center flex-1 p-2 text-center rounded-md shadow-md cursor-pointer bg-[${provider.bgColor}]`}
-                onClick={() => handleProviderLogin(provider.id)}
-                aria-label={provider.name}
-                type="button"
-                title={provider.name}
-              >
-                <FontAwesomeIcon
-                  icon={provider.icon}
-                  className="w-8"
-                  color={provider.iconColor}
-                />
-              </button>
-            ))}
-          </div>
-          <Divider>Don&apos;t have an account?</Divider>
-          <div className="w-full px-4">
-            <Button
-              extraClasses="w-full"
-              onClick={() => router.push('/signup')}
-            >
-              Register
-            </Button>
-          </div>
-        </div>
-      </div> */}
     </Layout>
   );
 };

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 import Layout from '../components/Layout';
+import { Database } from '../types/SupabaseDbTypes';
 
 interface LoginProps {
   callbackUrl: string;
@@ -45,12 +46,12 @@ const login = ({ callbackUrl }: LoginProps) => {
   const router = useRouter();
   const [routerActive, setRouterActive] = useState(false);
   const [loading, setLoading] = useState(false);
-  const supabaseClient = useSupabaseClient();
+  const supabase = useSupabaseClient<Database>();
 
   return (
     <Layout title="Login">
       <Auth
-        supabaseClient={supabaseClient}
+        supabaseClient={supabase}
         redirectTo="/"
         appearance={{ theme: ThemeSupa }}
         providers={['apple', 'facebook', 'google']}

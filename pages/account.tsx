@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   useSession,
   useSupabaseClient,
   useUser
 } from '@supabase/auth-helpers-react';
+import Button from '@ui/Button';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -42,7 +44,7 @@ const account = () => {
         .single();
 
       if (error && status !== 406) {
-        throw error;
+        throw new Error(error.message);
       }
 
       if (data) {
@@ -51,7 +53,6 @@ const account = () => {
       }
     } catch (error) {
       toast.error('Error loading user data!');
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -65,8 +66,6 @@ const account = () => {
     lastName: Profiles['last_name'];
   }) {
     try {
-      console.log(session);
-
       setLoading(true);
       if (!user) throw new Error('No user');
 
@@ -78,11 +77,10 @@ const account = () => {
       };
 
       const { error } = await supabase.from('profiles').upsert(updates);
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       toast.success('Profile updated!');
     } catch (error) {
       toast.error('Error updating the data!');
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -93,9 +91,9 @@ const account = () => {
       <Layout title="Account Settings">
         {/* <h1>{user?.displayName ? `Hi, ${user.displayName}!` : 'Hi!'}</h1> */}
         {/* <AddressForm /> */}
-        <div className="form-widget">
-          <div className="account-form-field">
-            <label htmlFor="email">Email</label>
+        <div className="flex flex-col gap-4">
+          <label htmlFor="email" className="input-field">
+            Email
             <input
               id="email"
               type="text"
@@ -104,9 +102,9 @@ const account = () => {
               autoComplete="false"
               aria-label="email"
             />
-          </div>
-          <div className="account-form-field">
-            <label htmlFor="firstName">firstName</label>
+          </label>
+          <label htmlFor="firstName" className="input-field">
+            First Name
             <input
               id="firstName"
               type="text"
@@ -115,9 +113,9 @@ const account = () => {
               autoComplete="true"
               aria-label="first name"
             />
-          </div>
-          <div className="account-form-field">
-            <label htmlFor="lastName">lastName</label>
+          </label>
+          <label htmlFor="lastName" className="input-field">
+            Last Name
             <input
               id="lastName"
               type="text"
@@ -126,28 +124,18 @@ const account = () => {
               autoComplete="true"
               aria-label="last name"
             />
-          </div>
+          </label>
 
-          <div className="account-form-field">
-            <button
-              className="block button primary"
-              onClick={() => updateProfile({ firstName, lastName })}
-              disabled={loading}
-              type="button"
-            >
-              {loading ? 'Loading ...' : 'Update'}
-            </button>
-          </div>
+          <Button
+            onClick={() => updateProfile({ firstName, lastName })}
+            disabled={loading}
+          >
+            {loading ? 'Loading ...' : 'Update'}
+          </Button>
 
-          <div className="account-form-field">
-            <button
-              className="block button"
-              onClick={() => supabase.auth.signOut()}
-              type="button"
-            >
-              Sign Out
-            </button>
-          </div>
+          <Button intent="danger" onClick={() => supabase.auth.signOut()}>
+            Sign Out
+          </Button>
         </div>
       </Layout>
     )

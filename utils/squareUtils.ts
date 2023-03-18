@@ -15,9 +15,11 @@ export function getImages(
   imageObjects: CatalogObject[]
 ): CatalogObject[] {
   const imageIds = item.itemData?.imageIds;
-  const itemImages = imageObjects.filter(
-    obj => obj.type === 'IMAGE' && imageIds?.includes(obj.id)
-  );
+  const itemImages = imageObjects
+    ? imageObjects.filter(
+        obj => obj.type === 'IMAGE' && imageIds?.includes(obj.id)
+      )
+    : [];
 
   return itemImages.length >= 1 ? itemImages : [DEFAULT_IMAGE];
 }

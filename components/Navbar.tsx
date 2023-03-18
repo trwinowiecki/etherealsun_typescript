@@ -12,10 +12,10 @@ import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { CartCommand } from '../enums/CartCommands';
-import { UserProfile } from '../types/Supabase';
+import { Database } from '../types/SupabaseDbTypes';
 import { Store } from '../utils/Store';
-import Layout from './Layout';
 
+type Profile = Database['public']['Tables']['profiles']['Row'];
 interface MyLinkProps {
   children: React.ReactNode;
   href: string;
@@ -63,32 +63,33 @@ function Navbar() {
   const { state, dispatch } = useContext(Store);
   const session = useSession();
   const user = useUser();
-  const supabaseClient = useSupabaseClient();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>();
+  const supabase = useSupabaseClient<Database>();
+  const [userProfile, setUserProfile] = useState<Profile>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
 
-    if (user) {
+    if (session) {
       getProfile(controller.signal);
     }
 
     return () => controller.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   async function getProfile(signal: AbortSignal) {
     try {
       setLoading(true);
 
-      const { data, error, status } = await supabaseClient
+      const { data, error, status } = await supabase
         .from('profiles')
         .select()
         .eq('id', user?.id)
         .single();
 
       if (error && status !== 406) {
-        throw error;
+        throw new Error(error.message);
       }
 
       if (data) {
@@ -96,7 +97,6 @@ function Navbar() {
       }
     } catch (error) {
       toast.error('Error loading user data!');
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,7 @@ function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      supabaseClient.auth.signOut().catch(err => toast.error(err));
+      supabase.auth.signOut().catch(err => toast.error(err));
       dispatch({
         type: CartCommand.CLEAR
       });
@@ -143,8 +143,8 @@ function Navbar() {
         <Menu as="div" className="z-50">
           <Menu.Button className="flex items-center h-full">
             <>
-              {userProfile?.full_name && (
-                <span className="pl-2">{userProfile.full_name}</span>
+              {userProfile?.first_name && (
+                <span className="pl-2">{userProfile.first_name}</span>
               )}
               <UserCircleIcon
                 className="w-10 h-10 p-2"

@@ -6,7 +6,8 @@ export interface UserProfile {
   id: string;
   updated_at?: string;
   username?: string;
-  full_name?: string;
+  first_name?: string;
+  last_name?: string;
   square_id?: string;
   square_customer?: Customer;
 }

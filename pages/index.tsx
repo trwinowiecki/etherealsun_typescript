@@ -66,8 +66,8 @@ const Home = ({ catalog }: HomeProps) => {
 
 export const getStaticProps: GetStaticProps = async ctx => {
   const client = new Client({
-    accessToken: process.env.SQUARE_ACCESS_TOKEN_PROD,
-    environment: Environment.Production
+    accessToken: process.env.SQUARE_ACCESS_TOKEN,
+    environment: Environment.Sandbox
   });
 
   const res = await client.catalogApi.searchCatalogObjects({

@@ -12,8 +12,8 @@ const merchantId = 'MLQSF7HKN6S30';
 
 const handler = async (req: SquareRequest, res: NextApiResponse) => {
   const client = new Client({
-    accessToken: process.env.SQUARE_ACCESS_TOKEN_PROD,
-    environment: Environment.Production
+    accessToken: process.env.SQUARE_ACCESS_TOKEN,
+    environment: Environment.Sandbox
   });
 
   let data;

@@ -8,9 +8,6 @@ interface GeoRequest extends NextApiRequest {
 
 export default async function handler(req: GeoRequest, res: NextApiResponse) {
   const { query, cancelToken } = req.body;
-  console.log(
-    `https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&apiKey=${process.env.GEOAPIFY_API_KEY}`
-  );
   try {
     const data = await axios({
       method: 'GET',

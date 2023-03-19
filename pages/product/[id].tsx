@@ -1,18 +1,23 @@
 import Button from '@ui/Button';
 import Listbox from '@ui/CustomListbox';
 import Image from '@ui/Image';
-import axios from 'axios';
-import { GetServerSideProps } from 'next';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import { useContext, useState } from 'react';
-import { CatalogObject, RetrieveCatalogObjectResponse } from 'square';
+import {
+  CatalogObject,
+  Client,
+  Environment,
+  ListCatalogResponse,
+  RetrieveCatalogObjectResponse
+} from 'square';
 
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
 import Layout from '../../components/Layout';
 import { CartCommand } from '../../enums/CartCommands';
-import { SquareCommand } from '../../enums/SquareCommands';
 import { DEFAULT_IMAGE, getImages } from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
 import useWindowBreakpoint, { WindowSize } from '../../utils/windowDimensions';
+import { convertToJSON } from '../api/square';
 
 interface ProductPageProps {
   catalogObjects: RetrieveCatalogObjectResponse;
@@ -150,14 +155,57 @@ function ProductPage(props: ProductPageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async context => {
-  const id = context.params?.id as string;
-
-  const { data } = await axios({
-    method: 'POST',
-    url: `${process.env.BASE_URL!}/api/square`,
-    data: { type: SquareCommand.GET_ONE_CATALOG, id }
+export const getStaticPaths: GetStaticPaths = async ctx => {
+  let res;
+  const client = new Client({
+    accessToken: process.env.SQUARE_ACCESS_TOKEN,
+    environment: Environment.Sandbox
   });
+
+  try {
+    res = await client.catalogApi.listCatalog('', 'ITEM');
+  } catch (error) {
+    console.error(error);
+    return {
+      paths: [],
+      fallback: 'blocking'
+    };
+  }
+
+  const data: ListCatalogResponse = convertToJSON(res);
+
+  if (!data.objects) {
+    return {
+      paths: [],
+      fallback: 'blocking'
+    };
+  }
+
+  return {
+    paths: data.objects
+      .filter(obj => obj.type === 'ITEM')
+      .map(obj => ({ params: { id: obj.id } })),
+    fallback: 'blocking'
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ctx => {
+  const client = new Client({
+    accessToken: process.env.SQUARE_ACCESS_TOKEN,
+    environment: Environment.Sandbox
+  });
+
+  let res;
+  try {
+    res = await client.catalogApi.retrieveCatalogObject(
+      ctx.params!.id! as string,
+      true
+    );
+  } catch (error) {
+    res = error;
+  }
+
+  const data: RetrieveCatalogObjectResponse = convertToJSON(res);
 
   return {
     props: {

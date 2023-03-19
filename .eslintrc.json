@@ -27,6 +27,6 @@
     "no-process-env": "off",
     "no-warning-comments": "warn",
     "no-console": "warn",
-    "jsx-a11y/label-has-for": "off"
+    "jsx-a11y/label-has-for": "warn"
   }
 }

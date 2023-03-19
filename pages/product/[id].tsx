@@ -1,8 +1,12 @@
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import Button from '@ui/Button';
 import Listbox from '@ui/CustomListbox';
+import FavButton from '@ui/FavButton';
 import Image from '@ui/Image';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   CatalogObject,
   Client,
@@ -14,9 +18,9 @@ import {
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
 import Layout from '../../components/Layout';
 import { CartCommand } from '../../enums/CartCommands';
+import { Database } from '../../types/SupabaseDbTypes';
 import { DEFAULT_IMAGE, getImages } from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
-import useWindowBreakpoint, { WindowSize } from '../../utils/windowDimensions';
 import { convertToJSON } from '../api/square';
 
 interface ProductPageProps {
@@ -25,17 +29,39 @@ interface ProductPageProps {
 
 function ProductPage(props: ProductPageProps) {
   const { catalogObjects } = props;
-  const windowSize = useWindowBreakpoint();
+
+  const router = useRouter();
+  const user = useUser();
+  const supabase = useSupabaseClient<Database>();
   const { dispatch } = useContext(Store);
   const [quantity, setQuantity] = useState(1);
+  const [favorite, setFavorite] = useState(false);
 
   if (catalogObjects.errors) {
-    return (
-      <Layout title={catalogObjects.errors[0].code}>
-        {catalogObjects.errors[0].detail}
-      </Layout>
-    );
+    useEffect(() => {
+      router.push('/404');
+    }, [router]);
+    return;
   }
+
+  useEffect(() => {
+    const getFavorites = async () => {
+      const res = await supabase
+        .from('favorite_products')
+        .select()
+        .eq('program_id', catalogObjects.object?.id)
+        .single();
+      if (res.error) {
+        toast.error(res.error.message);
+      }
+      if (res.data?.program_id === catalogObjects.object?.id) {
+        setFavorite(true);
+      }
+    };
+    if (user?.id) {
+      getFavorites();
+    }
+  }, [user]);
 
   const breadcrumbs: BreadcrumbPage[] = [
     { href: '/', name: 'Home' },
@@ -85,9 +111,7 @@ function ProductPage(props: ProductPageProps) {
   return (
     <Layout title={catalogObjects.object?.itemData?.name}>
       <div className="flex flex-col gap-2">
-        {WindowSize[windowSize] >= WindowSize.md && (
-          <Breadcrumbs pages={breadcrumbs} />
-        )}
+        <Breadcrumbs pages={breadcrumbs} />
         <div className="flex flex-col gap-2 md:flex-row">
           <div className="w-full md:flex-1 shrink-0">
             {itemImages.length > 1 ? (
@@ -129,7 +153,11 @@ function ProductPage(props: ProductPageProps) {
             <span className="text-2xl font-semibold">
               {catalogObjects.object?.itemData?.name}
             </span>
-            <div>{catalogObjects.object?.itemData?.description}</div>
+            <div className="">
+              {catalogObjects.object?.itemData?.description ??
+                catalogObjects.object?.itemData?.descriptionPlaintext ??
+                catalogObjects.object?.itemData?.descriptionHtml}
+            </div>
             <div className="flex items-center gap-4">
               <Listbox
                 listOfItems={[1, 2, 3, 4, 5]}
@@ -147,6 +175,7 @@ function ProductPage(props: ProductPageProps) {
               >
                 Add to bag
               </Button>
+              <FavButton isFavorite={favorite} />
             </div>
           </div>
         </div>

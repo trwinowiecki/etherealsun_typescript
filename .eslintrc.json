@@ -9,7 +9,8 @@
     "plugin:@shopify/esnext",
     "plugin:@shopify/typescript",
     "plugin:@shopify/react",
-    "plugin:@shopify/prettier"
+    "plugin:@shopify/prettier",
+    "plugin:@next/next/recommended"
   ],
   "overrides": [],
   "parserOptions": {

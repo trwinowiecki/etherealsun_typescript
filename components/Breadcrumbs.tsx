@@ -15,7 +15,7 @@ interface BreadcrumbProps {
 
 function Breadcrumbs({ pages }: BreadcrumbProps) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="items-center hidden gap-1 md:flex">
       {pages.map((page, i, { length }) =>
         length - 1 === i ? (
           <span

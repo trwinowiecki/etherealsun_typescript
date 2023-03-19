@@ -6,7 +6,6 @@ import Image from '@ui/Image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import {
   CatalogObject,
   Client,
@@ -21,6 +20,7 @@ import { CartCommand } from '../../enums/CartCommands';
 import { Database } from '../../types/SupabaseDbTypes';
 import { DEFAULT_IMAGE, getImages } from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
+import { handleError } from '../../utils/supabaseUtils';
 import { convertToJSON } from '../api/square';
 
 interface ProductPageProps {
@@ -49,18 +49,22 @@ function ProductPage(props: ProductPageProps) {
       const res = await supabase
         .from('favorite_products')
         .select()
-        .eq('program_id', catalogObjects.object?.id)
+        .eq('product_id', catalogObjects.object?.id)
         .single();
+
       if (res.error) {
-        toast.error(res.error.message);
+        handleError(res.error);
+        return;
       }
-      if (res.data?.program_id === catalogObjects.object?.id) {
+
+      if (res.data?.product_id === catalogObjects.object?.id) {
         setFavorite(true);
       }
     };
     if (user?.id) {
       getFavorites();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const breadcrumbs: BreadcrumbPage[] = [
@@ -175,7 +179,11 @@ function ProductPage(props: ProductPageProps) {
               >
                 Add to bag
               </Button>
-              <FavButton isFavorite={favorite} />
+              <FavButton
+                productId={catalogObjects.object!.id}
+                handleFavorite={newValue => setFavorite(newValue)}
+                isFavorite={favorite}
+              />
             </div>
           </div>
         </div>

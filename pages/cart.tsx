@@ -1,28 +1,73 @@
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import Button from '@ui/Button';
 import CartItemComponent from '@ui/cart/CartItemComponent';
 import Subtotal, { calcSubtotal } from '@ui/cart/Subtotal';
+import Featured from '@ui/Featured';
+import axios from 'axios';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { GooglePay } from 'react-square-web-payments-sdk';
+import { toast } from 'react-toastify';
+import { BatchRetrieveCatalogObjectsResponse } from 'square';
 
 import Layout from '../components/Layout';
 import SquarePaymentForm from '../components/SquarePaymentForm';
+import { SquareCommand } from '../enums/SquareCommands';
+import { Database } from '../types/SupabaseDbTypes';
 import { getImages } from '../utils/squareUtils';
 import { Store } from '../utils/Store';
+import { handleError } from '../utils/supabaseUtils';
 
 const Cart = () => {
+  const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const {
     cart: { cartItems }
   } = state;
-  const router = useRouter();
+  const supabase = useSupabaseClient<Database>();
+  const user = useUser();
+  const [favorites, setFavorites] =
+    useState<BatchRetrieveCatalogObjectsResponse>();
+
+  useEffect(() => {
+    const getFavProducts = async () => {
+      const res = await supabase.from('favorite_products').select();
+
+      if (res.error) {
+        handleError(res.error);
+        return;
+      }
+
+      await axios({
+        method: 'POST',
+        url: `api/square`,
+        data: {
+          type: SquareCommand.GET_BATCH_CATALOG,
+          ids: res.data
+            .filter(fav => !cartItems.find(item => item.id === fav.product_id))
+            .map(fav => fav.product_id)
+        }
+      })
+        .then(({ data }) => {
+          setFavorites(data);
+        })
+        .catch(error => toast.error(error));
+
+      // setFavorites(res.data.filter(fav => !cartItems.find(item => item.id === fav.product_id)));
+    };
+
+    if (user) {
+      getFavProducts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   return (
     <Layout title="Cart">
-      <>
-        <h1 className="mb-4 text-4xl tracking-wide">Your bag</h1>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-4xl tracking-wide">Your bag</h1>
         {!cartItems || cartItems.length === 0 ? (
           <div className="w-full p-4 rounded-md shadow-md bg-primary-background-darker">
             <span className="text-2xl">No treasures here yet!</span>
@@ -31,7 +76,7 @@ const Cart = () => {
             </div>
           </div>
         ) : (
-          <div className="relative flex flex-col gap-4 mb-4 md:items-start md:flex-row">
+          <div className="relative flex flex-col gap-4 md:items-start md:flex-row">
             <div className="w-full flex-[3] flex flex-col bg-primary-background-darker rounded-md overflow-hidden shadow-md">
               {cartItems.slice().map(item => {
                 return <CartItemComponent key={item.id} item={item} />;
@@ -96,7 +141,16 @@ const Cart = () => {
             </div>
           </div>
         )}
-      </>
+        {favorites ? (
+          <div className="w-full p-4 rounded-md shadow-md bg-primary-background-darker">
+            <Featured
+              name="Other Favorites"
+              products={favorites.objects!}
+              relatedObjs={favorites.relatedObjects!}
+            />
+          </div>
+        ) : null}
+      </div>
     </Layout>
   );
 };

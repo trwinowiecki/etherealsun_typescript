@@ -36,18 +36,15 @@ export interface Database {
     Tables: {
       favorite_products: {
         Row: {
-          id: number
-          program_id: string
+          product_id: string
           user_id: string
         }
         Insert: {
-          id?: number
-          program_id: string
+          product_id: string
           user_id: string
         }
         Update: {
-          id?: number
-          program_id?: string
+          product_id?: string
           user_id?: string
         }
       }
@@ -214,29 +211,20 @@ export interface Database {
     }
     Functions: {
       extension: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
         Returns: string
       }
       filename: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
         Returns: string
       }
       foldername: {
-        Args: {
-          name: string
-        }
+        Args: { name: string }
         Returns: string[]
       }
       get_size_by_bucket: {
         Args: Record<PropertyKey, never>
-        Returns: {
-          size: number
-          bucket_id: string
-        }[]
+        Returns: { size: number; bucket_id: string }[]
       }
       search: {
         Args: {

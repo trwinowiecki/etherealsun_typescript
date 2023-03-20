@@ -1,6 +1,10 @@
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
+import Button from '@ui/Button';
+import FavButton from '@ui/FavButton';
 import Image from '@ui/Image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
 import {
   CatalogObject,
   Client,
@@ -9,22 +13,79 @@ import {
   SearchCatalogObjectsResponse
 } from 'square';
 
+import { CartCommand } from '../enums/CartCommands';
 import { convertToJSON } from '../pages/api/square';
+import { Database } from '../types/SupabaseDbTypes';
 import { getImages } from '../utils/squareUtils';
+import { Store } from '../utils/Store';
+import { handleError } from '../utils/supabaseUtils';
 
 interface ProductCardProps {
   item: CatalogObject;
   relatedObj: SearchCatalogObjectsResponse['relatedObjects'];
   onClick?: (id: string) => void;
+  hasButtons?: boolean;
 }
 
-function ProductCard({ item, relatedObj, onClick }: ProductCardProps) {
+function ProductCard({
+  item,
+  relatedObj,
+  onClick,
+  hasButtons = false
+}: ProductCardProps) {
   const router = useRouter();
+  const { dispatch } = useContext(Store);
+  const user = useUser();
+  const supabase = useSupabaseClient<Database>();
+  const [favorite, setFavorite] = useState(false);
+
+  useEffect(() => {
+    const getFavorites = async (abortSignal: AbortSignal) => {
+      const res = await supabase
+        .from('favorite_products')
+        .select()
+        .eq('product_id', item.id)
+        .abortSignal(abortSignal)
+        .single();
+
+      if (res.error) {
+        handleError(res.error);
+        return;
+      }
+
+      if (res.data?.product_id === item.id) {
+        setFavorite(true);
+      }
+    };
+
+    const controller = new AbortController();
+    if (user?.id) {
+      getFavorites(controller.signal);
+    }
+
+    return () => controller.abort('Cancelled by user');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   const handleClick =
     onClick ??
     ((id: string) => {
       router.push(`/product/${id}`);
     });
+
+  const addToCartHandler = async (
+    product: CatalogObject,
+    relatedObjects: CatalogObject[] | undefined
+  ) => {
+    dispatch({
+      type: CartCommand.ADD,
+      payload: { ...product, quantity: 1, relatedObjects }
+    });
+    dispatch({
+      type: CartCommand.POP_UP,
+      payload: true
+    });
+  };
 
   const itemImages = getImages(item, relatedObj!);
 
@@ -41,7 +102,7 @@ function ProductCard({ item, relatedObj, onClick }: ProductCardProps) {
   return (
     <div
       id={item.id}
-      className="overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105 hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32"
+      className="overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105 hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32 justify-between flex flex-col"
     >
       <button
         className="w-full cursor-pointer text-primary-text hover:text-primary-text"
@@ -61,6 +122,21 @@ function ProductCard({ item, relatedObj, onClick }: ProductCardProps) {
           </>
         </div>
       </button>
+      {hasButtons && (
+        <div className="flex justify-between gap-2">
+          <Button
+            extraClasses="flex-1"
+            onClick={() => addToCartHandler(item, relatedObj)}
+          >
+            Add to cart
+          </Button>
+          <FavButton
+            isFavorite={favorite}
+            productId={item.id}
+            handleFavorite={newValue => setFavorite(newValue)}
+          />
+        </div>
+      )}
     </div>
   );
 }

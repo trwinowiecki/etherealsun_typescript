@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import {
@@ -86,6 +87,7 @@ function Navbar() {
         .from('profiles')
         .select()
         .eq('id', user?.id)
+        .abortSignal(signal)
         .single();
 
       if (error && status !== 406) {

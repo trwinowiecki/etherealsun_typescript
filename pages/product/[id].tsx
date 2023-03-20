@@ -45,11 +45,12 @@ function ProductPage(props: ProductPageProps) {
   }
 
   useEffect(() => {
-    const getFavorites = async () => {
+    const getFavorites = async (signal: AbortSignal) => {
       const res = await supabase
         .from('favorite_products')
         .select()
         .eq('product_id', catalogObjects.object?.id)
+        .abortSignal(signal)
         .single();
 
       if (res.error) {
@@ -61,9 +62,13 @@ function ProductPage(props: ProductPageProps) {
         setFavorite(true);
       }
     };
+
+    const controller = new AbortController();
     if (user?.id) {
-      getFavorites();
+      getFavorites(controller.signal);
     }
+
+    return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

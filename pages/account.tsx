@@ -25,14 +25,18 @@ const account = () => {
   const [lastName, setLastName] = useState<Profiles['last_name']>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     if (session) {
-      getProfile();
+      getProfile(controller.signal);
     } else {
       router.push('/login');
     }
+
+    return () => controller.abort();
   }, [session]);
 
-  async function getProfile() {
+  async function getProfile(signal: AbortSignal) {
     try {
       setLoading(true);
       if (!user) throw new Error('No user');
@@ -41,6 +45,7 @@ const account = () => {
         .from('profiles')
         .select(`first_name, last_name`)
         .eq('id', user.id)
+        .abortSignal(signal)
         .single();
 
       if (error && status !== 406) {

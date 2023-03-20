@@ -6,9 +6,15 @@ interface FeaturedProps {
   name: string;
   products: CatalogObject[];
   relatedObjs: CatalogObject[];
+  hasButtons?: boolean;
 }
 
-const Featured = ({ name, products, relatedObjs }: FeaturedProps) => {
+const Featured = ({
+  name,
+  products,
+  relatedObjs,
+  hasButtons = false
+}: FeaturedProps) => {
   return (
     <>
       <h2 className="tracking-widest">{name.toUpperCase()}</h2>
@@ -18,9 +24,12 @@ const Featured = ({ name, products, relatedObjs }: FeaturedProps) => {
         } flex w-full max-w-full gap-4 pt-4 overflow-y-auto`}
       >
         {products.map(product => (
-          <div key={product.id}>
-            <ProductCard item={product} relatedObj={relatedObjs} />
-          </div>
+          <ProductCard
+            key={product.id}
+            item={product}
+            relatedObj={relatedObjs}
+            hasButtons={hasButtons}
+          />
         ))}
       </div>
     </>

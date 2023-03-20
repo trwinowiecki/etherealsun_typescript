@@ -32,11 +32,23 @@ const Cart = () => {
     useState<BatchRetrieveCatalogObjectsResponse>();
 
   useEffect(() => {
-    const getFavProducts = async () => {
-      const res = await supabase.from('favorite_products').select();
+    const getFavProducts = async (signal: AbortSignal) => {
+      const res = await supabase
+        .from('favorite_products')
+        .select()
+        .abortSignal(signal);
 
       if (res.error) {
         handleError(res.error);
+        return;
+      }
+
+      const validProducts = res.data.filter(
+        fav => !cartItems.find(item => item.id === fav.product_id)
+      );
+
+      if (validProducts.length === 0) {
+        setFavorites(undefined);
         return;
       }
 
@@ -45,24 +57,23 @@ const Cart = () => {
         url: `api/square`,
         data: {
           type: SquareCommand.GET_BATCH_CATALOG,
-          ids: res.data
-            .filter(fav => !cartItems.find(item => item.id === fav.product_id))
-            .map(fav => fav.product_id)
+          ids: validProducts.map(fav => fav.product_id)
         }
       })
         .then(({ data }) => {
           setFavorites(data);
         })
         .catch(error => toast.error(error));
-
-      // setFavorites(res.data.filter(fav => !cartItems.find(item => item.id === fav.product_id)));
     };
 
+    const controller = new AbortController();
     if (user) {
-      getFavProducts();
+      getFavProducts(controller.signal);
     }
+
+    return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, cartItems]);
 
   return (
     <Layout title="Cart">
@@ -147,6 +158,7 @@ const Cart = () => {
               name="Other Favorites"
               products={favorites.objects!}
               relatedObjs={favorites.relatedObjects!}
+              hasButtons
             />
           </div>
         ) : null}

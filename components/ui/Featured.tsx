@@ -6,14 +6,16 @@ interface FeaturedProps {
   name: string;
   products: CatalogObject[];
   relatedObjs: CatalogObject[];
-  hasButtons?: boolean;
+  hasFavButton?: boolean;
+  hasCartButton?: boolean;
 }
 
 const Featured = ({
   name,
   products,
   relatedObjs,
-  hasButtons = false
+  hasFavButton = false,
+  hasCartButton = false
 }: FeaturedProps) => {
   return (
     <>
@@ -28,7 +30,8 @@ const Featured = ({
             key={product.id}
             item={product}
             relatedObj={relatedObjs}
-            hasButtons={hasButtons}
+            hasFavButton={hasFavButton}
+            hasCartButton={hasCartButton}
           />
         ))}
       </div>

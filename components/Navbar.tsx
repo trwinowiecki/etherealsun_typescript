@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { CartCommand } from '../enums/CartCommands';
 import { Database } from '../types/SupabaseDbTypes';
 import { Store } from '../utils/Store';
+import { handleError } from '../utils/supabaseUtils';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 interface MyLinkProps {
@@ -80,28 +81,24 @@ function Navbar() {
   }, [session]);
 
   async function getProfile(signal: AbortSignal) {
-    try {
-      setLoading(true);
+    setLoading(true);
 
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select()
-        .eq('id', user?.id)
-        .abortSignal(signal)
-        .single();
+    const { data, error, status } = await supabase
+      .from('profiles')
+      .select()
+      .eq('id', user?.id)
+      .abortSignal(signal)
+      .single();
 
-      if (error && status !== 406) {
-        throw new Error(error.message);
-      }
-
-      if (data) {
-        setUserProfile(data);
-      }
-    } catch (error) {
-      toast.error('Error loading user data!');
-    } finally {
-      setLoading(false);
+    if (error && status !== 406) {
+      handleError(error);
     }
+
+    if (data) {
+      setUserProfile(data);
+    }
+
+    setLoading(false);
   }
 
   const {

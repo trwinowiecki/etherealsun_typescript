@@ -8,6 +8,7 @@ export interface ImageProps {
   sizes?: string;
   width?: number;
   height?: number;
+  className?: string;
 }
 
 export default function Image({
@@ -15,7 +16,8 @@ export default function Image({
   src,
   sizes = `(max-width: ${WindowSize.sm}px) 100vw, (max-width: ${WindowSize.lg}) 50vw, 33vw `,
   width = 1000,
-  height = 1000
+  height = 1000,
+  className = ''
 }: ImageProps) {
   return (
     <NextImage
@@ -26,6 +28,7 @@ export default function Image({
       layout="responsive"
       objectFit="cover"
       sizes={sizes}
+      className={className}
     />
   );
 }

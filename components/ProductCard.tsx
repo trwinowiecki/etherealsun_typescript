@@ -24,14 +24,16 @@ interface ProductCardProps {
   item: CatalogObject;
   relatedObj: SearchCatalogObjectsResponse['relatedObjects'];
   onClick?: (id: string) => void;
-  hasButtons?: boolean;
+  hasFavButton?: boolean;
+  hasCartButton?: boolean;
 }
 
 function ProductCard({
   item,
   relatedObj,
   onClick,
-  hasButtons = false
+  hasFavButton = false,
+  hasCartButton = false
 }: ProductCardProps) {
   const router = useRouter();
   const { dispatch } = useContext(Store);
@@ -46,7 +48,7 @@ function ProductCard({
         .select()
         .eq('product_id', item.id)
         .abortSignal(abortSignal)
-        .single();
+        .maybeSingle();
 
       if (res.error) {
         handleError(res.error);
@@ -59,7 +61,7 @@ function ProductCard({
     };
 
     const controller = new AbortController();
-    if (user?.id) {
+    if (user?.id && hasFavButton) {
       getFavorites(controller.signal);
     }
 
@@ -102,7 +104,7 @@ function ProductCard({
   return (
     <div
       id={item.id}
-      className="overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md rounded-t-full rounded-b-lg hover:cursor-pointer hover:drop-shadow-lg hover:scale-105 hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32 justify-between flex flex-col"
+      className="relative overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md hover:cursor-pointer hover:drop-shadow-lg hover:scale-105 hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32 justify-between flex flex-col"
     >
       <button
         className="w-full cursor-pointer text-primary-text hover:text-primary-text"
@@ -112,6 +114,7 @@ function ProductCard({
         <Image
           alt={item.itemData?.name ?? 'Default'}
           src={itemImages[0].imageData?.url ?? '/defaultProduct.png'}
+          className="overflow-hidden rounded-t-full rounded-b-lg"
         />
         <div className="p-2 text-center">
           <div className="font-semibold">{item.itemData?.name}</div>
@@ -122,7 +125,7 @@ function ProductCard({
           </>
         </div>
       </button>
-      {hasButtons && (
+      {hasCartButton && (
         <div className="flex justify-between gap-2">
           <Button
             extraClasses="flex-1"
@@ -130,6 +133,10 @@ function ProductCard({
           >
             Add to cart
           </Button>
+        </div>
+      )}
+      {hasFavButton && (
+        <div className="absolute top-[7%] right-[7%] md:top-[5%] md:right-[5%]">
           <FavButton
             isFavorite={favorite}
             productId={item.id}

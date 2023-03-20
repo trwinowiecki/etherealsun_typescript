@@ -58,7 +58,9 @@ const FavButton = ({
       aria-label="Favorite"
     >
       <HeartIcon
-        className={`w-6 h-6 ${isFavorite ? 'fill-negative' : 'text-gray-500'}`}
+        className={`w-8 h-8 text-primary-text hover:stroke-[3px] ${
+          isFavorite ? 'fill-negative' : 'fill-white'
+        }`}
       />
     </button>
   );

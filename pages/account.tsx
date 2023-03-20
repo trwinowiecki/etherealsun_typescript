@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 
 import Layout from '../components/Layout';
 import { Database } from '../types/SupabaseDbTypes';
+import { handleError } from '../utils/supabaseUtils';
 
 type Profiles = Database['public']['Tables']['profiles']['Row'];
 
@@ -49,7 +50,8 @@ const account = () => {
         .single();
 
       if (error && status !== 406) {
-        throw new Error(error.message);
+        handleError(error);
+        return;
       }
 
       if (data) {
@@ -82,7 +84,10 @@ const account = () => {
       };
 
       const { error } = await supabase.from('profiles').upsert(updates);
-      if (error) throw new Error(error.message);
+      if (error) {
+        handleError(error);
+        return;
+      }
       toast.success('Profile updated!');
     } catch (error) {
       toast.error('Error updating the data!');

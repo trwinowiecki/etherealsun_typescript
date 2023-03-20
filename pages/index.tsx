@@ -37,6 +37,7 @@ const Home = ({ featuredProducts, relatedObjects }: HomeProps) => {
                 name={group.title}
                 products={group.products}
                 relatedObjs={relatedObjects ?? []}
+                hasFavButton
               />
             </section>
           ) : null

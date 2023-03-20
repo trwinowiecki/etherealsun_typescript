@@ -158,7 +158,7 @@ const Cart = () => {
               name="Other Favorites"
               products={favorites.objects!}
               relatedObjs={favorites.relatedObjects!}
-              hasButtons
+              hasCartButton
             />
           </div>
         ) : null}

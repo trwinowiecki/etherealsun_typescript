@@ -1406,7 +1406,7 @@ ALTER TABLE ONLY auth.refresh_tokens ALTER COLUMN id SET DEFAULT nextval('auth.r
 --
 
 COPY _realtime.extensions (id, type, settings, tenant_external_id, inserted_at, updated_at) FROM stdin;
-8715add8-08a2-42b5-97a0-24889494c0d1	postgres_cdc_rls	{"region": "us-east-1", "db_host": "AnX5HyKALY/v4q/VeM7gSfX+uMDEmwuC4nfLYmOxHwc=", "db_name": "sWBpZNdjggEPTQVlI52Zfw==", "db_port": "+enMDFi1J/3IrrquHHwUmA==", "db_user": "sWBpZNdjggEPTQVlI52Zfw==", "slot_name": "supabase_realtime_replication_slot", "ip_version": 4, "db_password": "sWBpZNdjggEPTQVlI52Zfw==", "publication": "supabase_realtime", "poll_interval_ms": 100, "poll_max_changes": 100, "poll_max_record_bytes": 1048576}	realtime-dev	2023-03-19 18:09:59	2023-03-19 18:09:59
+98b1adfc-5896-4a38-9c9d-4bb5dba19448	postgres_cdc_rls	{"region": "us-east-1", "db_host": "AnX5HyKALY/v4q/VeM7gSfX+uMDEmwuC4nfLYmOxHwc=", "db_name": "sWBpZNdjggEPTQVlI52Zfw==", "db_port": "+enMDFi1J/3IrrquHHwUmA==", "db_user": "sWBpZNdjggEPTQVlI52Zfw==", "slot_name": "supabase_realtime_replication_slot", "ip_version": 4, "db_password": "sWBpZNdjggEPTQVlI52Zfw==", "publication": "supabase_realtime", "poll_interval_ms": 100, "poll_max_changes": 100, "poll_max_record_bytes": 1048576}	realtime-dev	2023-03-20 00:00:34	2023-03-20 00:00:34
 \.
 
 
@@ -1435,7 +1435,7 @@ COPY _realtime.schema_migrations (version, inserted_at) FROM stdin;
 --
 
 COPY _realtime.tenants (id, name, external_id, jwt_secret, max_concurrent_users, inserted_at, updated_at, max_events_per_second, postgres_cdc_default, max_bytes_per_second, max_channels_per_client, max_joins_per_second) FROM stdin;
-4c6b8766-3bac-49cb-ac54-332eb668848d	realtime-dev	realtime-dev	iNjicxc4+llvc9wovDvqymwfnj9teWMlyOIbJ8Fh6j2WNU8CIJ2ZgjR6MUIKqSmeDmvpsKLsZ9jgXJmQPpwL8w==	200	2023-03-19 18:09:59	2023-03-19 18:09:59	100	postgres_cdc_rls	100000	100	500
+b7970ae9-8351-43dc-a933-b43a29ab206c	realtime-dev	realtime-dev	iNjicxc4+llvc9wovDvqymwfnj9teWMlyOIbJ8Fh6j2WNU8CIJ2ZgjR6MUIKqSmeDmvpsKLsZ9jgXJmQPpwL8w==	200	2023-03-20 00:00:34	2023-03-20 00:00:34	100	postgres_cdc_rls	100000	100	500
 \.
 
 
@@ -1478,6 +1478,10 @@ COPY auth.audit_log_entries (instance_id, id, payload, created_at, ip_address) F
 00000000-0000-0000-0000-000000000000	dd39e370-780b-4c1a-a49f-822dad6c7222	{"action":"token_refreshed","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 22:13:23.406129+00	
 00000000-0000-0000-0000-000000000000	685fb482-0880-4bef-8aed-10144eac3873	{"action":"token_revoked","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 22:13:23.407853+00	
 00000000-0000-0000-0000-000000000000	59828ae5-6402-4742-8b3b-e5d344ac459f	{"action":"token_revoked","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 22:13:23.407845+00	
+00000000-0000-0000-0000-000000000000	af6e2cde-8feb-4285-a2ff-554118e0f341	{"action":"token_refreshed","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.245477+00	
+00000000-0000-0000-0000-000000000000	e05bac3d-46aa-415c-bef3-786921e68ef9	{"action":"token_refreshed","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.246402+00	
+00000000-0000-0000-0000-000000000000	b1f5821b-bb82-4354-94d9-e1ca4556b705	{"action":"token_revoked","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.246925+00	
+00000000-0000-0000-0000-000000000000	54cd5a92-f1c3-44ef-8548-ae27680baaa2	{"action":"token_revoked","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.24701+00	
 \.
 
 
@@ -1531,7 +1535,9 @@ COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, 
 00000000-0000-0000-0000-000000000000	15	igQ0hmT2aB7cCSvSLOMumg	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	t	2023-03-19 18:18:56.320142+00	2023-03-19 19:19:59.15176+00	\N	a03ef6bf-55ce-4fae-96f4-eba67034c29d
 00000000-0000-0000-0000-000000000000	18	jxvYs9xZqKLCyAWviMSWpw	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-19 22:13:23.410705+00	2023-03-19 22:13:23.410705+00	SxcAJNrO04w3t2eKrTXR4w	a03ef6bf-55ce-4fae-96f4-eba67034c29d
 00000000-0000-0000-0000-000000000000	17	SxcAJNrO04w3t2eKrTXR4w	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	t	2023-03-19 19:19:59.153927+00	2023-03-19 22:13:23.408736+00	igQ0hmT2aB7cCSvSLOMumg	a03ef6bf-55ce-4fae-96f4-eba67034c29d
-00000000-0000-0000-0000-000000000000	19	zm6kUwFNhdBczJHSBkCO1Q	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-19 22:13:23.420286+00	2023-03-19 22:13:23.420286+00	SxcAJNrO04w3t2eKrTXR4w	a03ef6bf-55ce-4fae-96f4-eba67034c29d
+00000000-0000-0000-0000-000000000000	20	YCG3kQPzDwvfHhLUm0PFiA	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-19 23:12:55.251018+00	2023-03-19 23:12:55.251018+00	zm6kUwFNhdBczJHSBkCO1Q	a03ef6bf-55ce-4fae-96f4-eba67034c29d
+00000000-0000-0000-0000-000000000000	19	zm6kUwFNhdBczJHSBkCO1Q	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	t	2023-03-19 22:13:23.420286+00	2023-03-19 23:12:55.248832+00	SxcAJNrO04w3t2eKrTXR4w	a03ef6bf-55ce-4fae-96f4-eba67034c29d
+00000000-0000-0000-0000-000000000000	21	ZcanYrmKltbfBPVKg1Ujjg	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-19 23:12:55.258986+00	2023-03-19 23:12:55.258986+00	zm6kUwFNhdBczJHSBkCO1Q	a03ef6bf-55ce-4fae-96f4-eba67034c29d
 \.
 
 
@@ -1627,7 +1633,7 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at) FROM stdin;
 --
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user) FROM stdin;
-00000000-0000-0000-0000-000000000000	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	authenticated	authenticated	trw0511@yahoo.com	$2a$10$V.b/KZJ.oWWmfLC/vpSkpeHgNDHEFPzEIl7hvs9XWAl6Xjf9dw99W	2023-03-18 02:46:25.425941+00	\N		\N		\N			\N	2023-03-19 18:18:56.318322+00	{"provider": "email", "providers": ["email"]}	{}	\N	2023-03-18 02:46:25.422049+00	2023-03-19 22:13:23.422257+00	\N	\N			\N		0	\N		\N	f
+00000000-0000-0000-0000-000000000000	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	authenticated	authenticated	trw0511@yahoo.com	$2a$10$V.b/KZJ.oWWmfLC/vpSkpeHgNDHEFPzEIl7hvs9XWAl6Xjf9dw99W	2023-03-18 02:46:25.425941+00	\N		\N		\N			\N	2023-03-19 18:18:56.318322+00	{"provider": "email", "providers": ["email"]}	{}	\N	2023-03-18 02:46:25.422049+00	2023-03-19 23:12:55.260904+00	\N	\N			\N		0	\N		\N	f
 \.
 
 
@@ -1644,6 +1650,9 @@ COPY pgsodium.key (id, status, created, expires, key_type, key_id, key_context, 
 --
 
 COPY public.favorite_products (user_id, product_id) FROM stdin;
+18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	N65CZYT3XTLWLOITNNKFRQ7I
+18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	WK5GP7D5IADJ3GPBQWABFBRW
+18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2WMCSYAZ6PIL5TVRZESYLZ6N
 \.
 
 
@@ -1732,7 +1741,7 @@ COPY storage.objects (id, bucket_id, name, owner, created_at, updated_at, last_a
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 19, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 21, true);
 
 
 --
@@ -2344,6 +2353,20 @@ ALTER TABLE ONLY storage.objects
 --
 
 CREATE POLICY "Enable all for users based on user_id" ON public.favorite_products USING ((auth.uid() = user_id));
+
+
+--
+-- Name: favorite_products Enable delete for users based on user_id; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "Enable delete for users based on user_id" ON public.favorite_products FOR DELETE USING ((auth.uid() = user_id));
+
+
+--
+-- Name: favorite_products Enable insert for authenticated users only; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "Enable insert for authenticated users only" ON public.favorite_products FOR INSERT TO authenticated WITH CHECK (true);
 
 
 --

@@ -1406,7 +1406,7 @@ ALTER TABLE ONLY auth.refresh_tokens ALTER COLUMN id SET DEFAULT nextval('auth.r
 --
 
 COPY _realtime.extensions (id, type, settings, tenant_external_id, inserted_at, updated_at) FROM stdin;
-98b1adfc-5896-4a38-9c9d-4bb5dba19448	postgres_cdc_rls	{"region": "us-east-1", "db_host": "AnX5HyKALY/v4q/VeM7gSfX+uMDEmwuC4nfLYmOxHwc=", "db_name": "sWBpZNdjggEPTQVlI52Zfw==", "db_port": "+enMDFi1J/3IrrquHHwUmA==", "db_user": "sWBpZNdjggEPTQVlI52Zfw==", "slot_name": "supabase_realtime_replication_slot", "ip_version": 4, "db_password": "sWBpZNdjggEPTQVlI52Zfw==", "publication": "supabase_realtime", "poll_interval_ms": 100, "poll_max_changes": 100, "poll_max_record_bytes": 1048576}	realtime-dev	2023-03-20 00:00:34	2023-03-20 00:00:34
+bf4c02a4-2478-4892-b782-a2cc78f4ff5e	postgres_cdc_rls	{"region": "us-east-1", "db_host": "AnX5HyKALY/v4q/VeM7gSfX+uMDEmwuC4nfLYmOxHwc=", "db_name": "sWBpZNdjggEPTQVlI52Zfw==", "db_port": "+enMDFi1J/3IrrquHHwUmA==", "db_user": "sWBpZNdjggEPTQVlI52Zfw==", "slot_name": "supabase_realtime_replication_slot", "ip_version": 4, "db_password": "sWBpZNdjggEPTQVlI52Zfw==", "publication": "supabase_realtime", "poll_interval_ms": 100, "poll_max_changes": 100, "poll_max_record_bytes": 1048576}	realtime-dev	2023-03-20 01:15:35	2023-03-20 01:15:35
 \.
 
 
@@ -1435,7 +1435,7 @@ COPY _realtime.schema_migrations (version, inserted_at) FROM stdin;
 --
 
 COPY _realtime.tenants (id, name, external_id, jwt_secret, max_concurrent_users, inserted_at, updated_at, max_events_per_second, postgres_cdc_default, max_bytes_per_second, max_channels_per_client, max_joins_per_second) FROM stdin;
-b7970ae9-8351-43dc-a933-b43a29ab206c	realtime-dev	realtime-dev	iNjicxc4+llvc9wovDvqymwfnj9teWMlyOIbJ8Fh6j2WNU8CIJ2ZgjR6MUIKqSmeDmvpsKLsZ9jgXJmQPpwL8w==	200	2023-03-20 00:00:34	2023-03-20 00:00:34	100	postgres_cdc_rls	100000	100	500
+0507b492-0311-4195-9b56-e2d8ed7b3214	realtime-dev	realtime-dev	iNjicxc4+llvc9wovDvqymwfnj9teWMlyOIbJ8Fh6j2WNU8CIJ2ZgjR6MUIKqSmeDmvpsKLsZ9jgXJmQPpwL8w==	200	2023-03-20 01:15:35	2023-03-20 01:15:35	100	postgres_cdc_rls	100000	100	500
 \.
 
 
@@ -1491,6 +1491,7 @@ COPY auth.audit_log_entries (instance_id, id, payload, created_at, ip_address) F
 00000000-0000-0000-0000-000000000000	8ac6930d-dded-4b58-a209-6a7bc3a4cb0d	{"action":"logout","actor_id":"641b5d66-ac2b-4b60-9f83-2941ce477fb3","actor_username":"schimmellilian@gmail.com","log_type":"account"}	2023-03-20 01:08:42.061343+00	
 00000000-0000-0000-0000-000000000000	9de2430e-82bb-4f5d-b66f-580a02150668	{"action":"login","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"account","traits":{"provider":"email"}}	2023-03-20 01:10:49.833813+00	
 00000000-0000-0000-0000-000000000000	54cd5a92-f1c3-44ef-8548-ae27680baaa2	{"action":"token_revoked","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.24701+00	
+00000000-0000-0000-0000-000000000000	e696cfb7-51fd-4869-aaa2-12b9c91c7fcc	{"action":"login","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"account","traits":{"provider":"email"}}	2023-03-20 02:32:29.443738+00	
 \.
 
 
@@ -1499,7 +1500,6 @@ COPY auth.audit_log_entries (instance_id, id, payload, created_at, ip_address) F
 --
 
 COPY auth.identities (id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at) FROM stdin;
-641b5d66-ac2b-4b60-9f83-2941ce477fb3	641b5d66-ac2b-4b60-9f83-2941ce477fb3	{"sub": "641b5d66-ac2b-4b60-9f83-2941ce477fb3", "email": "schimmellilian@gmail.com"}	email	2023-03-20 00:08:08.26933+00	2023-03-20 00:08:08.269388+00	2023-03-20 00:08:08.269388+00
 \.
 
 
@@ -1516,8 +1516,7 @@ COPY auth.instances (id, uuid, raw_base_config, created_at, updated_at) FROM std
 --
 
 COPY auth.mfa_amr_claims (session_id, created_at, updated_at, authentication_method, id) FROM stdin;
-4a8b618d-3de9-474f-9fff-500771711957	2023-03-20 00:21:03.541933+00	2023-03-20 00:21:03.541933+00	password	37950349-8ddd-4bfb-92de-cd6a3aee3569
-5710ce6c-1534-47d1-bb40-3bdcc1a676d0	2023-03-20 01:10:49.837955+00	2023-03-20 01:10:49.837955+00	password	1fbc79d8-d00b-4434-b409-c8961331d9ec
+5b6162a7-3a06-4f24-b474-64ed0bb0bd2a	2023-03-20 02:32:29.461165+00	2023-03-20 02:32:29.461165+00	password	1f27b5c3-2dcc-4266-af20-50dd0c422c17
 \.
 
 
@@ -1542,8 +1541,7 @@ COPY auth.mfa_factors (id, user_id, friendly_name, factor_type, status, created_
 --
 
 COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, updated_at, parent, session_id) FROM stdin;
-00000000-0000-0000-0000-000000000000	23	xltKq7IeFw5DTOq8c9vpow	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-20 00:21:03.539898+00	2023-03-20 00:21:03.539898+00	\N	4a8b618d-3de9-474f-9fff-500771711957
-00000000-0000-0000-0000-000000000000	25	73v1LThp-CksNR3QfXHJTA	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-20 01:10:49.835783+00	2023-03-20 01:10:49.835783+00	\N	5710ce6c-1534-47d1-bb40-3bdcc1a676d0
+00000000-0000-0000-0000-000000000000	26	vEh4ZC0E8OqBDcSlKtdHGw	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-20 02:32:29.455379+00	2023-03-20 02:32:29.455379+00	\N	5b6162a7-3a06-4f24-b474-64ed0bb0bd2a
 \.
 
 
@@ -1614,8 +1612,7 @@ COPY auth.schema_migrations (version) FROM stdin;
 --
 
 COPY auth.sessions (id, user_id, created_at, updated_at, factor_id, aal, not_after) FROM stdin;
-4a8b618d-3de9-474f-9fff-500771711957	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2023-03-20 00:21:03.539059+00	2023-03-20 00:21:03.539059+00	\N	aal1	\N
-5710ce6c-1534-47d1-bb40-3bdcc1a676d0	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2023-03-20 01:10:49.834786+00	2023-03-20 01:10:49.834786+00	\N	aal1	\N
+5b6162a7-3a06-4f24-b474-64ed0bb0bd2a	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2023-03-20 02:32:29.452225+00	2023-03-20 02:32:29.452225+00	\N	aal1	\N
 \.
 
 
@@ -1641,7 +1638,7 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at) FROM stdin;
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user) FROM stdin;
 00000000-0000-0000-0000-000000000000	641b5d66-ac2b-4b60-9f83-2941ce477fb3	authenticated	authenticated	schimmellilian@gmail.com	$2a$10$J3rFbmcfgmvb9YkgI5RYz.ph.OuJtvimy7pRwORw4D.bcoSA13MA2	2023-03-20 00:08:08.271582+00	\N		\N		\N			\N	2023-03-20 00:08:08.274323+00	{"provider": "email", "providers": ["email"]}	{}	\N	2023-03-20 00:08:08.261351+00	2023-03-20 01:07:42.680308+00	\N	\N			\N		0	\N		\N	f
-00000000-0000-0000-0000-000000000000	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	authenticated	authenticated	trw0511@yahoo.com	$2a$10$V.b/KZJ.oWWmfLC/vpSkpeHgNDHEFPzEIl7hvs9XWAl6Xjf9dw99W	2023-03-18 02:46:25.425941+00	\N		\N		\N			\N	2023-03-20 01:10:49.834743+00	{"provider": "email", "providers": ["email"]}	{}	\N	2023-03-18 02:46:25.422049+00	2023-03-20 01:10:49.836832+00	\N	\N			\N		0	\N		\N	f
+00000000-0000-0000-0000-000000000000	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	authenticated	authenticated	trw0511@yahoo.com	$2a$10$V.b/KZJ.oWWmfLC/vpSkpeHgNDHEFPzEIl7hvs9XWAl6Xjf9dw99W	2023-03-18 02:46:25.425941+00	\N		\N		\N			\N	2023-03-20 02:32:29.452146+00	{"provider": "email", "providers": ["email"]}	{}	\N	2023-03-18 02:46:25.422049+00	2023-03-20 02:32:29.458036+00	\N	\N			\N		0	\N		\N	f
 \.
 
 
@@ -1658,11 +1655,9 @@ COPY pgsodium.key (id, status, created, expires, key_type, key_id, key_context, 
 --
 
 COPY public.favorite_products (user_id, product_id) FROM stdin;
-18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	N65CZYT3XTLWLOITNNKFRQ7I
-18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	WK5GP7D5IADJ3GPBQWABFBRW
-18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2WMCSYAZ6PIL5TVRZESYLZ6N
 641b5d66-ac2b-4b60-9f83-2941ce477fb3	D5W4O2IT7Y35323GS34ZF6G6
 641b5d66-ac2b-4b60-9f83-2941ce477fb3	2WMCSYAZ6PIL5TVRZESYLZ6N
+18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2WMCSYAZ6PIL5TVRZESYLZ6N
 \.
 
 
@@ -1752,7 +1747,7 @@ COPY storage.objects (id, bucket_id, name, owner, created_at, updated_at, last_a
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 25, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 26, true);
 
 
 --

@@ -1481,6 +1481,15 @@ COPY auth.audit_log_entries (instance_id, id, payload, created_at, ip_address) F
 00000000-0000-0000-0000-000000000000	af6e2cde-8feb-4285-a2ff-554118e0f341	{"action":"token_refreshed","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.245477+00	
 00000000-0000-0000-0000-000000000000	e05bac3d-46aa-415c-bef3-786921e68ef9	{"action":"token_refreshed","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.246402+00	
 00000000-0000-0000-0000-000000000000	b1f5821b-bb82-4354-94d9-e1ca4556b705	{"action":"token_revoked","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.246925+00	
+00000000-0000-0000-0000-000000000000	e07b4aaf-1914-40ff-b1d1-6b1306bee62f	{"action":"logout","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"account"}	2023-03-20 00:06:32.351156+00	
+00000000-0000-0000-0000-000000000000	4a924be1-c182-402d-bfaa-80958df475d9	{"action":"user_signedup","actor_id":"641b5d66-ac2b-4b60-9f83-2941ce477fb3","actor_username":"schimmellilian@gmail.com","log_type":"team","traits":{"provider":"email"}}	2023-03-20 00:08:08.270786+00	
+00000000-0000-0000-0000-000000000000	e97b8d0a-30c8-4512-8c16-fcc5c5dee539	{"action":"login","actor_id":"641b5d66-ac2b-4b60-9f83-2941ce477fb3","actor_username":"schimmellilian@gmail.com","log_type":"account","traits":{"provider":"email"}}	2023-03-20 00:08:08.273783+00	
+00000000-0000-0000-0000-000000000000	91cb3bd7-497d-4e04-a0b4-ed1750836ea2	{"action":"login","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"account","traits":{"provider":"email"}}	2023-03-20 00:21:03.538266+00	
+00000000-0000-0000-0000-000000000000	929707be-f928-41b4-ae05-367609432f16	{"action":"token_refreshed","actor_id":"641b5d66-ac2b-4b60-9f83-2941ce477fb3","actor_username":"schimmellilian@gmail.com","log_type":"token"}	2023-03-20 01:07:42.67081+00	
+00000000-0000-0000-0000-000000000000	23622bba-3c02-4a23-8ed5-5a5c35d39545	{"action":"token_revoked","actor_id":"641b5d66-ac2b-4b60-9f83-2941ce477fb3","actor_username":"schimmellilian@gmail.com","log_type":"token"}	2023-03-20 01:07:42.672445+00	
+00000000-0000-0000-0000-000000000000	43c7efc5-5f44-4d12-95d8-f54196ff8543	{"action":"logout","actor_id":"641b5d66-ac2b-4b60-9f83-2941ce477fb3","actor_username":"schimmellilian@gmail.com","log_type":"account"}	2023-03-20 01:08:40.430815+00	
+00000000-0000-0000-0000-000000000000	8ac6930d-dded-4b58-a209-6a7bc3a4cb0d	{"action":"logout","actor_id":"641b5d66-ac2b-4b60-9f83-2941ce477fb3","actor_username":"schimmellilian@gmail.com","log_type":"account"}	2023-03-20 01:08:42.061343+00	
+00000000-0000-0000-0000-000000000000	9de2430e-82bb-4f5d-b66f-580a02150668	{"action":"login","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"account","traits":{"provider":"email"}}	2023-03-20 01:10:49.833813+00	
 00000000-0000-0000-0000-000000000000	54cd5a92-f1c3-44ef-8548-ae27680baaa2	{"action":"token_revoked","actor_id":"18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec","actor_username":"trw0511@yahoo.com","log_type":"token"}	2023-03-19 23:12:55.24701+00	
 \.
 
@@ -1490,6 +1499,7 @@ COPY auth.audit_log_entries (instance_id, id, payload, created_at, ip_address) F
 --
 
 COPY auth.identities (id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at) FROM stdin;
+641b5d66-ac2b-4b60-9f83-2941ce477fb3	641b5d66-ac2b-4b60-9f83-2941ce477fb3	{"sub": "641b5d66-ac2b-4b60-9f83-2941ce477fb3", "email": "schimmellilian@gmail.com"}	email	2023-03-20 00:08:08.26933+00	2023-03-20 00:08:08.269388+00	2023-03-20 00:08:08.269388+00
 \.
 
 
@@ -1506,7 +1516,8 @@ COPY auth.instances (id, uuid, raw_base_config, created_at, updated_at) FROM std
 --
 
 COPY auth.mfa_amr_claims (session_id, created_at, updated_at, authentication_method, id) FROM stdin;
-a03ef6bf-55ce-4fae-96f4-eba67034c29d	2023-03-19 18:18:56.324277+00	2023-03-19 18:18:56.324277+00	password	3e0e5ad4-5aff-4108-8107-8424ae77224b
+4a8b618d-3de9-474f-9fff-500771711957	2023-03-20 00:21:03.541933+00	2023-03-20 00:21:03.541933+00	password	37950349-8ddd-4bfb-92de-cd6a3aee3569
+5710ce6c-1534-47d1-bb40-3bdcc1a676d0	2023-03-20 01:10:49.837955+00	2023-03-20 01:10:49.837955+00	password	1fbc79d8-d00b-4434-b409-c8961331d9ec
 \.
 
 
@@ -1531,13 +1542,8 @@ COPY auth.mfa_factors (id, user_id, friendly_name, factor_type, status, created_
 --
 
 COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, updated_at, parent, session_id) FROM stdin;
-00000000-0000-0000-0000-000000000000	16	DJbrXbpbDidUHH0id4Cjsw	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-19 19:19:59.139363+00	2023-03-19 19:19:59.139363+00	igQ0hmT2aB7cCSvSLOMumg	a03ef6bf-55ce-4fae-96f4-eba67034c29d
-00000000-0000-0000-0000-000000000000	15	igQ0hmT2aB7cCSvSLOMumg	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	t	2023-03-19 18:18:56.320142+00	2023-03-19 19:19:59.15176+00	\N	a03ef6bf-55ce-4fae-96f4-eba67034c29d
-00000000-0000-0000-0000-000000000000	18	jxvYs9xZqKLCyAWviMSWpw	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-19 22:13:23.410705+00	2023-03-19 22:13:23.410705+00	SxcAJNrO04w3t2eKrTXR4w	a03ef6bf-55ce-4fae-96f4-eba67034c29d
-00000000-0000-0000-0000-000000000000	17	SxcAJNrO04w3t2eKrTXR4w	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	t	2023-03-19 19:19:59.153927+00	2023-03-19 22:13:23.408736+00	igQ0hmT2aB7cCSvSLOMumg	a03ef6bf-55ce-4fae-96f4-eba67034c29d
-00000000-0000-0000-0000-000000000000	20	YCG3kQPzDwvfHhLUm0PFiA	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-19 23:12:55.251018+00	2023-03-19 23:12:55.251018+00	zm6kUwFNhdBczJHSBkCO1Q	a03ef6bf-55ce-4fae-96f4-eba67034c29d
-00000000-0000-0000-0000-000000000000	19	zm6kUwFNhdBczJHSBkCO1Q	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	t	2023-03-19 22:13:23.420286+00	2023-03-19 23:12:55.248832+00	SxcAJNrO04w3t2eKrTXR4w	a03ef6bf-55ce-4fae-96f4-eba67034c29d
-00000000-0000-0000-0000-000000000000	21	ZcanYrmKltbfBPVKg1Ujjg	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-19 23:12:55.258986+00	2023-03-19 23:12:55.258986+00	zm6kUwFNhdBczJHSBkCO1Q	a03ef6bf-55ce-4fae-96f4-eba67034c29d
+00000000-0000-0000-0000-000000000000	23	xltKq7IeFw5DTOq8c9vpow	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-20 00:21:03.539898+00	2023-03-20 00:21:03.539898+00	\N	4a8b618d-3de9-474f-9fff-500771711957
+00000000-0000-0000-0000-000000000000	25	73v1LThp-CksNR3QfXHJTA	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	f	2023-03-20 01:10:49.835783+00	2023-03-20 01:10:49.835783+00	\N	5710ce6c-1534-47d1-bb40-3bdcc1a676d0
 \.
 
 
@@ -1608,7 +1614,8 @@ COPY auth.schema_migrations (version) FROM stdin;
 --
 
 COPY auth.sessions (id, user_id, created_at, updated_at, factor_id, aal, not_after) FROM stdin;
-a03ef6bf-55ce-4fae-96f4-eba67034c29d	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2023-03-19 18:18:56.318379+00	2023-03-19 18:18:56.318379+00	\N	aal1	\N
+4a8b618d-3de9-474f-9fff-500771711957	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2023-03-20 00:21:03.539059+00	2023-03-20 00:21:03.539059+00	\N	aal1	\N
+5710ce6c-1534-47d1-bb40-3bdcc1a676d0	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2023-03-20 01:10:49.834786+00	2023-03-20 01:10:49.834786+00	\N	aal1	\N
 \.
 
 
@@ -1633,7 +1640,8 @@ COPY auth.sso_providers (id, resource_id, created_at, updated_at) FROM stdin;
 --
 
 COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user) FROM stdin;
-00000000-0000-0000-0000-000000000000	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	authenticated	authenticated	trw0511@yahoo.com	$2a$10$V.b/KZJ.oWWmfLC/vpSkpeHgNDHEFPzEIl7hvs9XWAl6Xjf9dw99W	2023-03-18 02:46:25.425941+00	\N		\N		\N			\N	2023-03-19 18:18:56.318322+00	{"provider": "email", "providers": ["email"]}	{}	\N	2023-03-18 02:46:25.422049+00	2023-03-19 23:12:55.260904+00	\N	\N			\N		0	\N		\N	f
+00000000-0000-0000-0000-000000000000	641b5d66-ac2b-4b60-9f83-2941ce477fb3	authenticated	authenticated	schimmellilian@gmail.com	$2a$10$J3rFbmcfgmvb9YkgI5RYz.ph.OuJtvimy7pRwORw4D.bcoSA13MA2	2023-03-20 00:08:08.271582+00	\N		\N		\N			\N	2023-03-20 00:08:08.274323+00	{"provider": "email", "providers": ["email"]}	{}	\N	2023-03-20 00:08:08.261351+00	2023-03-20 01:07:42.680308+00	\N	\N			\N		0	\N		\N	f
+00000000-0000-0000-0000-000000000000	18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	authenticated	authenticated	trw0511@yahoo.com	$2a$10$V.b/KZJ.oWWmfLC/vpSkpeHgNDHEFPzEIl7hvs9XWAl6Xjf9dw99W	2023-03-18 02:46:25.425941+00	\N		\N		\N			\N	2023-03-20 01:10:49.834743+00	{"provider": "email", "providers": ["email"]}	{}	\N	2023-03-18 02:46:25.422049+00	2023-03-20 01:10:49.836832+00	\N	\N			\N		0	\N		\N	f
 \.
 
 
@@ -1653,6 +1661,8 @@ COPY public.favorite_products (user_id, product_id) FROM stdin;
 18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	N65CZYT3XTLWLOITNNKFRQ7I
 18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	WK5GP7D5IADJ3GPBQWABFBRW
 18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	2WMCSYAZ6PIL5TVRZESYLZ6N
+641b5d66-ac2b-4b60-9f83-2941ce477fb3	D5W4O2IT7Y35323GS34ZF6G6
+641b5d66-ac2b-4b60-9f83-2941ce477fb3	2WMCSYAZ6PIL5TVRZESYLZ6N
 \.
 
 
@@ -1699,6 +1709,7 @@ WXNV23NHSJMNAWLAEOFM2URH	2
 
 COPY public.profiles (id, first_name, last_name, square_id, updated_at) FROM stdin;
 18eb4a3b-2bb3-4f3d-a9bb-1de3211916ec	Taylor	Winowiecki	\N	2023-03-18 18:43:09.673+00
+641b5d66-ac2b-4b60-9f83-2941ce477fb3	\N	\N	\N	\N
 \.
 
 
@@ -1741,7 +1752,7 @@ COPY storage.objects (id, bucket_id, name, owner, created_at, updated_at, last_a
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
 --
 
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 21, true);
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 25, true);
 
 
 --

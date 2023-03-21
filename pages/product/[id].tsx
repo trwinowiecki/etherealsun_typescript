@@ -36,6 +36,9 @@ function ProductPage(props: ProductPageProps) {
   const { dispatch } = useContext(Store);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
+  const [options, setOptions] = useState(
+    {} as { [name: string]: { values: string[] } }
+  );
 
   if (catalogObjects.errors) {
     useEffect(() => {
@@ -43,6 +46,35 @@ function ProductPage(props: ProductPageProps) {
     }, [router]);
     return;
   }
+
+  useEffect(() => {
+    if (
+      catalogObjects.relatedObjects?.find(obj => obj.type === 'ITEM_OPTION') &&
+      catalogObjects.object?.itemData?.itemOptions &&
+      catalogObjects.object?.itemData?.itemOptions?.length > 0
+    ) {
+      let newOptions: { [name: string]: { values: string[] } } = {};
+      catalogObjects.object.itemData.itemOptions.forEach(itemOption => {
+        const newOption = catalogObjects.relatedObjects!.find(
+          obj => obj.id === itemOption.itemOptionId
+        );
+        if (newOption) {
+          const newOptionFormatted = {
+            [newOption.itemOptionData!.name!]: {
+              values: newOption.itemOptionData!.values!.map(
+                value => value.itemOptionValueData!.name!
+              )
+            }
+          };
+          newOptions = { ...newOptions, ...newOptionFormatted };
+        }
+      });
+      setOptions(newOptions);
+    }
+  }, [
+    catalogObjects.object?.itemData?.itemOptions,
+    catalogObjects.relatedObjects
+  ]);
 
   useEffect(() => {
     const getFavorites = async (signal: AbortSignal) => {
@@ -190,6 +222,15 @@ function ProductPage(props: ProductPageProps) {
                 isFavorite={favorite}
               />
             </div>
+            {options && (
+              <div className="">
+                {Object.keys(options).map(key => (
+                  <div key={key}>
+                    {key}: {options[key].values}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -249,10 +290,34 @@ export const getStaticProps: GetStaticProps = async ctx => {
 
   const data: RetrieveCatalogObjectResponse = convertToJSON(res);
 
+  let extraInfo;
+  try {
+    extraInfo = await client.catalogApi.listCatalog(
+      undefined,
+      'ITEM_OPTION,CUSTOM_ATTRIBUTE_DEFINITION'
+    );
+  } catch (error) {
+    extraInfo = error;
+  }
+
+  const extraInfoData: ListCatalogResponse = convertToJSON(extraInfo);
+
+  const relatedObjects = [];
+  if (data.relatedObjects) {
+    relatedObjects.push(...data.relatedObjects);
+  }
+  if (extraInfoData.objects) {
+    relatedObjects?.push(...extraInfoData.objects);
+  }
+
   return {
     props: {
-      catalogObjects: data
-    }
+      catalogObjects: {
+        ...data,
+        relatedObjects
+      }
+    },
+    revalidate: 60
   };
 };
 

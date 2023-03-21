@@ -54,7 +54,7 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
       onClick={onClick}
       className={`${
         active ? 'bg-primary-background-darker' : ''
-      } py-2 px-4 text-left`}
+      } py-2 px-4 text-left !rounded-none`}
       type="button"
     >
       {children}
@@ -164,7 +164,7 @@ function Navbar() {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 origin-top-right rounded-md shadow-lg right-4 menu-items ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
+            <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 overflow-hidden origin-top-right rounded-md shadow-lg right-4 ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
               {userProfile ? (
                 <>
                   <Menu.Item>
@@ -197,7 +197,7 @@ function Navbar() {
                   <Menu.Item>
                     {({ active }) => (
                       <MyLink
-                        href={`/account?callbackUrl=${router.asPath}&view=sign_up`}
+                        href={`account?callbackUrl=${router.asPath}&view=sign_up`}
                         active={active}
                       >
                         Create Account

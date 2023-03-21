@@ -115,7 +115,12 @@ export const getStaticProps: GetStaticProps = async () => {
   });
 
   return {
-    props: { featuredProducts, relatedObjects: squareData.relatedObjects },
+    props: {
+      featuredProducts: featuredProducts.sort((g1, g2) =>
+        Date.parse(g1.startDate) < Date.parse(g2.startDate) ? 1 : -1
+      ),
+      relatedObjects: squareData.relatedObjects
+    },
     revalidate: 100
   };
 };

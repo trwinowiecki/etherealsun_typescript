@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const withTM = require('next-transpile-modules')([
   '@square/web-sdk',
-  'react-square-web-payments-sdk',
+  'react-square-web-payments-sdk'
 ]);
 const { withPlaiceholder } = require('@plaiceholder/next');
 
@@ -10,11 +10,14 @@ const nextConfig = withTM(
     reactStrictMode: true,
     swcMinify: true,
     experimental: {
-      esmExternals: true,
+      esmExternals: true
     },
     images: {
-      domains: ['items-images-production.s3.us-west-2.amazonaws.com'],
-    },
+      domains: [
+        'items-images-production.s3.us-west-2.amazonaws.com',
+        'square-catalog-sandbox.s3.amazonaws.com'
+      ]
+    }
   })
 );
 

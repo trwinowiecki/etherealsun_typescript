@@ -55,6 +55,9 @@ const handler = async (req: SquareRequest, res: NextApiResponse) => {
         res.status(400).send({ message: 'Invalid email' });
       }
       break;
+    case SquareCommand.GET_OPTIONS_AND_ATTRIBUTES:
+      res.status(418).send('TODO');
+      break;
     default:
       res.status(404).send({ message: 'Request not found' });
   }

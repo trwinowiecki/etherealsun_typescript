@@ -1,3 +1,4 @@
+/* eslint-disable no-negated-condition */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
@@ -5,6 +6,8 @@ import {
   useSupabaseClient,
   useUser
 } from '@supabase/auth-helpers-react';
+import { Auth, ThemeSupa } from '@supabase/auth-ui-react';
+import { ViewType } from '@supabase/auth-ui-react/dist/esm/src/types';
 import Button from '@ui/Button';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -24,14 +27,25 @@ const account = () => {
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState<Profiles['first_name']>(null);
   const [lastName, setLastName] = useState<Profiles['last_name']>(null);
+  const [redirect, setRedirect] = useState('/');
+  const [authView, setAuthView] = useState<ViewType>('sign_in');
+
+  useEffect(() => {
+    setRedirect(prev =>
+      router.query.callbackUrl ? router.query.callbackUrl.toString() : prev
+    );
+    setAuthView(
+      router.query.view && router.query.view === 'sign_up'
+        ? 'sign_up'
+        : 'sign_in'
+    );
+  }, [router.isReady, router.query.callbackUrl]);
 
   useEffect(() => {
     const controller = new AbortController();
 
     if (session) {
       getProfile(controller.signal);
-    } else {
-      router.push('/login');
     }
 
     return () => controller.abort();
@@ -93,21 +107,37 @@ const account = () => {
       toast.error('Error updating the data!');
     } finally {
       setLoading(false);
+      router.reload();
     }
   }
 
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+      router.push(redirect);
+    }
+    if (event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+      router.reload();
+    }
+  });
+
   return (
-    session && (
-      <Layout title="Account Settings">
-        {/* <h1>{user?.displayName ? `Hi, ${user.displayName}!` : 'Hi!'}</h1> */}
-        {/* <AddressForm /> */}
+    <Layout title="Account Settings">
+      {!user ? (
+        <Auth
+          supabaseClient={supabase}
+          appearance={{ theme: ThemeSupa }}
+          providers={['apple', 'facebook', 'google']}
+          view={authView}
+        />
+      ) : (
         <div className="flex flex-col gap-4">
+          <h1>{firstName ? `Hi, ${firstName}!` : 'Hi!'}</h1>
           <label htmlFor="email" className="input-field">
             Email
             <input
               id="email"
               type="text"
-              value={session.user.email}
+              value={user.email}
               disabled
               autoComplete="false"
               aria-label="email"
@@ -147,8 +177,8 @@ const account = () => {
             Sign Out
           </Button>
         </div>
-      </Layout>
-    )
+      )}
+    </Layout>
   );
 };
 

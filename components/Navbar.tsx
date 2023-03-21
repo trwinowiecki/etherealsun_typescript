@@ -9,6 +9,7 @@ import {
 } from '@supabase/auth-helpers-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -62,6 +63,7 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
 });
 
 function Navbar() {
+  const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const session = useSession();
   const user = useUser();
@@ -113,6 +115,8 @@ function Navbar() {
       });
     } catch (error: any) {
       toast.error(error);
+    } finally {
+      router.reload();
     }
   };
 
@@ -166,7 +170,7 @@ function Navbar() {
                   <Menu.Item>
                     {({ active }) => (
                       <MyLink href="/account" active={active}>
-                        Account settings
+                        My Account
                       </MyLink>
                     )}
                   </Menu.Item>
@@ -182,14 +186,20 @@ function Navbar() {
                 <>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/login" active={active}>
+                      <MyLink
+                        href={`/account?callbackUrl=${router.asPath}`}
+                        active={active}
+                      >
                         Sign In
                       </MyLink>
                     )}
                   </Menu.Item>
                   <Menu.Item>
                     {({ active }) => (
-                      <MyLink href="/signup" active={active}>
+                      <MyLink
+                        href={`/account?callbackUrl=${router.asPath}&view=sign_up`}
+                        active={active}
+                      >
                         Create Account
                       </MyLink>
                     )}

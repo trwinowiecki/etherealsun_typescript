@@ -64,64 +64,7 @@ const products = ({ catalog }: ProductsPageProps) => {
     type: 'radio'
   };
 
-  const filterFields: FilterField<string>[] = [
-    {
-      name: 'test',
-      values: ['testone', 'test2'],
-      selected: filter.test?.value,
-      type: 'radio'
-    },
-    {
-      name: 'test2',
-      values: ['testone', 'test2'],
-      description: 'TEst description',
-      selected: filter.test2?.value,
-      type: 'radio'
-    },
-    // {
-    //   name: 'test2',
-    //   values: ['testone', 'test2'],
-    //   description: 'TEst description',
-    //   selected: filter['test2']?.value,
-    //   type: 'radio'
-    // },
-    // {
-    //   name: 'test2',
-    //   values: ['testone', 'test2'],
-    //   description: 'TEst description',
-    //   selected: filter['test2']?.value,
-    //   type: 'radio'
-    // },
-    // {
-    //   name: 'test2',
-    //   values: ['testone', 'test2'],
-    //   description: 'TEst description',
-    //   selected: filter['test2']?.value,
-    //   type: 'radio'
-    // },
-    // {
-    //   name: 'test2',
-    //   values: ['testone', 'test2'],
-    //   description: 'TEst description',
-    //   selected: filter['test2']?.value,
-    //   type: 'radio'
-    // },
-    // {
-    //   name: 'test2',
-    //   values: ['testone', 'test2'],
-    //   description: 'TEst description',
-    //   selected: filter['test2']?.value,
-    //   type: 'radio'
-    // },
-    // {
-    //   name: 'test2',
-    //   values: ['testone', 'test2'],
-    //   description: 'TEst description',
-    //   selected: filter['test2']?.value,
-    //   type: 'radio'
-    // },
-    categoryField
-  ];
+  const filterFields: FilterField<string>[] = [categoryField];
 
   catalog.objects
     ?.filter(

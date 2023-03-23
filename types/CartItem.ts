@@ -1,5 +1,7 @@
 import { CatalogCustomAttributeValue, CatalogObject } from 'square';
 
+import { getImages } from '../utils/squareUtils';
+
 export interface OldCartItem extends CatalogObject {
   quantity: number;
   relatedObjects: CatalogObject[];
@@ -18,15 +20,15 @@ export class CartItem {
   variationName: string;
   quantity: number;
   price: number;
-  images?: CartImage[];
-  customAttributeValues?: Map<string, CatalogCustomAttributeValue>;
-  category?: string;
+  images: CartImage[];
+  customAttributeValues: Map<string, CatalogCustomAttributeValue>;
+  category: string;
 
   constructor(
     catalogObject: CatalogObject,
     variationId: string,
     relatedObjects: CatalogObject[] = [],
-    quantity = 1;
+    quantity = 1
   ) {
     this.catalogObjectId = catalogObject.id;
     this.name = catalogObject.itemData?.name ?? '';
@@ -39,8 +41,13 @@ export class CartItem {
     }
 
     this.variationName = variation.itemVariationData?.name ?? '';
-this.quantity = quantity;
-this.price ;
+    this.quantity = quantity;
+    this.price = Number(variation.itemVariationData?.priceMoney?.amount) ?? 0;
+    this.images = this.getCartImages(catalogObject, relatedObjects);
+    this.customAttributeValues =
+      catalogObject.customAttributeValues ??
+      new Map<string, CatalogCustomAttributeValue>();
+    this.category = catalogObject.categoryData?.name;
   }
 
   private getVariationData(
@@ -52,5 +59,22 @@ this.price ;
         variation => variation.id === variationId
       ) ?? null
     );
+  }
+
+  private getCartImages(
+    catalogObject: CatalogObject,
+    relatedObjects: CatalogObject[] = []
+  ): CartImage[] {
+    const validImages = getImages(catalogObject, relatedObjects);
+    return validImages
+      .filter(image => image.imageData?.url)
+      .map(
+        image =>
+          ({
+            id: image.id,
+            name: image.imageData?.name ?? '',
+            url: image.imageData?.url
+          } as CartImage)
+      );
   }
 }

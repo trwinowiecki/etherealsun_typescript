@@ -1,7 +1,7 @@
-import { CartItem } from './CartItem';
+import { OldCartItem } from './CartItem';
 
 export interface Cart {
-  cartItems: CartItem[];
+  cartItems: OldCartItem[];
   shippingAddress: ShippingAddress;
   paymentMethod: string;
   popUp: boolean;

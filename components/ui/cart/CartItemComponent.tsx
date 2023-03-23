@@ -4,13 +4,13 @@ import Link from 'next/link';
 import { useContext } from 'react';
 
 import { CartCommand } from '../../../enums/CartCommands';
-import { CartItem } from '../../../types/CartItem';
+import { OldCartItem } from '../../../types/CartItem';
 import { getImages } from '../../../utils/squareUtils';
 import { Store } from '../../../utils/Store';
 import Quantity from '../Quantity';
 
 interface CartItemProps {
-  item: CartItem;
+  item: OldCartItem;
   classes?: string;
   children?: React.ReactNode;
 }
@@ -26,7 +26,7 @@ function CartItemComponent({
   } = state;
 
   const handleQuantityUpdate = async (
-    selectedItem: CartItem,
+    selectedItem: OldCartItem,
     quantity: number
   ) => {
     if (quantity <= 0) {

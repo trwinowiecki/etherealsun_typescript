@@ -2,7 +2,7 @@ import { createContext, useMemo, useReducer } from 'react';
 
 import { CartCommand } from '../enums/CartCommands';
 import { Cart, ShippingAddress } from '../types/Cart.model';
-import { CartItem } from '../types/CartItem';
+import { OldCartItem } from '../types/CartItem';
 
 interface StoreContextInterface {
   state: State;
@@ -14,11 +14,11 @@ interface State {
 }
 
 type Action =
-  | { type: CartCommand.ADD; payload: CartItem }
-  | { type: CartCommand.UPDATE; payload: CartItem }
-  | { type: CartCommand.REMOVE; payload: CartItem }
+  | { type: CartCommand.ADD; payload: OldCartItem }
+  | { type: CartCommand.UPDATE; payload: OldCartItem }
+  | { type: CartCommand.REMOVE; payload: OldCartItem }
   | { type: CartCommand.RESET }
-  | { type: CartCommand.CLEAR; payload: CartItem }
+  | { type: CartCommand.CLEAR; payload: OldCartItem }
   | {
       type: CartCommand.SAVE_SHIPPING_ADDRESS;
       payload: ShippingAddress;
@@ -51,7 +51,7 @@ function reducer(state: State, action: Action): State {
       case CartCommand.ADD: {
         const newItem = action.payload;
         const existItem = state.cart.cartItems.find(
-          (item: CartItem) => item.id === newItem.id
+          (item: OldCartItem) => item.id === newItem.id
         );
 
         const cartItems = existItem
@@ -72,7 +72,7 @@ function reducer(state: State, action: Action): State {
       case CartCommand.UPDATE: {
         const updatedItem = action.payload;
         const existItem = state.cart.cartItems.find(
-          (item: CartItem) => item.id === updatedItem.id
+          (item: OldCartItem) => item.id === updatedItem.id
         );
 
         const cartItems = existItem
@@ -115,14 +115,14 @@ function reducer(state: State, action: Action): State {
       case CartCommand.CLEAR: {
         localStorage.setItem(
           'cart',
-          JSON.stringify({ ...state.cart, cartItems: [] as CartItem[] })
+          JSON.stringify({ ...state.cart, cartItems: [] as OldCartItem[] })
         );
 
         return {
           ...state,
           cart: {
             ...state.cart,
-            cartItems: [] as CartItem[]
+            cartItems: [] as OldCartItem[]
           }
         };
       }

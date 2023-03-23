@@ -1,7 +1,7 @@
-import { CartItem } from '../../../types/CartItem';
+import { OldCartItem } from '../../../types/CartItem';
 
 interface SubtotalProps {
-  cartItems: CartItem[];
+  cartItems: OldCartItem[];
 }
 
 const Subtotal = ({ cartItems }: SubtotalProps) => {
@@ -18,7 +18,7 @@ const Subtotal = ({ cartItems }: SubtotalProps) => {
   );
 };
 
-export const calcSubtotal = (cartItems: CartItem[]) => {
+export const calcSubtotal = (cartItems: OldCartItem[]) => {
   return cartItems.reduce(
     (acc, item) =>
       acc +

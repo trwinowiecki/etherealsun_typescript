@@ -1,3 +1,4 @@
+import { RadioGroup } from '@headlessui/react';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import Button from '@ui/Button';
 import Listbox from '@ui/CustomListbox';
@@ -18,7 +19,13 @@ import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
 import Layout from '../../components/Layout';
 import { CartCommand } from '../../enums/CartCommands';
 import { Database } from '../../types/SupabaseDbTypes';
-import { DEFAULT_IMAGE, getImages } from '../../utils/squareUtils';
+import {
+  DEFAULT_IMAGE,
+  getImages,
+  getValidOptions,
+  OptionGroup,
+  OptionValue
+} from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
 import { handleError } from '../../utils/supabaseUtils';
 import { convertToJSON } from '../api/square';
@@ -36,8 +43,9 @@ function ProductPage(props: ProductPageProps) {
   const { dispatch } = useContext(Store);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
-  const [options, setOptions] = useState(
-    {} as { [name: string]: { values: string[] } }
+  const [options, setOptions] = useState(new Map<string, OptionGroup>());
+  const [selectedOptions, setSelectedOptions] = useState(
+    new Map<string, OptionValue>()
   );
 
   if (catalogObjects.errors) {
@@ -48,33 +56,14 @@ function ProductPage(props: ProductPageProps) {
   }
 
   useEffect(() => {
-    if (
-      catalogObjects.relatedObjects?.find(obj => obj.type === 'ITEM_OPTION') &&
-      catalogObjects.object?.itemData?.itemOptions &&
-      catalogObjects.object?.itemData?.itemOptions?.length > 0
-    ) {
-      let newOptions: { [name: string]: { values: string[] } } = {};
-      catalogObjects.object.itemData.itemOptions.forEach(itemOption => {
-        const newOption = catalogObjects.relatedObjects!.find(
-          obj => obj.id === itemOption.itemOptionId
-        );
-        if (newOption) {
-          const newOptionFormatted = {
-            [newOption.itemOptionData!.name!]: {
-              values: newOption.itemOptionData!.values!.map(
-                value => value.itemOptionValueData!.name!
-              )
-            }
-          };
-          newOptions = { ...newOptions, ...newOptionFormatted };
-        }
-      });
+    if (catalogObjects.object && catalogObjects.relatedObjects) {
+      const newOptions = getValidOptions(
+        catalogObjects.object,
+        catalogObjects.relatedObjects
+      );
       setOptions(newOptions);
     }
-  }, [
-    catalogObjects.object?.itemData?.itemOptions,
-    catalogObjects.relatedObjects
-  ]);
+  }, [catalogObjects.object, catalogObjects.relatedObjects]);
 
   useEffect(() => {
     const getFavorites = async (signal: AbortSignal) => {
@@ -147,6 +136,10 @@ function ProductPage(props: ProductPageProps) {
       type: CartCommand.POP_UP,
       payload: true
     });
+  };
+
+  const handleOptionSelected = (key: string, value: OptionValue) => {
+    setSelectedOptions(prev => new Map(prev.set(key, value)));
   };
 
   return (
@@ -223,10 +216,39 @@ function ProductPage(props: ProductPageProps) {
               />
             </div>
             {options && (
-              <div className="">
-                {Object.keys(options).map(key => (
+              <div className="flex flex-col gap-4 mt-4">
+                {Array.from(options.keys()).map(key => (
                   <div key={key}>
-                    {key}: {options[key].values}
+                    <RadioGroup
+                      value={selectedOptions.get(key)}
+                      onChange={value => handleOptionSelected(key, value)}
+                    >
+                      <RadioGroup.Label>
+                        {options.get(key)!.name +
+                          (selectedOptions.has(key)
+                            ? ` - ${selectedOptions.get(key)!.name}`
+                            : '')}
+                      </RadioGroup.Label>
+                      <div className="flex gap-4">
+                        {options.get(key)!.values.map(optionValue => (
+                          <RadioGroup.Option
+                            key={optionValue.id}
+                            value={optionValue}
+                          >
+                            {({ checked }) => (
+                              <div className="mt-2 cursor-pointer">
+                                <div
+                                  className={`${
+                                    checked ? 'border-2 border-black' : ''
+                                  } w-10 h-6 rounded-full bg-blue-400`}
+                                  title={optionValue.name}
+                                />
+                              </div>
+                            )}
+                          </RadioGroup.Option>
+                        ))}
+                      </div>
+                    </RadioGroup>
                   </div>
                 ))}
               </div>

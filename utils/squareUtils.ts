@@ -42,3 +42,53 @@ export const filterItems = ({ items, filters }: FilterItemsProps) => {
     }
   });
 };
+
+export interface OptionValue {
+  id: string;
+  name: string;
+}
+
+export interface OptionGroup {
+  id: string;
+  name: string;
+  values: OptionValue[];
+}
+
+export const getValidOptions = (
+  objectToCheck: CatalogObject,
+  itemsToCheck: CatalogObject[]
+): Map<string, OptionGroup> => {
+  const newOptions = new Map<string, OptionGroup>();
+
+  if (
+    itemsToCheck.find(obj => obj.type === 'ITEM_OPTION') &&
+    objectToCheck.itemData?.itemOptions &&
+    objectToCheck.itemData?.itemOptions?.length > 0
+  ) {
+    objectToCheck.itemData.itemOptions.forEach(itemOption => {
+      const newOption = itemsToCheck.find(
+        obj => obj.id === itemOption.itemOptionId
+      );
+
+      if (newOption) {
+        const newOptionFormatted: OptionGroup = {
+          id: newOption.id,
+          name: newOption.itemOptionData?.name
+            ? newOption.itemOptionData.name
+            : '',
+          values: newOption.itemOptionData?.values
+            ? newOption.itemOptionData.values.map(value => ({
+                id: value.id,
+                name: value.itemOptionValueData?.name
+                  ? value.itemOptionValueData.name
+                  : ''
+              }))
+            : []
+        };
+
+        newOptions.set(newOption.id, newOptionFormatted);
+      }
+    });
+  }
+  return newOptions;
+};

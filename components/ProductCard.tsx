@@ -1,5 +1,4 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import Button from '@ui/Button';
 import FavButton from '@ui/FavButton';
 import Image from '@ui/Image';
 import { GetStaticPaths, GetStaticProps } from 'next';
@@ -13,7 +12,6 @@ import {
   SearchCatalogObjectsResponse
 } from 'square';
 
-import { CartCommand } from '../enums/CartCommands';
 import { convertToJSON } from '../pages/api/square';
 import { Database } from '../types/SupabaseDbTypes';
 import { getImages } from '../utils/squareUtils';
@@ -25,15 +23,13 @@ interface ProductCardProps {
   relatedObj: SearchCatalogObjectsResponse['relatedObjects'];
   onClick?: (id: string) => void;
   hasFavButton?: boolean;
-  hasCartButton?: boolean;
 }
 
 function ProductCard({
   item,
   relatedObj,
   onClick,
-  hasFavButton = false,
-  hasCartButton = false
+  hasFavButton = false
 }: ProductCardProps) {
   const router = useRouter();
   const { dispatch } = useContext(Store);
@@ -75,20 +71,6 @@ function ProductCard({
       router.push(`/product/${id}`);
     });
 
-  const addToCartHandler = async (
-    product: CatalogObject,
-    relatedObjects: CatalogObject[] | undefined
-  ) => {
-    dispatch({
-      type: CartCommand.ADD,
-      payload: { ...product, quantity: 1, relatedObjects }
-    });
-    dispatch({
-      type: CartCommand.POP_UP,
-      payload: true
-    });
-  };
-
   const itemImages = getImages(item, relatedObj!);
 
   const prices = Array.from(
@@ -125,16 +107,6 @@ function ProductCard({
           </>
         </div>
       </button>
-      {hasCartButton && (
-        <div className="flex justify-between gap-2">
-          <Button
-            extraClasses="flex-1"
-            onClick={() => addToCartHandler(item, relatedObj)}
-          >
-            Add to cart
-          </Button>
-        </div>
-      )}
       {hasFavButton && (
         <div className="absolute top-[7%] right-[7%] md:top-[5%] md:right-[5%]">
           <FavButton

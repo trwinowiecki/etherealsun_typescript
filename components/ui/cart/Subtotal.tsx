@@ -1,7 +1,7 @@
-import { OldCartItem } from '../../../types/CartItem';
+import { CartItem } from '../../../types/CartItem';
 
 interface SubtotalProps {
-  cartItems: OldCartItem[];
+  cartItems: CartItem[];
 }
 
 const Subtotal = ({ cartItems }: SubtotalProps) => {
@@ -18,15 +18,9 @@ const Subtotal = ({ cartItems }: SubtotalProps) => {
   );
 };
 
-export const calcSubtotal = (cartItems: OldCartItem[]) => {
+export const calcSubtotal = (cartItems: CartItem[]) => {
   return cartItems.reduce(
-    (acc, item) =>
-      acc +
-      (Number(
-        item.itemData?.variations![0].itemVariationData?.priceMoney?.amount
-      ) *
-        item.quantity) /
-        100,
+    (acc, item) => acc + (item.price * item.quantity) / 100,
     0
   );
 };

@@ -1,7 +1,5 @@
 import { CatalogObject } from 'square';
 
-import { OldCartItem } from '../types/CartItem';
-
 export const DEFAULT_IMAGE: CatalogObject = {
   imageData: {
     url: '/defaultProduct.png',
@@ -12,7 +10,7 @@ export const DEFAULT_IMAGE: CatalogObject = {
 };
 
 export function getImages(
-  item: CatalogObject | OldCartItem,
+  item: CatalogObject,
   imageObjects: CatalogObject[]
 ): CatalogObject[] {
   const imageIds = item.itemData?.imageIds;
@@ -29,25 +27,6 @@ export function getImages(
   return itemImages.length >= 1 ? itemImages : [DEFAULT_IMAGE];
 }
 
-interface FilterItemsProps {
-  items: CatalogObject[] | OldCartItem[];
-  filters: {
-    type: 'CUSTOM_ATTRIBUTE_DEFINITION' | 'CATEGORY';
-    value: string;
-  }[];
-}
-
-export const filterItems = ({ items, filters }: FilterItemsProps) => {
-  let filteredItems = items.filter(item => item.type === 'ITEM');
-  filters.forEach(filter => {
-    if (filter.type.toUpperCase() === 'CATEGORY') {
-      filteredItems = filteredItems.filter(
-        item => item.itemData?.categoryId === filter.value
-      );
-    }
-  });
-};
-
 export interface OptionValue {
   id: string;
   name: string;
@@ -62,36 +41,41 @@ export interface OptionGroup {
 export const getValidOptions = (
   objectToCheck: CatalogObject,
   itemsToCheck: CatalogObject[]
-): Map<string, OptionGroup> => {
-  const newOptions = new Map<string, OptionGroup>();
+): Map<string, OptionGroup[]> => {
+  const newOptions = new Map<string, OptionGroup[]>();
+  const itemObjects = itemsToCheck.filter(obj => obj.type === 'ITEM_OPTION');
 
   if (
-    itemsToCheck.find(obj => obj.type === 'ITEM_OPTION') &&
+    itemObjects.length > 0 &&
     objectToCheck.itemData?.itemOptions &&
     objectToCheck.itemData?.itemOptions?.length > 0
   ) {
-    objectToCheck.itemData.itemOptions.forEach(itemOption => {
-      const newOption = itemsToCheck.find(
-        obj => obj.id === itemOption.itemOptionId
-      );
+    objectToCheck.itemData.variations?.forEach(variation => {
+      const optionValues: OptionGroup[] = variation.itemVariationData
+        ?.itemOptionValues
+        ? variation.itemVariationData.itemOptionValues
+            .filter(option => option.itemOptionId && option.itemOptionValueId)
+            .map(option => ({
+              id: option.itemOptionId ?? '',
+              name:
+                itemObjects.find(obj => obj.id === option.itemOptionId)
+                  ?.itemOptionData?.name ?? '',
+              values: [
+                {
+                  id: option.itemOptionValueId ?? '',
+                  name:
+                    itemObjects
+                      .find(obj => obj.id === option.itemOptionId)
+                      ?.itemOptionData?.values?.find(
+                        obj => obj.id === option.itemOptionValueId
+                      )?.itemOptionValueData?.name ?? ''
+                }
+              ]
+            }))
+        : [];
 
-      if (newOption) {
-        const newOptionFormatted: OptionGroup = {
-          id: newOption.id,
-          name: newOption.itemOptionData?.name
-            ? newOption.itemOptionData.name
-            : '',
-          values: newOption.itemOptionData?.values
-            ? newOption.itemOptionData.values.map(value => ({
-                id: value.id,
-                name: value.itemOptionValueData?.name
-                  ? value.itemOptionValueData.name
-                  : ''
-              }))
-            : []
-        };
-
-        newOptions.set(newOption.id, newOptionFormatted);
+      if (optionValues && optionValues.length > 0) {
+        newOptions.set(variation.id, optionValues);
       }
     });
   }

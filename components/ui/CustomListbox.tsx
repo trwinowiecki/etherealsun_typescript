@@ -6,13 +6,25 @@ interface Props {
   listOfItems: any[];
   state: any;
   label?: string;
+  disabled?: boolean;
   setState: (val: any) => void;
 }
 
-function CustomListbox({ listOfItems, state, label, setState }: Props) {
+function CustomListbox({
+  listOfItems,
+  state,
+  label,
+  setState,
+  disabled = false
+}: Props) {
   return (
     <div className="flex items-center gap-2">
-      <Listbox as="div" value={state} onChange={event => setState(event)}>
+      <Listbox
+        as="div"
+        value={state}
+        onChange={event => setState(event)}
+        disabled={disabled}
+      >
         <Listbox.Button className="relative py-2 pl-3 pr-10 text-left bg-white rounded-lg shadow-md cursor-default sm:text-sm">
           <span>{state}</span>
           <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">

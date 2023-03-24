@@ -4,13 +4,12 @@ import Link from 'next/link';
 import { useContext } from 'react';
 
 import { CartCommand } from '../../../enums/CartCommands';
-import { OldCartItem } from '../../../types/CartItem';
-import { getImages } from '../../../utils/squareUtils';
+import { CartItem } from '../../../types/CartItem';
 import { Store } from '../../../utils/Store';
 import Quantity from '../Quantity';
 
 interface CartItemProps {
-  item: OldCartItem;
+  item: CartItem;
   classes?: string;
   children?: React.ReactNode;
 }
@@ -26,7 +25,7 @@ function CartItemComponent({
   } = state;
 
   const handleQuantityUpdate = async (
-    selectedItem: OldCartItem,
+    selectedItem: CartItem,
     quantity: number
   ) => {
     if (quantity <= 0) {
@@ -37,33 +36,35 @@ function CartItemComponent({
     } else {
       dispatch({
         type: CartCommand.UPDATE,
-        payload: {
+        payload: CartItem.fromCartItem({
           ...selectedItem,
-          quantity,
-          relatedObjects: selectedItem.relatedObjects
-        }
+          quantity
+        } as CartItem)
       });
     }
   };
 
   return (
     <div
-      key={item.id}
+      key={item.catalogObjectId}
       className={`flex justify-between items-center gap-2 p-2 px-4 ${classes}`}
     >
-      <div key={item.id} className="flex items-center flex-1 gap-4">
-        <Link href={`/product/${item.id}`}>
+      <div
+        key={item.catalogObjectId}
+        className="flex items-center flex-1 gap-4"
+      >
+        <Link href={`/product/${item.catalogObjectId}`}>
           <a className="w-14 min-w-[3.5rem]">
             <Image
-              src={getImages(item, item.relatedObjects)[0].imageData!.url!}
-              alt={item.itemData!.name!}
+              src={item.images[0].url}
+              alt={item.images[0].name || item.name}
             />
           </a>
         </Link>
         <div className="flex flex-col gap-1">
-          <Link href={`/product/${item.id}`}>
+          <Link href={`/product/${item.catalogObjectId}`}>
             <a>
-              <span>{item.itemData?.name}</span>
+              <span>{item.name}</span>
             </a>
           </Link>
           <Quantity
@@ -77,14 +78,7 @@ function CartItemComponent({
         </div>
       </div>
       {children}
-      <span className="">
-        $
-        {(Number(
-          item.itemData?.variations![0].itemVariationData?.priceMoney?.amount
-        ) *
-          item.quantity) /
-          100}
-      </span>
+      <span className="">${(item.price * item.quantity) / 100}</span>
     </div>
   );
 }

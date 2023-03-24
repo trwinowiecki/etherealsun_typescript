@@ -2,7 +2,7 @@ import { createContext, useMemo, useReducer } from 'react';
 
 import { CartCommand } from '../enums/CartCommands';
 import { Cart, ShippingAddress } from '../types/Cart.model';
-import { OldCartItem } from '../types/CartItem';
+import { CartItem } from '../types/CartItem';
 
 interface StoreContextInterface {
   state: State;
@@ -14,11 +14,11 @@ interface State {
 }
 
 type Action =
-  | { type: CartCommand.ADD; payload: OldCartItem }
-  | { type: CartCommand.UPDATE; payload: OldCartItem }
-  | { type: CartCommand.REMOVE; payload: OldCartItem }
+  | { type: CartCommand.ADD; payload: CartItem }
+  | { type: CartCommand.UPDATE; payload: CartItem }
+  | { type: CartCommand.REMOVE; payload: CartItem }
   | { type: CartCommand.RESET }
-  | { type: CartCommand.CLEAR; payload: OldCartItem }
+  | { type: CartCommand.CLEAR; payload: CartItem }
   | {
       type: CartCommand.SAVE_SHIPPING_ADDRESS;
       payload: ShippingAddress;
@@ -26,10 +26,12 @@ type Action =
   | { type: CartCommand.SAVE_PAYMENT_METHOD; payload: string }
   | { type: CartCommand.POP_UP; payload: boolean };
 
+const CART_KEY = 'cart';
+
 const initialState: State = {
   cart:
-    typeof window !== 'undefined' && localStorage.getItem('cart')
-      ? JSON.parse(localStorage.getItem('cart')!)
+    typeof window !== 'undefined' && sessionStorage.getItem(CART_KEY)
+      ? JSON.parse(sessionStorage.getItem(CART_KEY)!)
       : {
           cartItems: [],
           shippingAddress: {},
@@ -51,53 +53,52 @@ function reducer(state: State, action: Action): State {
       case CartCommand.ADD: {
         const newItem = action.payload;
         const existItem = state.cart.cartItems.find(
-          (item: OldCartItem) => item.id === newItem.id
+          item => item.catalogObjectId === newItem.catalogObjectId
         );
 
         const cartItems = existItem
           ? state.cart.cartItems.map(item =>
-              item.id === existItem.id
-                ? { ...newItem, quantity: newItem.quantity + item.quantity }
+              item.catalogObjectId === existItem.catalogObjectId
+                ? CartItem.fromCartItem({
+                    ...newItem,
+                    quantity: newItem.quantity + item.quantity
+                  } as CartItem)
                 : item
             )
           : [...state.cart.cartItems, newItem];
 
-        localStorage.setItem(
-          'cart',
-          JSON.stringify({ ...state.cart, cartItems })
-        );
+        setCart({ ...state.cart, cartItems });
 
         return { ...state, cart: { ...state.cart, cartItems } };
       }
       case CartCommand.UPDATE: {
         const updatedItem = action.payload;
         const existItem = state.cart.cartItems.find(
-          (item: OldCartItem) => item.id === updatedItem.id
+          item => item.catalogObjectId === updatedItem.catalogObjectId
         );
 
         const cartItems = existItem
           ? state.cart.cartItems.map(item =>
-              item.itemData?.name === existItem.itemData?.name
-                ? { ...updatedItem, quantity: updatedItem.quantity }
+              item.catalogObjectId === existItem.catalogObjectId
+                ? CartItem.fromCartItem({
+                    ...existItem,
+                    ...updatedItem,
+                    quantity: updatedItem.quantity
+                  } as CartItem)
                 : item
             )
           : [...state.cart.cartItems, updatedItem];
 
-        localStorage.setItem(
-          'cart',
-          JSON.stringify({ ...state.cart, cartItems })
-        );
+        setCart({ ...state.cart, cartItems });
 
         return { ...state, cart: { ...state.cart, cartItems } };
       }
       case CartCommand.REMOVE: {
         const cartItems = state.cart.cartItems.filter(
-          item => item.id !== action.payload.id
+          item => item.catalogObjectId !== action.payload.catalogObjectId
         );
-        localStorage.setItem(
-          'cart',
-          JSON.stringify({ ...state.cart, cartItems })
-        );
+
+        setCart({ ...state.cart, cartItems });
 
         return { ...state, cart: { ...state.cart, cartItems } };
       }
@@ -113,16 +114,13 @@ function reducer(state: State, action: Action): State {
         };
       }
       case CartCommand.CLEAR: {
-        localStorage.setItem(
-          'cart',
-          JSON.stringify({ ...state.cart, cartItems: [] as OldCartItem[] })
-        );
+        setCart({ ...state.cart, cartItems: [] });
 
         return {
           ...state,
           cart: {
             ...state.cart,
-            cartItems: [] as OldCartItem[]
+            cartItems: []
           }
         };
       }
@@ -161,6 +159,10 @@ function reducer(state: State, action: Action): State {
     }
   }
 }
+
+const setCart = (value: any) => {
+  sessionStorage.setItem(CART_KEY, JSON.stringify(value));
+};
 
 export const StoreProvider = ({ children }: React.PropsWithChildren) => {
   const [state, dispatch] = useReducer(reducer, initialState);

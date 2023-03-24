@@ -18,6 +18,7 @@ import {
 import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
 import Layout from '../../components/Layout';
 import { CartCommand } from '../../enums/CartCommands';
+import { CartItem } from '../../types/CartItem';
 import { Database } from '../../types/SupabaseDbTypes';
 import {
   DEFAULT_IMAGE,
@@ -43,10 +44,11 @@ function ProductPage(props: ProductPageProps) {
   const { dispatch } = useContext(Store);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
-  const [options, setOptions] = useState(new Map<string, OptionGroup>());
+  const [options, setOptions] = useState(new Map<string, OptionGroup[]>());
   const [selectedOptions, setSelectedOptions] = useState(
     new Map<string, OptionValue>()
   );
+  const [cartDisabled, setCartDisabled] = useState(true);
 
   if (catalogObjects.errors) {
     useEffect(() => {
@@ -126,11 +128,17 @@ function ProductPage(props: ProductPageProps) {
 
   const addToCartHandler = async (
     product: CatalogObject,
-    relatedObjects: CatalogObject[]
+    relatedObjects: CatalogObject[],
+    variationId: string
   ) => {
     dispatch({
       type: CartCommand.ADD,
-      payload: { ...product, quantity, relatedObjects }
+      payload: new CartItem({
+        catalogObject: product,
+        variationId,
+        quantity,
+        relatedObjects
+      })
     });
     dispatch({
       type: CartCommand.POP_UP,
@@ -192,45 +200,23 @@ function ProductPage(props: ProductPageProps) {
                 catalogObjects.object?.itemData?.descriptionPlaintext ??
                 catalogObjects.object?.itemData?.descriptionHtml}
             </div>
-            <div className="flex items-center gap-4">
-              <Listbox
-                listOfItems={[1, 2, 3, 4, 5]}
-                state={quantity}
-                setState={setQuantity}
-              />
-              <Button
-                intent="primary"
-                onClick={() =>
-                  addToCartHandler(
-                    catalogObjects.object!,
-                    catalogObjects.relatedObjects!
-                  )
-                }
-              >
-                Add to bag
-              </Button>
-              <FavButton
-                productId={catalogObjects.object!.id}
-                handleFavorite={newValue => setFavorite(newValue)}
-                isFavorite={favorite}
-              />
-            </div>
             {options && (
               <div className="flex flex-col gap-4 mt-4">
-                {Array.from(options.keys()).map(key => (
-                  <div key={key}>
+                {Array.from(options.entries()).map(([variationId, groups]) =>
+                groups.reduce(group => , []) (
+                  <div key={variationId}>
                     <RadioGroup
-                      value={selectedOptions.get(key)}
-                      onChange={value => handleOptionSelected(key, value)}
+                      value={selectedOptions.get(variationId)}
+                      onChange={value => handleOptionSelected(variationId, value)}
                     >
                       <RadioGroup.Label>
-                        {options.get(key)!.name +
-                          (selectedOptions.has(key)
-                            ? ` - ${selectedOptions.get(key)!.name}`
+                        {options.get(variationId)!.name +
+                          (selectedOptions.has(variationId)
+                            ? ` - ${selectedOptions.get(variationId)!.name}`
                             : '')}
                       </RadioGroup.Label>
                       <div className="flex gap-4">
-                        {options.get(key)!.values.map(optionValue => (
+                        {options.get(variationId)!.values.map(optionValue => (
                           <RadioGroup.Option
                             key={optionValue.id}
                             value={optionValue}
@@ -253,6 +239,32 @@ function ProductPage(props: ProductPageProps) {
                 ))}
               </div>
             )}
+            <div className="flex items-center gap-4">
+              <Listbox
+                listOfItems={[1, 2, 3, 4, 5]}
+                state={quantity}
+                setState={setQuantity}
+                disabled={cartDisabled}
+              />
+              <Button
+                intent="primary"
+                onClick={() =>
+                  addToCartHandler(
+                    catalogObjects.object!,
+                    catalogObjects.relatedObjects ?? [],
+                    ''
+                  )
+                }
+                disabled={cartDisabled}
+              >
+                Add to bag
+              </Button>
+              <FavButton
+                productId={catalogObjects.object!.id}
+                handleFavorite={newValue => setFavorite(newValue)}
+                isFavorite={favorite}
+              />
+            </div>
           </div>
         </div>
       </div>

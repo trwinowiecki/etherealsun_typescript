@@ -148,6 +148,9 @@ function ProductPage(props: ProductPageProps) {
 
   const handleOptionSelected = (key: string, value: OptionValue) => {
     setSelectedOptions(prev => new Map(prev.set(key, value)));
+    if (options.size === selectedOptions.size) {
+      setCartDisabled(false);
+    }
   };
 
   return (
@@ -202,37 +205,43 @@ function ProductPage(props: ProductPageProps) {
             </div>
             {options && (
               <div className="flex flex-col gap-4 mt-4">
-                {Array.from(options.entries()).map(([variationId, groups]) =>
-                groups.reduce(group => , []) (
+                {Array.from(options.entries()).map(([variationId, groups]) => (
                   <div key={variationId}>
                     <RadioGroup
                       value={selectedOptions.get(variationId)}
-                      onChange={value => handleOptionSelected(variationId, value)}
+                      onChange={value =>
+                        handleOptionSelected(variationId, value)
+                      }
                     >
                       <RadioGroup.Label>
-                        {options.get(variationId)!.name +
+                        {options
+                          .get(variationId)!
+                          .map(group => group.name)
+                          .join(', ') +
                           (selectedOptions.has(variationId)
                             ? ` - ${selectedOptions.get(variationId)!.name}`
                             : '')}
                       </RadioGroup.Label>
                       <div className="flex gap-4">
-                        {options.get(variationId)!.values.map(optionValue => (
-                          <RadioGroup.Option
-                            key={optionValue.id}
-                            value={optionValue}
-                          >
-                            {({ checked }) => (
-                              <div className="mt-2 cursor-pointer">
-                                <div
-                                  className={`${
-                                    checked ? 'border-2 border-black' : ''
-                                  } w-10 h-6 rounded-full bg-blue-400`}
-                                  title={optionValue.name}
-                                />
-                              </div>
-                            )}
-                          </RadioGroup.Option>
-                        ))}
+                        {Array.from(options.get(variationId)!.values()).map(
+                          optionValue => (
+                            <RadioGroup.Option
+                              key={optionValue.id}
+                              value={optionValue}
+                            >
+                              {({ checked }) => (
+                                <div className="mt-2 cursor-pointer">
+                                  <div
+                                    className={`${
+                                      checked ? 'border-2 border-black' : ''
+                                    } w-10 h-6 rounded-full bg-blue-400`}
+                                    title={optionValue.name}
+                                  />
+                                </div>
+                              )}
+                            </RadioGroup.Option>
+                          )
+                        )}
                       </div>
                     </RadioGroup>
                   </div>
@@ -282,7 +291,6 @@ export const getStaticPaths: GetStaticPaths = async ctx => {
   try {
     res = await client.catalogApi.listCatalog('', 'ITEM');
   } catch (error) {
-    console.error(error);
     return {
       paths: [],
       fallback: 'blocking'

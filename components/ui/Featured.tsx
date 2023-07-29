@@ -31,7 +31,6 @@ const Featured = ({
             item={product}
             relatedObj={relatedObjs}
             hasFavButton={hasFavButton}
-            hasCartButton={hasCartButton}
           />
         ))}
       </div>

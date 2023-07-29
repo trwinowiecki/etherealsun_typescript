@@ -16,7 +16,6 @@ import Layout from '../components/Layout';
 import SquarePaymentForm from '../components/SquarePaymentForm';
 import { SquareCommand } from '../enums/SquareCommands';
 import { Database } from '../types/SupabaseDbTypes';
-import { getImages } from '../utils/squareUtils';
 import { Store } from '../utils/Store';
 import { handleError } from '../utils/supabaseUtils';
 
@@ -44,7 +43,7 @@ const Cart = () => {
       }
 
       const validProducts = res.data.filter(
-        fav => !cartItems.find(item => item.id === fav.product_id)
+        fav => !cartItems.find(item => item.variationId === fav.product_id)
       );
 
       if (validProducts.length === 0) {
@@ -90,7 +89,7 @@ const Cart = () => {
           <div className="relative flex flex-col gap-4 md:items-start md:flex-row">
             <div className="w-full flex-[3] flex flex-col bg-primary-background-darker rounded-md overflow-hidden shadow-md">
               {cartItems.slice().map(item => {
-                return <CartItemComponent key={item.id} item={item} />;
+                return <CartItemComponent key={item.variationId} item={item} />;
               })}
             </div>
             <div className="flex flex-col flex-1 gap-4 md:sticky md:top-16">
@@ -103,17 +102,12 @@ const Cart = () => {
                     currencyCode: 'USD',
                     lineItems: cartItems.map(item => ({
                       amount: (
-                        (Number(
-                          item.itemData?.variations![0].itemVariationData
-                            ?.priceMoney?.amount
-                        ) *
-                          item.quantity) /
+                        (Number(item.price) * item.quantity) /
                         100
                       ).toString(),
-                      label: `${item.itemData!.name!} x ${item.quantity}`,
-                      id: item.id,
-                      imageUrl: getImages(item, item.relatedObjects)[0]
-                        .imageData?.url,
+                      label: `${item.name!} x ${item.quantity}`,
+                      id: item.variationId,
+                      imageUrl: item.images[0].url,
                       productUrl: ``
                     })),
                     requestShippingContact: true,

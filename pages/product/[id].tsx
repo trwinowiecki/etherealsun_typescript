@@ -23,6 +23,7 @@ import { Database } from '../../types/SupabaseDbTypes';
 import {
   DEFAULT_IMAGE,
   getImages,
+  getProperOptionGroups,
   getValidOptions,
   OptionGroup,
   OptionValue
@@ -44,7 +45,10 @@ function ProductPage(props: ProductPageProps) {
   const { dispatch } = useContext(Store);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
-  const [options, setOptions] = useState(new Map<string, OptionGroup[]>());
+  const [validOptionCombos, setValidOptionCombos] = useState(
+    new Map<string, OptionGroup[]>()
+  );
+  const [options, setOptions] = useState<OptionGroup[]>([]);
   const [selectedOptions, setSelectedOptions] = useState(
     new Map<string, OptionValue>()
   );
@@ -63,7 +67,12 @@ function ProductPage(props: ProductPageProps) {
         catalogObjects.object,
         catalogObjects.relatedObjects
       );
-      setOptions(newOptions);
+      if (newOptions.size === 0) {
+        setCartDisabled(false);
+      }
+      console.log('newOptions', newOptions);
+      setValidOptionCombos(new Map([...newOptions]));
+      setOptions(getProperOptionGroups(newOptions));
     }
   }, [catalogObjects.object, catalogObjects.relatedObjects]);
 
@@ -148,9 +157,64 @@ function ProductPage(props: ProductPageProps) {
 
   const handleOptionSelected = (key: string, value: OptionValue) => {
     setSelectedOptions(prev => new Map(prev.set(key, value)));
-    if (options.size === selectedOptions.size) {
+    if (validOptionCombos.size === selectedOptions.size) {
       setCartDisabled(false);
     }
+  };
+
+  const isOptionDisabled = (
+    optionGroupId: string,
+    option: OptionValue
+  ): boolean => {
+    // console.log(`Checking group ${optionGroupId}, option ${option.name}`);
+    const selectedOptionKeys = Array.from(selectedOptions.keys()).filter(
+      key => key !== optionGroupId
+    );
+    // console.log(validOptionCombos);
+    const validCombos = Array.from(validOptionCombos.entries()).filter(
+      ([, optionGroups]) => {
+        // const combosWithSelectedOptions = selectedOptionKeys
+        //   .map(key => {
+        //     const optionGroup = optionGroups.find(
+        //       optionGroup => optionGroup.id === key
+        //     );
+        // console.log('optionGroup', optionGroup);
+        //     if (optionGroup?.values.includes(selectedOptions.get(key)!)) {
+        //       return optionGroup;
+        //     }
+        //     return null;
+        //   })
+        //   .filter(val => val !== null);
+        const combosWithSelectedOptions =
+          selectedOptionKeys.length > 0
+            ? selectedOptionKeys
+                .map(key => {
+                  const optionGroup = optionGroups.find(
+                    optionGroup => optionGroup.id === key
+                  );
+                  if (optionGroup?.values.includes(selectedOptions.get(key)!)) {
+                    return optionGroups;
+                  }
+                  return null;
+                })
+                .flatMap(val => val ?? [])
+            : optionGroups;
+        // console.log('combosWithSelectedOptions', combosWithSelectedOptions);
+
+        if (combosWithSelectedOptions.length === 0) {
+          return false;
+        }
+
+        const hasOption = combosWithSelectedOptions.find(validOption =>
+          validOption.values.includes(option)
+        );
+
+        // console.log('hasOption', hasOption);
+        return hasOption;
+      }
+    );
+    // console.log(validCombos);
+    return validCombos.length === 0;
   };
 
   return (
@@ -203,45 +267,39 @@ function ProductPage(props: ProductPageProps) {
                 catalogObjects.object?.itemData?.descriptionPlaintext ??
                 catalogObjects.object?.itemData?.descriptionHtml}
             </div>
-            {options && (
+            {validOptionCombos && (
               <div className="flex flex-col gap-4 mt-4">
-                {Array.from(options.entries()).map(([variationId, groups]) => (
-                  <div key={variationId}>
+                {options.map(option => (
+                  <div key={option.id}>
                     <RadioGroup
-                      value={selectedOptions.get(variationId)}
-                      onChange={value =>
-                        handleOptionSelected(variationId, value)
-                      }
+                      value={selectedOptions.get(option.id)}
+                      onChange={value => handleOptionSelected(option.id, value)}
                     >
                       <RadioGroup.Label>
-                        {options
-                          .get(variationId)!
-                          .map(group => group.name)
-                          .join(', ') +
-                          (selectedOptions.has(variationId)
-                            ? ` - ${selectedOptions.get(variationId)!.name}`
+                        {option.name +
+                          (selectedOptions.has(option.id)
+                            ? ` - ${selectedOptions.get(option.id)!.name}`
                             : '')}
                       </RadioGroup.Label>
                       <div className="flex gap-4">
-                        {Array.from(options.get(variationId)!.values()).map(
-                          optionValue => (
-                            <RadioGroup.Option
-                              key={optionValue.id}
-                              value={optionValue}
-                            >
-                              {({ checked }) => (
-                                <div className="mt-2 cursor-pointer">
-                                  <div
-                                    className={`${
-                                      checked ? 'border-2 border-black' : ''
-                                    } w-10 h-6 rounded-full bg-blue-400`}
-                                    title={optionValue.name}
-                                  />
-                                </div>
-                              )}
-                            </RadioGroup.Option>
-                          )
-                        )}
+                        {option.values.map(optionValue => (
+                          <RadioGroup.Option
+                            key={optionValue.id}
+                            value={optionValue}
+                            disabled={isOptionDisabled(option.id, optionValue)}
+                          >
+                            {({ checked }) => (
+                              <div className="mt-2 cursor-pointer">
+                                <div
+                                  className={`${
+                                    checked ? 'border-2 border-black' : ''
+                                  } w-10 h-6 rounded-full bg-blue-400`}
+                                  title={optionValue.name}
+                                />
+                              </div>
+                            )}
+                          </RadioGroup.Option>
+                        ))}
                       </div>
                     </RadioGroup>
                   </div>

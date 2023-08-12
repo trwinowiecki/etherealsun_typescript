@@ -26,7 +26,8 @@ import {
   getProperOptionGroups,
   getValidOptions,
   OptionGroup,
-  OptionValue
+  OptionValue,
+  VariationGroup
 } from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
 import { handleError } from '../../utils/supabaseUtils';
@@ -45,9 +46,8 @@ function ProductPage(props: ProductPageProps) {
   const { dispatch } = useContext(Store);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
-  const [validOptionCombos, setValidOptionCombos] = useState(
-    new Map<string, OptionGroup[]>()
-  );
+  const [validOptionCombos, setValidOptionCombos] =
+    useState<VariationGroup[]>();
   const [options, setOptions] = useState<OptionGroup[]>([]);
   const [selectedOptions, setSelectedOptions] = useState(
     new Map<string, OptionValue>()
@@ -67,11 +67,11 @@ function ProductPage(props: ProductPageProps) {
         catalogObjects.object,
         catalogObjects.relatedObjects
       );
-      if (newOptions.size === 0) {
+      if (newOptions.length === 0) {
         setCartDisabled(false);
       }
-      console.log('newOptions', newOptions);
-      setValidOptionCombos(new Map([...newOptions]));
+      // console.log('newOptions', newOptions);
+      setValidOptionCombos(newOptions);
       setOptions(getProperOptionGroups(newOptions));
     }
   }, [catalogObjects.object, catalogObjects.relatedObjects]);
@@ -157,7 +157,7 @@ function ProductPage(props: ProductPageProps) {
 
   const handleOptionSelected = (key: string, value: OptionValue) => {
     setSelectedOptions(prev => new Map(prev.set(key, value)));
-    if (validOptionCombos.size === selectedOptions.size) {
+    if (validOptionCombos?.length === selectedOptions.size) {
       setCartDisabled(false);
     }
   };
@@ -171,50 +171,48 @@ function ProductPage(props: ProductPageProps) {
       key => key !== optionGroupId
     );
     // console.log(validOptionCombos);
-    const validCombos = Array.from(validOptionCombos.entries()).filter(
-      ([, optionGroups]) => {
-        // const combosWithSelectedOptions = selectedOptionKeys
-        //   .map(key => {
-        //     const optionGroup = optionGroups.find(
-        //       optionGroup => optionGroup.id === key
-        //     );
-        // console.log('optionGroup', optionGroup);
-        //     if (optionGroup?.values.includes(selectedOptions.get(key)!)) {
-        //       return optionGroup;
-        //     }
-        //     return null;
-        //   })
-        //   .filter(val => val !== null);
-        const combosWithSelectedOptions =
-          selectedOptionKeys.length > 0
-            ? selectedOptionKeys
-                .map(key => {
-                  const optionGroup = optionGroups.find(
-                    optionGroup => optionGroup.id === key
-                  );
-                  if (optionGroup?.values.includes(selectedOptions.get(key)!)) {
-                    return optionGroups;
-                  }
-                  return null;
-                })
-                .flatMap(val => val ?? [])
-            : optionGroups;
-        // console.log('combosWithSelectedOptions', combosWithSelectedOptions);
+    const validCombos = validOptionCombos?.filter(({ options }) => {
+      // const combosWithSelectedOptions = selectedOptionKeys
+      //   .map(key => {
+      //     const optionGroup = optionGroups.find(
+      //       optionGroup => optionGroup.id === key
+      //     );
+      // console.log('optionGroup', optionGroup);
+      //     if (optionGroup?.values.includes(selectedOptions.get(key)!)) {
+      //       return optionGroup;
+      //     }
+      //     return null;
+      //   })
+      //   .filter(val => val !== null);
+      const combosWithSelectedOptions =
+        selectedOptionKeys.length > 0
+          ? selectedOptionKeys
+              .map(key => {
+                const optionGroup = options.find(
+                  optionGroup => optionGroup.id === key
+                );
+                if (optionGroup?.values.includes(selectedOptions.get(key)!)) {
+                  return options;
+                }
+                return null;
+              })
+              .flatMap(val => val ?? [])
+          : options;
+      // console.log('combosWithSelectedOptions', combosWithSelectedOptions);
 
-        if (combosWithSelectedOptions.length === 0) {
-          return false;
-        }
-
-        const hasOption = combosWithSelectedOptions.find(validOption =>
-          validOption.values.includes(option)
-        );
-
-        // console.log('hasOption', hasOption);
-        return hasOption;
+      if (combosWithSelectedOptions.length === 0) {
+        return false;
       }
-    );
-    // console.log(validCombos);
-    return validCombos.length === 0;
+
+      const hasOption = combosWithSelectedOptions.find(validOption =>
+        validOption.values.includes(option)
+      );
+
+      // console.log('hasOption', hasOption);
+      return hasOption;
+    });
+    console.log(validCombos);
+    return validCombos?.length === 0;
   };
 
   return (

@@ -39,13 +39,19 @@ export interface OptionGroup {
   values: OptionValue[];
 }
 
+export interface VariationGroup {
+  id: string;
+  options: OptionGroup[];
+}
+
 export const getValidOptions = (
   objectToCheck: CatalogObject,
   itemsToCheck: CatalogObject[]
-): Map<string, OptionGroup[]> => {
-  const newOptions = new Map<string, OptionGroup[]>();
+): VariationGroup[] => {
+  const newOptions = new Map<string, VariationGroup>();
   const itemObjects = itemsToCheck.filter(obj => obj.type === 'ITEM_OPTION');
   console.log('objectToCheck', objectToCheck);
+  console.log('itemObjects', itemObjects);
 
   if (
     itemObjects.length > 0 &&
@@ -53,7 +59,7 @@ export const getValidOptions = (
     objectToCheck.itemData?.itemOptions?.length > 0
   ) {
     objectToCheck.itemData.variations?.forEach(variation => {
-      console.log('variation', variation.id);
+      // console.log('variation', variation.id);
       const optionValues: OptionGroup[] = variation.itemVariationData
         ?.itemOptionValues
         ? variation.itemVariationData.itemOptionValues
@@ -81,23 +87,59 @@ export const getValidOptions = (
               return namedGroup;
             })
         : [];
-      console.log('optionValues', optionValues);
+      // console.log('optionValues', optionValues);
 
       if (optionValues?.length > 0) {
-        newOptions.set(variation.id, optionValues);
+        updateMap(newOptions, variation.id, optionValues);
       }
     });
   }
-  console.log('newOptions', newOptions);
-  return newOptions;
+  console.log('newOptions', Array.from(newOptions.values()));
+  return Array.from(newOptions.values());
+};
+
+const updateMap = (
+  newOptions: Map<string, VariationGroup>,
+  variationId: string,
+  options: OptionGroup[]
+) => {
+  const existingVariantGroup = newOptions.get(variationId);
+  if (existingVariantGroup) {
+    const newVariantGroup: VariationGroup = {
+      ...existingVariantGroup,
+      options: []
+    };
+    existingVariantGroup.options.forEach(optionGroup => {
+      const newOptionGroup = options.find(
+        optGroup => optGroup.id === optionGroup.id
+      );
+
+      if (newOptionGroup) {
+        newVariantGroup.options.push({
+          ...optionGroup,
+          values: [
+            ...new Set([...optionGroup.values, ...newOptionGroup.values])
+          ]
+        });
+      } else {
+        newVariantGroup.options.push(optionGroup);
+      }
+    });
+    newOptions.set(variationId, newVariantGroup);
+  } else {
+    newOptions.set(variationId, {
+      id: variationId,
+      options
+    });
+  }
 };
 
 export const getProperOptionGroups = (
-  options: Map<string, OptionGroup[]>
+  options: VariationGroup[]
 ): OptionGroup[] => {
   const optionGroups: OptionGroup[] = [];
-  Array.from(options.entries())
-    .flatMap(([, option]) => option)
+  options
+    .flatMap(option => option.options)
     .forEach(optionGroup => {
       const existingOption = optionGroups.find(
         obj => obj.name === optionGroup.name && obj.id === optionGroup.id

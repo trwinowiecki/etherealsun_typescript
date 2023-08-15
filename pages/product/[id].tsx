@@ -211,7 +211,7 @@ function ProductPage(props: ProductPageProps) {
       // console.log('hasOption', hasOption);
       return hasOption;
     });
-    console.log(validCombos);
+    // console.log(validCombos);
     return validCombos?.length === 0;
   };
 

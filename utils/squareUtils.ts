@@ -50,8 +50,8 @@ export const getValidOptions = (
 ): VariationGroup[] => {
   const newOptions = new Map<string, VariationGroup>();
   const itemObjects = itemsToCheck.filter(obj => obj.type === 'ITEM_OPTION');
-  console.log('objectToCheck', objectToCheck);
-  console.log('itemObjects', itemObjects);
+  // console.log('objectToCheck', objectToCheck);
+  // console.log('itemObjects', itemObjects);
 
   if (
     itemObjects.length > 0 &&
@@ -60,36 +60,47 @@ export const getValidOptions = (
   ) {
     objectToCheck.itemData.variations?.forEach(variation => {
       // console.log('variation', variation.id);
-      const optionValues: OptionGroup[] = variation.itemVariationData
-        ?.itemOptionValues
-        ? variation.itemVariationData.itemOptionValues
-            .filter(option => option.itemOptionId && option.itemOptionValueId)
-            .map(option => {
-              const optionItem = itemObjects.find(
-                obj => obj.id === option.itemOptionId
-              );
-              const optionItemValue = optionItem?.itemOptionData?.values?.find(
-                obj => obj.id === option.itemOptionValueId
-              );
-              const namedGroup = {
-                id: option.itemOptionId ?? '',
-                name:
-                  optionItem?.itemOptionData?.displayName ??
-                  optionItem?.itemOptionData?.name ??
-                  '',
-                values: [
-                  {
-                    id: option.itemOptionValueId ?? '',
-                    name: optionItemValue?.itemOptionValueData?.name ?? ''
-                  }
-                ]
-              };
-              return namedGroup;
-            })
+      const test = variation.itemVariationData?.itemOptionValues?.filter(
+        option => option.itemOptionId && option.itemOptionValueId
+      );
+      const optionValues: OptionGroup[] = test
+        ? test.map(option => {
+            const optionItem = itemObjects.find(
+              obj => obj.id === option.itemOptionId
+            );
+            const optionItemValue = optionItem?.itemOptionData?.values?.find(
+              obj => obj.id === option.itemOptionValueId
+            );
+            const namedGroup = {
+              id: option.itemOptionId ?? '',
+              name:
+                optionItem?.itemOptionData?.displayName ??
+                optionItem?.itemOptionData?.name ??
+                '',
+              values: [
+                {
+                  id: option.itemOptionValueId ?? '',
+                  name: optionItemValue?.itemOptionValueData?.name ?? ''
+                }
+              ]
+            };
+            // if (variation.id === 'ALIN7UCNWORH2VBQRSWMI2B3') {
+            //   console.log('option: ', namedGroup.name, option);
+            //   console.log('optionItem', namedGroup.name, optionItem);
+            //   console.log('optionItemValue', namedGroup.name, optionItemValue);
+            //   console.log('namedGroup', namedGroup.name, namedGroup);
+            // }
+            return namedGroup;
+          })
         : [];
       // console.log('optionValues', optionValues);
 
       if (optionValues?.length > 0) {
+        // console.log('variation.id', variation.id);
+        // if (variation.id === 'ALIN7UCNWORH2VBQRSWMI2B3') {
+        //   console.log('test', test);
+        //   console.log('optionValues', optionValues);
+        // }
         updateMap(newOptions, variation.id, optionValues);
       }
     });
@@ -132,6 +143,7 @@ const updateMap = (
       options
     });
   }
+  // console.log('newOptions update map', newOptions);
 };
 
 export const getProperOptionGroups = (

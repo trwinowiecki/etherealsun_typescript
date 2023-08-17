@@ -52,6 +52,9 @@ function ProductPage(props: ProductPageProps) {
   const [selectedOptions, setSelectedOptions] = useState(
     new Map<string, OptionValue>()
   );
+  const [selectedVariant, setSelectedVariant] = useState<CatalogObject>(
+    {} as CatalogObject
+  );
   const [cartDisabled, setCartDisabled] = useState(true);
 
   if (catalogObjects.errors) {
@@ -67,8 +70,10 @@ function ProductPage(props: ProductPageProps) {
         catalogObjects.object,
         catalogObjects.relatedObjects
       );
-      if (newOptions.length === 0) {
+      if (newOptions.length <= 1) {
         setCartDisabled(false);
+        const variant = catalogObjects.object.itemData!.variations![0];
+        setSelectedVariant(variant);
       }
       setValidOptionCombos(newOptions);
       setOptions(getProperOptionGroups(newOptions));
@@ -158,6 +163,7 @@ function ProductPage(props: ProductPageProps) {
     setSelectedOptions(prev => new Map(prev.set(key, value)));
     if (validOptionCombos?.length === selectedOptions.size) {
       setCartDisabled(false);
+      // todo update selectedVariantId
     }
   };
 
@@ -299,7 +305,7 @@ function ProductPage(props: ProductPageProps) {
                   addToCartHandler(
                     catalogObjects.object!,
                     catalogObjects.relatedObjects ?? [],
-                    ''
+                    selectedVariant.id
                   )
                 }
                 disabled={cartDisabled}

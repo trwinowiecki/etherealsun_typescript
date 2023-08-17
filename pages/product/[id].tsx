@@ -70,7 +70,6 @@ function ProductPage(props: ProductPageProps) {
       if (newOptions.length === 0) {
         setCartDisabled(false);
       }
-      // console.log('newOptions', newOptions);
       setValidOptionCombos(newOptions);
       setOptions(getProperOptionGroups(newOptions));
     }
@@ -166,24 +165,10 @@ function ProductPage(props: ProductPageProps) {
     optionGroupId: string,
     option: OptionValue
   ): boolean => {
-    // console.log(`Checking group ${optionGroupId}, option ${option.name}`);
     const selectedOptionKeys = Array.from(selectedOptions.keys()).filter(
       key => key !== optionGroupId
     );
-    // console.log(validOptionCombos);
     const validCombos = validOptionCombos?.filter(({ options }) => {
-      // const combosWithSelectedOptions = selectedOptionKeys
-      //   .map(key => {
-      //     const optionGroup = optionGroups.find(
-      //       optionGroup => optionGroup.id === key
-      //     );
-      // console.log('optionGroup', optionGroup);
-      //     if (optionGroup?.values.includes(selectedOptions.get(key)!)) {
-      //       return optionGroup;
-      //     }
-      //     return null;
-      //   })
-      //   .filter(val => val !== null);
       const combosWithSelectedOptions =
         selectedOptionKeys.length > 0
           ? selectedOptionKeys
@@ -198,7 +183,6 @@ function ProductPage(props: ProductPageProps) {
               })
               .flatMap(val => val ?? [])
           : options;
-      // console.log('combosWithSelectedOptions', combosWithSelectedOptions);
 
       if (combosWithSelectedOptions.length === 0) {
         return false;
@@ -208,10 +192,8 @@ function ProductPage(props: ProductPageProps) {
         validOption.values.includes(option)
       );
 
-      // console.log('hasOption', hasOption);
       return hasOption;
     });
-    // console.log(validCombos);
     return validCombos?.length === 0;
   };
 

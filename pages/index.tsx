@@ -16,7 +16,7 @@ import { Database } from '../types/SupabaseDbTypes';
 import { ShippoCommand } from '../enums/ShippoCommands';
 
 import { convertToJSON } from './api/square';
-import { ShippoAddressRequest } from './api/shippo';
+import { ShippoAddress, ShippoRequest } from './api/shippo';
 
 interface HomeProps {
   featuredProducts: FeaturedProduct[];
@@ -24,29 +24,8 @@ interface HomeProps {
 }
 
 const Home = ({ featuredProducts, relatedObjects }: HomeProps) => {
-  const shippoButton = async () => {
-    const validateAddressReq: ShippoAddressRequest = {
-      type: ShippoCommand.VALIDATE_ADDRESS,
-      data: {
-        name: 'John Smith',
-        street1: '6512 Greene Rd.',
-        city: 'Woodridge',
-        state: 'IL',
-        zip: '60517',
-        country: 'US'
-      }
-    };
-    await axios({
-      method: 'GET',
-      url: `api/shippo`,
-      data: validateAddressReq
-    }).then(({ data }) => {
-      console.log(data);
-    });
-  };
   return (
     <Layout overridePadding>
-      <button onClick={shippoButton}>Shippo</button>
       <div className="flex flex-col gap-4">
         <section className="p-4">
           <Link href="/products">products page</Link>

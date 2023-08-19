@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { ShippoCommand } from '../../enums/ShippoCommands';
 
 export interface ShippoRequest extends NextApiRequest {
-  body: { type: ShippoCommand; address?: ShippoAddressRequest };
+  body: { type: ShippoCommand; address?: ShippoAddress };
 }
 
 export interface ShippoAddressResponse {
@@ -48,7 +48,7 @@ export interface ShippoAddressResponse {
   zip?: string;
 }
 
-export interface ShippoAddressRequest {
+export interface ShippoAddress {
   name: string;
   company?: string;
   street1: string;
@@ -72,7 +72,8 @@ export const shippoAPI = axios.create({
 const handler = async (req: ShippoRequest, res: NextApiResponse) => {
   switch (req.body.type) {
     case ShippoCommand.VALIDATE_ADDRESS:
-      validateAddress(req.body.address!, res);
+      const shippoRes = await validateAddress(req.body.address!);
+      res.status(shippoRes.status).send(shippoRes.data);
       break;
     default:
       console.error('Invalid Shippo command: ', req.body.type);
@@ -82,21 +83,11 @@ const handler = async (req: ShippoRequest, res: NextApiResponse) => {
   }
 };
 
-const validateAddress = (
-  addressData: ShippoAddressRequest,
-  res: NextApiResponse
-) => {
-  shippoAPI
-    .post('addresses', {
-      ...addressData,
-      validate: true
-    })
-    .then(({ data }) => {
-      res.status(200).send(data);
-    })
-    .catch((err: any) => {
-      res.status(400).send(err);
-    });
+const validateAddress = async (addressData: ShippoAddress) => {
+  return await shippoAPI.post('addresses', {
+    ...addressData,
+    validate: true
+  });
 };
 
 export default handler;

@@ -8,15 +8,12 @@ import {
   Client,
   Environment
 } from 'square';
-import axios from 'axios';
 
 import Layout from '../components/Layout';
 import { FeaturedProduct } from '../types/FeaturedProduct';
 import { Database } from '../types/SupabaseDbTypes';
-import { ShippoCommand } from '../enums/ShippoCommands';
 
 import { convertToJSON } from './api/square';
-import { ShippoAddress, ShippoRequest } from './api/shippo';
 
 interface HomeProps {
   featuredProducts: FeaturedProduct[];

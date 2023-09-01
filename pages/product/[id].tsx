@@ -86,15 +86,17 @@ function ProductPage(props: ProductPageProps) {
         .from('favorite_products')
         .select()
         .eq('product_id', catalogObjects.object?.id)
-        .abortSignal(signal)
-        .single();
+        .abortSignal(signal);
 
       if (res.error) {
         handleError(res.error);
         return;
       }
 
-      if (res.data?.product_id === catalogObjects.object?.id) {
+      if (
+        res.data?.length > 0 &&
+        res.data[0].product_id === catalogObjects.object?.id
+      ) {
         setFavorite(true);
       }
     };
@@ -106,7 +108,7 @@ function ProductPage(props: ProductPageProps) {
 
     return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user?.id]);
 
   const breadcrumbs: BreadcrumbPage[] = [
     { href: '/', name: 'Home' },

@@ -1,17 +1,23 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import axios, { AxiosResponse } from 'axios';
-import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { HTMLInputTypeAttribute, useState } from 'react';
+import {
+  Controller,
+  RegisterOptions,
+  SubmitHandler,
+  useForm
+} from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { Address } from 'square';
 
 import Button from '@ui/Button';
 import LoadingSpinner from '@ui/LoadingSpinner';
 import Modal from '@ui/Modal';
+import PhoneInput from 'react-phone-number-input/input';
 import { ShippoCommand } from '../enums/ShippoCommands';
 import { ShippoAddressResponse } from '../pages/api/shippo';
 import { UserProfile } from '../types/Supabase';
-import { getError } from '../utils/error';
+import { getErrorShippo } from '../utils/error';
 
 interface AddressFormProps {
   user?: UserProfile;
@@ -57,7 +63,8 @@ const AddressForm = (props: AddressFormProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    control
   } = useForm<AddressForm>({
     defaultValues: defaultAddress
   });
@@ -87,13 +94,14 @@ const AddressForm = (props: AddressFormProps) => {
             props.onSubmit(address);
           }
         } else {
-          toast.error(data.validation_results?.messages?.map(m => m.text));
-          console.error(data.validation_results);
+          const errMeassage = getErrorShippo(data);
+          toast.error(errMeassage);
+          console.error(errMeassage);
         }
       })
       .catch(error => {
         setLoading(false);
-        toast.error(getError(error));
+        toast.error(getErrorShippo(error));
       });
   };
 
@@ -161,120 +169,181 @@ const AddressForm = (props: AddressFormProps) => {
     );
   };
 
+  const states = {
+    AA: 'Select a state',
+    AL: 'Alabama',
+    AK: 'Alaska',
+    AZ: 'Arizona',
+    AR: 'Arkansas',
+    CA: 'California',
+    CO: 'Colorado',
+    CT: 'Connecticut',
+    DE: 'Delaware',
+    FL: 'Florida',
+    GA: 'Georgia',
+    HI: 'Hawaii',
+    ID: 'Idaho',
+    IL: 'Illinois',
+    IN: 'Indiana',
+    IA: 'Iowa',
+    KS: 'Kansas',
+    KY: 'Kentucky',
+    LA: 'Louisiana',
+    ME: 'Maine',
+    MD: 'Maryland',
+    MA: 'Massachusetts',
+    MI: 'Michigan',
+    MN: 'Minnesota',
+    MS: 'Mississippi',
+    MO: 'Missouri',
+    MT: 'Montana',
+    NE: 'Nebraska',
+    NV: 'Nevada',
+    NH: 'New Hampshire',
+    NJ: 'New Jersey',
+    NM: 'New Mexico',
+    NY: 'New York',
+    NC: 'North Carolina',
+    ND: 'North Dakota',
+    OH: 'Ohio',
+    OK: 'Oklahoma',
+    OR: 'Oregon',
+    PA: 'Pennsylvania',
+    RI: 'Rhode Island',
+    SC: 'South Carolina',
+    SD: 'South Dakota',
+    TN: 'Tennessee',
+    TX: 'Texas',
+    UT: 'Utah',
+    VT: 'Vermont',
+    VA: 'Virginia',
+    WA: 'Washington',
+    WV: 'West Virginia',
+    WI: 'Wisconsin',
+    WY: 'Wyoming'
+  };
+
+  const reactHookFormInput = (
+    name: keyof AddressForm,
+    displayName: string,
+    type: HTMLInputTypeAttribute,
+    options: RegisterOptions = {},
+    extraClasses: string = ''
+  ) => {
+    return (
+      <label
+        htmlFor={name}
+        className={`${errors[name] ? 'error' : ''} input-field ${extraClasses}`}
+      >
+        {displayName}
+        <input type={type} {...register(name, options)} autoComplete="true" />
+      </label>
+    );
+  };
+
+  const reactHookFormSelectInput = (
+    name: keyof AddressForm,
+    displayName: string,
+    values: string[],
+    keys = values,
+    options: RegisterOptions = {},
+    extraClasses: string = ''
+  ) => {
+    return (
+      <label
+        htmlFor={name}
+        className={`${errors[name] ? 'error' : ''} input-field ${extraClasses}`}
+      >
+        {displayName}
+        <select {...register(name, options)} autoComplete="true">
+          {keys.map((key, index) => (
+            <option
+              key={key}
+              value={key}
+              disabled={index === 0}
+              selected={index === 0}
+            >
+              {values[index]}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  };
+
   return (
     <>
-      <form className="flex flex-col gap-2 relative" autoComplete="true">
-        <div className="flex gap-2 flex-col md:flex-row w-full">
+      <div className="flex justify-center w-full">
+        <form
+          className="flex flex-col self-stretch w-full max-w-4xl gap-2"
+          autoComplete="true"
+        >
+          <div className="flex flex-col w-full gap-2 md:flex-row">
+            {reactHookFormInput(
+              'firstName',
+              'First Name',
+              'text',
+              { required: true },
+              'flex-1'
+            )}
+            {reactHookFormInput(
+              'lastName',
+              'Last Name',
+              'text',
+              { required: true },
+              'flex-1'
+            )}
+          </div>
+          {reactHookFormInput('addressLine1', 'Address Line 1', 'text', {
+            required: true
+          })}
+          {reactHookFormInput('addressLine2', 'Address Line 2', 'text')}
+          {reactHookFormInput('addressLine3', 'Address Line 3', 'text')}
+          {reactHookFormInput('locality', 'City', 'text', {
+            required: true
+          })}
+          {reactHookFormSelectInput(
+            'administrativeDistrictLevel1',
+            'State',
+            Object.values(states),
+            Object.keys(states),
+            { required: true }
+          )}
+          {reactHookFormInput('postalCode', 'Postal Code', 'number', {
+            required: true,
+            min: 5,
+            valueAsNumber: true
+          })}
+          {reactHookFormInput('country', 'Country', 'text', {
+            required: true
+          })}
           <label
-            htmlFor="firstName"
-            className={`${errors.firstName ? 'error' : ''} input-field flex-1`}
+            htmlFor="phoneNumber"
+            className={`${errors.phoneNumber ? 'error' : ''} input-field`}
           >
-            First Name
-            <input
-              type="text"
-              {...register('firstName', { required: true })}
-              autoComplete="true"
+            Phone
+            <Controller
+              name="phoneNumber"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <PhoneInput
+                  value={value}
+                  onChange={onChange}
+                  defaultCountry="US"
+                  id="phoneNumber"
+                />
+              )}
             />
           </label>
-          <label
-            htmlFor="lastName"
-            className={`${errors.lastName ? 'error' : ''} input-field flex-1`}
-          >
-            Last Name
-            <input
-              type="text"
-              {...register('lastName', { required: true })}
-              autoComplete="true"
-            />
-          </label>
-        </div>
-        <label
-          htmlFor="addressLine1"
-          className={`${errors.addressLine1 ? 'error' : ''} input-field`}
-        >
-          Address Line 1
-          <input
-            type="text"
-            {...register('addressLine1', { required: true })}
-            autoComplete="true"
-          />
-        </label>
-        <label
-          htmlFor="addressLine2"
-          className={`${errors.addressLine2 ? 'error' : ''} input-field`}
-        >
-          Address Line 2
-          <input
-            type="text"
-            {...register('addressLine2')}
-            autoComplete="true"
-          />
-        </label>
-        <label
-          htmlFor="addressLine3"
-          className={`${errors.addressLine3 ? 'error' : ''} input-field`}
-        >
-          Address Line 3
-          <input
-            type="text"
-            {...register('addressLine3')}
-            autoComplete="true"
-          />
-        </label>
-        <label
-          htmlFor="locality"
-          className={`${errors.locality ? 'error' : ''} input-field`}
-        >
-          City
-          <input
-            type="text"
-            {...register('locality', { required: true })}
-            autoComplete="true"
-          />
-        </label>
-        <label
-          htmlFor="administrativeDistrictLevel1"
-          className={`${
-            errors.administrativeDistrictLevel1 ? 'error' : ''
-          } input-field`}
-        >
-          State
-          <input
-            type="text"
-            {...register('administrativeDistrictLevel1', { required: true })}
-            autoComplete="true"
-          />
-        </label>
-        <label
-          htmlFor="postalCode"
-          className={`${errors.postalCode ? 'error' : ''} input-field`}
-        >
-          Postal Code
-          <input
-            type="number"
-            {...register('postalCode', {
-              required: true,
-              min: 5,
-              valueAsNumber: true
-            })}
-            autoComplete="true"
-          />
-        </label>
-        <label
-          htmlFor="country"
-          className={`${errors.country ? 'error' : ''} input-field`}
-        >
-          Country
-          <input
-            type="text"
-            {...register('country', { required: true })}
-            autoComplete="true"
-          />
-        </label>
-        <Button role="submit" type="submit" onClick={handleSubmit(onSubmit)}>
-          Submit
-        </Button>
-      </form>
+          {errors.phoneNumber && (
+            <p className="error-message">{errors.phoneNumber.message}</p>
+          )}
+          <Button role="submit" type="submit" onClick={handleSubmit(onSubmit)}>
+            Submit
+          </Button>
+        </form>
+      </div>
       <LoadingSpinner loading={loading} />
       <Modal
         name="Suggested Address Changes"
@@ -286,16 +355,16 @@ const AddressForm = (props: AddressFormProps) => {
         <div className="flex flex-col gap-2">
           <div>Would you like to use the suggested address?</div>
           <div className="flex gap-2">
-            <div className="flex-1 border border-black p-2">
+            <div className="flex-1 p-2 border border-black">
               <strong>Your address:</strong>
               {addressDisplay(userEnteredAddress)}
             </div>
-            <div className="flex-1 border border-black p-2">
+            <div className="flex-1 p-2 border border-black">
               <strong>Suggested address:</strong>
               {addressDisplay(convertShippoToSquare(suggestedAddress))}
             </div>
           </div>
-          <div className="flex gap-2 absolute bottom-6 right-6">
+          <div className="absolute flex gap-2 bottom-6 right-6">
             <Button onClick={() => modalHandler(false)} intent="secondary">
               No
             </Button>

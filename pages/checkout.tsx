@@ -37,6 +37,7 @@ const checkout = () => {
 
   const addressSubmit = (address: Address) => {
     setAddress(address);
+    console.log(address);
     handleStepChange(activeStep + 1);
   };
 

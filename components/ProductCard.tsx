@@ -63,7 +63,7 @@ function ProductCard({
 
     return () => controller.abort('Cancelled by user');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user?.id]);
 
   const handleClick =
     onClick ??

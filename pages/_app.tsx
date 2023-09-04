@@ -4,13 +4,14 @@ import { AppProps } from 'next/app';
 import { useState } from 'react';
 
 import '../styles/globals.scss';
+import { Database } from '../types/SupabaseDbTypes';
 import { StoreProvider } from '../utils/Store';
 
 function MyApp({
   Component,
   pageProps
 }: AppProps<{ initialSession: Session }>) {
-  const [supabase] = useState(() => createBrowserSupabaseClient());
+  const [supabase] = useState(() => createBrowserSupabaseClient<Database>());
 
   return (
     <SessionContextProvider

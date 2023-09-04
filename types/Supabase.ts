@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Session } from '@supabase/auth-helpers-react';
+import { Session, User } from '@supabase/auth-helpers-react';
 import { Customer } from 'square';
 
-export interface UserProfile {
+export interface UserProfile extends User {
+  first_name: string | null;
   id: string;
-  updated_at?: string;
-  username?: string;
-  first_name?: string;
-  last_name?: string;
-  square_id?: string;
+  last_name: string | null;
+  square_id: string | null;
+  updated_at: string | undefined;
   square_customer?: Customer;
 }
 

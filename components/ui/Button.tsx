@@ -7,7 +7,7 @@ const buttonStyles = cva(
       intent: {
         primary: 'bg-primary hover:bg-primary-darker text-primary-text',
         secondary: 'bg-secondary hover:bg-secondary-darker, text-primary-text',
-        danger: ''
+        danger: 'bg-negative'
       },
       fullWidth: {
         true: 'w-full'

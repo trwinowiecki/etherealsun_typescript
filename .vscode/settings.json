@@ -1,5 +1,8 @@
 {
   "marquee.widgets.npm-stats.packageNames": [
     "etherealsun"
-  ]
+  ],
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true,
+  },
 }

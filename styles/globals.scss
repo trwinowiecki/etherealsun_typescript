@@ -47,8 +47,8 @@ label.input-field {
     @apply border-negative border-2;
   }
 
-  >* {
-    @apply flex-1 py-1 pl-2 bg-transparent font-normal;
+  > * {
+    @apply flex-1 py-1 pl-2 bg-transparent font-normal border-b-2;
   }
 }
 

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import axios, { AxiosResponse } from 'axios';
-import { HTMLInputTypeAttribute, useState } from 'react';
+import { HTMLInputTypeAttribute, useEffect, useState } from 'react';
 import {
   Controller,
   RegisterOptions,
@@ -22,6 +22,7 @@ import { getErrorShippo } from '../utils/error';
 interface AddressFormProps {
   user?: UserProfile;
   onSubmit: (data: AddressForm) => void;
+  address?: AddressForm;
 }
 
 interface AddressForm extends Address {
@@ -36,37 +37,119 @@ const AddressForm = (props: AddressFormProps) => {
     useState<ShippoAddressResponse>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user } = props;
+  const { user, address } = props;
 
-  if (user) {
-    setDefaultAddress(
-      user.square_customer?.address
+  useEffect(() => {
+    let newAddress: AddressForm = {};
+
+    if (user) {
+      newAddress = user.square_customer?.address
         ? {
+            ...defaultAddress,
             ...user.square_customer.address,
             firstName:
               user.first_name ??
               user.square_customer.givenName ??
               user.square_customer.address.firstName ??
+              defaultAddress.firstName ??
               '',
             lastName:
               user.last_name ??
               user.square_customer.familyName ??
               user.square_customer.address.lastName ??
+              defaultAddress.lastName ??
               '',
-            phoneNumber: user.square_customer.phoneNumber ?? '',
-            email: user.square_customer.emailAddress ?? ''
+            phoneNumber:
+              user.square_customer.phoneNumber ??
+              defaultAddress.phoneNumber ??
+              '',
+            email:
+              user.square_customer.emailAddress ?? defaultAddress.email ?? ''
           }
-        : {}
-    );
-  }
+        : defaultAddress;
+    }
+
+    if (address) {
+      newAddress = {
+        firstName:
+          address.firstName ||
+          newAddress.firstName ||
+          defaultAddress.firstName ||
+          '',
+        lastName:
+          address.lastName ||
+          newAddress.lastName ||
+          defaultAddress.lastName ||
+          '',
+        addressLine1:
+          address.addressLine1 ||
+          newAddress.addressLine1 ||
+          defaultAddress.addressLine1 ||
+          '',
+        addressLine2:
+          address.addressLine2 ||
+          newAddress.addressLine2 ||
+          defaultAddress.addressLine2 ||
+          '',
+        addressLine3:
+          address.addressLine3 ||
+          newAddress.addressLine3 ||
+          defaultAddress.addressLine3 ||
+          '',
+        locality:
+          address.locality ||
+          newAddress.locality ||
+          defaultAddress.locality ||
+          '',
+        administrativeDistrictLevel1:
+          address.administrativeDistrictLevel1 ||
+          newAddress.administrativeDistrictLevel1 ||
+          defaultAddress.administrativeDistrictLevel1 ||
+          '',
+        postalCode:
+          address.postalCode ||
+          newAddress.postalCode ||
+          defaultAddress.postalCode ||
+          '',
+        country:
+          address.country || newAddress.country || defaultAddress.country || '',
+        phoneNumber:
+          address.phoneNumber ||
+          newAddress.phoneNumber ||
+          defaultAddress.phoneNumber ||
+          '',
+        email: address.email || newAddress.email || defaultAddress.email || ''
+      };
+    }
+
+    setDefaultAddress(newAddress);
+    reset(newAddress);
+  }, [
+    user?.id,
+    address?.firstName,
+    address?.lastName,
+    address?.addressLine1,
+    address?.addressLine2,
+    address?.addressLine3,
+    address?.locality,
+    address?.administrativeDistrictLevel1,
+    address?.postalCode,
+    address?.country,
+    address?.phoneNumber,
+    address?.email
+  ]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    control
+    control,
+    reset
   } = useForm<AddressForm>({
-    defaultValues: defaultAddress
+    defaultValues: {
+      ...defaultAddress,
+      country: defaultAddress.country ?? 'US'
+    }
   });
 
   const onSubmit: SubmitHandler<AddressForm> = async address => {
@@ -86,17 +169,18 @@ const AddressForm = (props: AddressFormProps) => {
         setLoading(false);
 
         if (data.validation_results?.is_valid) {
-          console.log(data);
-          if (data.validation_results?.messages) {
+          if (
+            data.validation_results?.messages &&
+            data.validation_results?.messages?.length > 0
+          ) {
             setModalOpen(true);
             setSuggestedAddress(data);
           } else {
             props.onSubmit(address);
           }
         } else {
-          const errMeassage = getErrorShippo(data);
-          toast.error(errMeassage);
-          console.error(errMeassage);
+          const errMessage = getErrorShippo(data);
+          toast.error(errMessage);
         }
       })
       .catch(error => {
@@ -228,7 +312,8 @@ const AddressForm = (props: AddressFormProps) => {
     displayName: string,
     type: HTMLInputTypeAttribute,
     options: RegisterOptions = {},
-    extraClasses: string = ''
+    extraClasses: string = '',
+    extraProps: any = {}
   ) => {
     return (
       <label
@@ -236,7 +321,12 @@ const AddressForm = (props: AddressFormProps) => {
         className={`${errors[name] ? 'error' : ''} input-field ${extraClasses}`}
       >
         {displayName}
-        <input type={type} {...register(name, options)} autoComplete="true" />
+        <input
+          type={type}
+          {...register(name, options)}
+          autoComplete="true"
+          {...extraProps}
+        />
       </label>
     );
   };
@@ -257,12 +347,7 @@ const AddressForm = (props: AddressFormProps) => {
         {displayName}
         <select {...register(name, options)} autoComplete="true">
           {keys.map((key, index) => (
-            <option
-              key={key}
-              value={key}
-              disabled={index === 0}
-              selected={index === 0}
-            >
+            <option key={key} value={key} disabled={index === 0}>
               {values[index]}
             </option>
           ))}
@@ -273,7 +358,7 @@ const AddressForm = (props: AddressFormProps) => {
 
   return (
     <>
-      <div className="flex justify-center w-full">
+      <section className="flex justify-center w-full">
         <form
           className="flex flex-col self-stretch w-full max-w-4xl gap-2"
           autoComplete="true"
@@ -307,16 +392,20 @@ const AddressForm = (props: AddressFormProps) => {
             'State',
             Object.values(states),
             Object.keys(states),
-            { required: true }
+            { required: true, value: 'AA' }
           )}
-          {reactHookFormInput('postalCode', 'Postal Code', 'number', {
+          {reactHookFormInput('postalCode', 'Postal Code', 'text', {
             required: true,
-            min: 5,
-            valueAsNumber: true
+            min: 5
           })}
-          {reactHookFormInput('country', 'Country', 'text', {
-            required: true
-          })}
+          {reactHookFormInput(
+            'country',
+            'Country',
+            'text',
+            { value: 'US' },
+            '',
+            { disabled: true }
+          )}
           <label
             htmlFor="phoneNumber"
             className={`${errors.phoneNumber ? 'error' : ''} input-field`}
@@ -343,7 +432,7 @@ const AddressForm = (props: AddressFormProps) => {
             Submit
           </Button>
         </form>
-      </div>
+      </section>
       <LoadingSpinner loading={loading} />
       <Modal
         name="Suggested Address Changes"
@@ -365,7 +454,7 @@ const AddressForm = (props: AddressFormProps) => {
             </div>
           </div>
           <div className="absolute flex gap-2 bottom-6 right-6">
-            <Button onClick={() => modalHandler(false)} intent="secondary">
+            <Button onClick={() => modalHandler(false)} intent="danger">
               No
             </Button>
             <Button onClick={() => modalHandler(true)} intent="primary">

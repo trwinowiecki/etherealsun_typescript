@@ -134,7 +134,7 @@ const Cart = () => {
                     <Button
                       type="button"
                       onClick={() => router.push('/checkout')}
-                      extraClasses="w-full"
+                      className="w-full"
                     >
                       Checkout
                     </Button>

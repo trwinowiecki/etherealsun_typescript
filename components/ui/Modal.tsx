@@ -91,7 +91,7 @@ const Modal = ({
                   {closeButton && (
                     <div className="mt-4">
                       <Button
-                        extraClasses="absolute bottom-6 right-6"
+                        className="absolute bottom-6 right-6"
                         onClick={closeModal}
                       >
                         Done

@@ -1,4 +1,5 @@
 import { cva, VariantProps } from 'class-variance-authority';
+import { cn } from '../../utils/tw-utils';
 
 const buttonStyles = cva(
   'flex items-center justify-center px-4 py-2 rounded-md',
@@ -8,9 +9,6 @@ const buttonStyles = cva(
         primary: 'bg-primary hover:bg-primary-darker text-primary-text',
         secondary: 'bg-secondary hover:bg-secondary-darker, text-primary-text',
         danger: 'bg-negative'
-      },
-      fullWidth: {
-        true: 'w-full'
       }
     },
     defaultVariants: {
@@ -19,28 +17,29 @@ const buttonStyles = cva(
   }
 );
 
-export interface ButtonProps
-  extends VariantProps<typeof buttonStyles>,
-    React.HTMLProps<HTMLButtonElement> {
-  children: React.ReactNode;
-  extraClasses?: string;
-  onClick: () => void;
-}
+export type ButtonProps = VariantProps<typeof buttonStyles> &
+  React.HTMLProps<HTMLButtonElement> & {
+    children: React.ReactNode;
+    className?: string;
+    onClick: () => void;
+  };
 
 function Button({
   children,
-  extraClasses = '',
+  className: extraClasses = '',
   onClick,
   intent,
-  fullWidth,
   ...props
 }: ButtonProps) {
   return (
     <button
-      className={`${buttonStyles({
-        intent,
-        fullWidth
-      })} ${extraClasses} disabled:bg-slate-400`}
+      className={cn(
+        buttonStyles({
+          intent
+        }),
+        extraClasses,
+        'disabled:bg-slate-400'
+      )}
       onClick={onClick}
       {...props}
       type="button"

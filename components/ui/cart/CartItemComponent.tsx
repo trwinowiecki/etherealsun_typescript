@@ -6,17 +6,18 @@ import { useContext } from 'react';
 import { CartCommand } from '../../../enums/CartCommands';
 import { CartItem } from '../../../types/CartItem';
 import { Store } from '../../../utils/Store';
+import { cn } from '../../../utils/tw-utils';
 import Quantity from '../Quantity';
 
 interface CartItemProps {
   item: CartItem;
-  classes?: string;
+  className?: string;
   children?: React.ReactNode;
 }
 
 function CartItemComponent({
   item,
-  classes = '',
+  className = '',
   children = null
 }: CartItemProps) {
   const { state, dispatch } = useContext(Store);
@@ -47,7 +48,10 @@ function CartItemComponent({
   return (
     <div
       key={item.catalogObjectId}
-      className={`flex justify-between items-center gap-2 p-2 px-4 ${classes}`}
+      className={cn(
+        'flex justify-between items-center gap-2 p-2 px-4',
+        className
+      )}
     >
       <div
         key={item.catalogObjectId}

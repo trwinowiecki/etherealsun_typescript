@@ -1,5 +1,6 @@
 import { Disclosure, RadioGroup } from '@headlessui/react';
 import { CheckIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { cn } from '../../utils/tw-utils';
 
 export interface FilterField<TFilterType> {
   name: string;
@@ -35,11 +36,15 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
               <Disclosure.Button className="flex items-center justify-between w-full">
                 <span>{field.name}</span>
                 <ChevronUpIcon
-                  className={`${open ? 'transform rotate-180' : ''} w-5 h-5`}
+                  className={cn('w-5 h-5', { 'transform rotate-180': open })}
                 />
               </Disclosure.Button>
               <Disclosure.Panel className="pt-2">
-                <div className={field.description ? 'pb-2 text-xs' : 'hidden'}>
+                <div
+                  className={cn('pb-2 text-xs hidden', {
+                    block: field.description
+                  })}
+                >
                   {field.description}
                 </div>
                 <RadioGroup
@@ -54,14 +59,15 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
                         >
                           {({ checked }) => (
                             <div
-                              className={`${
-                                checked ? 'bg-primary-background-darker' : ''
-                              } w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer`}
+                              className={cn({
+                                'bg-primary-background-darker': checked
+                              })}
                             >
                               <CheckIcon
-                                className={`${
-                                  checked ? 'inline-flex' : 'invisible'
-                                } h-5`}
+                                className={cn(
+                                  'w-full h-5 gap-2 items-center p-1 rounded-lg cursor-pointer inline-flex invisible',
+                                  { visible: checked }
+                                )}
                               />
                               <div className="w-full overflow-x-auto">
                                 {val}
@@ -74,14 +80,15 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
                         <RadioGroup.Option key={val} value={val}>
                           {({ checked }) => (
                             <div
-                              className={`${
-                                checked ? 'bg-primary-background-darker' : ''
-                              } w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer`}
+                              className={cn(
+                                'w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer',
+                                { 'bg-primary-background-darker': checked }
+                              )}
                             >
                               <CheckIcon
-                                className={`${
-                                  checked ? 'inline-flex' : 'invisible'
-                                } h-5`}
+                                className={cn('inline-flex h-5 invisible', {
+                                  visible: checked
+                                })}
                               />
                               <div className="w-full overflow-x-auto">
                                 {val}

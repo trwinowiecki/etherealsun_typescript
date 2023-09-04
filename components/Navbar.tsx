@@ -17,6 +17,7 @@ import { CartCommand } from '../enums/CartCommands';
 import { Database } from '../types/SupabaseDbTypes';
 import { Store } from '../utils/Store';
 import { handleError } from '../utils/supabaseUtils';
+import { cn } from '../utils/tw-utils';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 interface MyLinkProps {
@@ -33,7 +34,7 @@ const MyLink = forwardRef<HTMLAnchorElement, MyLinkProps>((props, ref) => {
       <a
         ref={ref}
         {...rest}
-        className={`${active ? 'bg-primary-background-darker' : ''} py-2 px-4`}
+        className={cn('py-2 px-4', { 'bg-primary-background-darker': active })}
       >
         {children}
       </a>
@@ -52,9 +53,9 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
   return (
     <button
       onClick={onClick}
-      className={`${
-        active ? 'bg-primary-background-darker' : ''
-      } py-2 px-4 text-left !rounded-none`}
+      className={cn('py-2 px-4 text-left !rounded-none', {
+        'bg-primary-background-darker': active
+      })}
       type="button"
     >
       {children}
@@ -133,9 +134,9 @@ function Navbar() {
               aria-label="shopping bag"
             />
             <div
-              className={`${
-                cartItems.length > 0 ? 'absolute' : 'hidden'
-              } top-1 right-1`}
+              className={cn('top-1 right-1 hidden absolute', {
+                block: cartItems.length > 0
+              })}
             >
               <div className="flex justify-center items-center text-white bg-red-500 rounded-full h-4 min-w-[1rem] text-center text-xs px-1">
                 {cartItems.reduce((acc, item) => acc + item.quantity, 0)}

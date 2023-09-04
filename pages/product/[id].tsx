@@ -31,6 +31,7 @@ import {
 } from '../../utils/squareUtils';
 import { Store } from '../../utils/Store';
 import { handleError } from '../../utils/supabaseUtils';
+import { cn } from '../../utils/tw-utils';
 import { convertToJSON } from '../api/square';
 
 interface ProductPageProps {
@@ -217,9 +218,10 @@ function ProductPage(props: ProductPageProps) {
                   {itemImages.map((image, i) => (
                     <button
                       key={image.id}
-                      className={`${
-                        selectedImage.id === image.id ? 'border-2' : ''
-                      } border-primary hover:cursor-pointer w-12 md:w-auto`}
+                      className={cn(
+                        'border-primary hover:cursor-pointer w-12 md:w-auto',
+                        { 'border-2': selectedImage.id === image.id }
+                      )}
                       type="button"
                       onClick={() => setSelectedImage(image)}
                     >
@@ -279,9 +281,10 @@ function ProductPage(props: ProductPageProps) {
                             {({ checked }) => (
                               <div className="mt-2 cursor-pointer">
                                 <div
-                                  className={`${
-                                    checked ? 'border-2 border-black' : ''
-                                  } w-10 h-6 rounded-full bg-blue-400`}
+                                  className={cn(
+                                    'w-10 h-6 rounded-full bg-blue-400',
+                                    { 'border-2 border-black': checked }
+                                  )}
                                   title={optionValue.name}
                                 />
                               </div>

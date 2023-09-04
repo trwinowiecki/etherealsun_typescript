@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { cn } from '../utils/tw-utils';
 
 interface CheckoutStepperProps {
   activeStep: number;
@@ -12,9 +13,10 @@ const CheckoutSteps = ({ activeStep = 0, steps }: CheckoutStepperProps) => {
         {steps.map((step, index) => (
           <Fragment key={step.title}>
             <div
-              className={`${index === activeStep ? 'font-bold' : ''} ${
-                index <= activeStep ? 'text-secondary' : ''
-              } `}
+              className={cn({
+                'font-bold': index === activeStep,
+                'text-secondary': index <= activeStep
+              })}
             >
               {step.title}
             </div>

@@ -18,6 +18,7 @@ import { ShippoCommand } from '../enums/ShippoCommands';
 import { ShippoAddressResponse } from '../pages/api/shippo';
 import { UserProfile } from '../types/Supabase';
 import { getErrorShippo } from '../utils/error';
+import { cn } from '../utils/tw-utils';
 
 interface AddressFormProps {
   user?: UserProfile;
@@ -312,13 +313,13 @@ const AddressForm = (props: AddressFormProps) => {
     displayName: string,
     type: HTMLInputTypeAttribute,
     options: RegisterOptions = {},
-    extraClasses: string = '',
+    className: string = '',
     extraProps: any = {}
   ) => {
     return (
       <label
         htmlFor={name}
-        className={`${errors[name] ? 'error' : ''} input-field ${extraClasses}`}
+        className={cn('input-field', className, { error: !!errors[name] })}
       >
         {displayName}
         <input
@@ -337,12 +338,12 @@ const AddressForm = (props: AddressFormProps) => {
     values: string[],
     keys = values,
     options: RegisterOptions = {},
-    extraClasses: string = ''
+    className: string = ''
   ) => {
     return (
       <label
         htmlFor={name}
-        className={`${errors[name] ? 'error' : ''} input-field ${extraClasses}`}
+        className={cn('input-field', className, { error: !!errors[name] })}
       >
         {displayName}
         <select {...register(name, options)} autoComplete="true">
@@ -408,7 +409,7 @@ const AddressForm = (props: AddressFormProps) => {
           )}
           <label
             htmlFor="phoneNumber"
-            className={`${errors.phoneNumber ? 'error' : ''} input-field`}
+            className={cn('input-field', { error: !!errors.phoneNumber })}
           >
             Phone
             <Controller

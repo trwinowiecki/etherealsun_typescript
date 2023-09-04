@@ -1,6 +1,7 @@
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import React from 'react';
+import { cn } from '../../utils/tw-utils';
 
 interface Props {
   listOfItems: any[];
@@ -54,9 +55,9 @@ function CustomListbox({
                 {({ selected }) => (
                   <>
                     <span
-                      className={`block truncate ${
-                        selected ? 'font-medium' : 'font-normal'
-                      }`}
+                      className={cn('block truncate font-normal', {
+                        'font-medium': selected
+                      })}
                     >
                       {item}
                     </span>

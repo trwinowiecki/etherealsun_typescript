@@ -1,5 +1,6 @@
 import { CatalogObject } from 'square';
 
+import { cn } from '../../utils/tw-utils';
 import ProductCard from '../ProductCard';
 
 interface FeaturedProps {
@@ -21,9 +22,9 @@ const Featured = ({
     <>
       <h2 className="tracking-widest">{name.toUpperCase()}</h2>
       <div
-        className={`${
-          products.length === 1 ? 'justify-center' : ''
-        } flex w-full max-w-full gap-4 pt-4 overflow-y-auto`}
+        className={cn('flex w-full max-w-full gap-4 pt-4 overflow-y-auto', {
+          'justify-center': products.length === 1
+        })}
       >
         {products.map(product => (
           <ProductCard

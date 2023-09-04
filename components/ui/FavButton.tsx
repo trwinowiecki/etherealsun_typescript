@@ -5,6 +5,7 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { toast } from 'react-toastify';
 
 import { Database } from '../../types/SupabaseDbTypes';
+import { cn } from '../../utils/tw-utils';
 
 interface FavButtonProps {
   isFavorite: boolean;
@@ -58,9 +59,10 @@ const FavButton = ({
       aria-label="Favorite"
     >
       <HeartIcon
-        className={`w-8 h-8 text-primary-text hover:stroke-[3px] ${
-          isFavorite ? 'fill-negative' : 'fill-white'
-        }`}
+        className={cn(
+          'w-8 h-8 text-primary-text hover:stroke-[3px] fill-white',
+          { 'fill-negative': isFavorite }
+        )}
       />
     </button>
   );

@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { DEFAULT_THEME } from '../styles/themes';
 import { applyTheme } from '../styles/themes/utils';
 
+import { cn } from '../utils/tw-utils';
 import Footer from './Footer';
 import Navbar from './Navbar';
 
@@ -20,23 +21,7 @@ export default function Layout({
   children,
   overridePadding = false
 }: PropsWithChildren<LayoutProps>) {
-  // const { state, dispatch } = useContext(Store);
-  // const cart = state.cart;
-  // const [cartItemsCount, setCartItemsCount] = useState(0);
   const [theme, setTheme] = useState(DEFAULT_THEME);
-  // const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-
-  // const childrenWithProps = React.Children.map(children, child => {
-  //   if (React.isValidElement(child)) {
-  //     return React.cloneElement(child, { userProfile });
-  //   }
-  //   return child;
-  // });
-  // useEffect(() => {
-  //   setCartItemsCount(
-  //     cart?.cartItems.reduce((acc, item) => acc + item.quantity, 0)
-  //   );
-  // }, [cart?.cartItems]);
 
   useEffect(() => {
     applyTheme(theme);
@@ -56,9 +41,9 @@ export default function Layout({
         <Navbar />
         <div className="flex justify-center flex-1 w-full">
           <main
-            className={`${
-              overridePadding ? '' : 'px-4 mt-4'
-            } w-full xl:w-[1200px]`}
+            className={cn('w-full xl:w-[1200px] px-4 mt-4', {
+              'p-0 m-0': overridePadding
+            })}
           >
             {children}
           </main>

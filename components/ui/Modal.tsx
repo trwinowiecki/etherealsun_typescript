@@ -1,6 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 
+import { cn } from '../../utils/tw-utils';
 import Button from './Button';
 
 interface ModalProps {
@@ -77,7 +78,10 @@ const Modal = ({
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel
-                  className={`${minHeight} w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
+                  className={cn(
+                    'w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all',
+                    minHeight
+                  )}
                 >
                   <Dialog.Title
                     as="h3"

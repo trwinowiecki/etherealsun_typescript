@@ -7,7 +7,7 @@ import axios from 'axios';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GooglePay } from 'react-square-web-payments-sdk';
 import { toast } from 'react-toastify';
 import { BatchRetrieveCatalogObjectsResponse } from 'square';
@@ -16,12 +16,12 @@ import Layout from '../components/Layout';
 import SquarePaymentForm from '../components/SquarePaymentForm';
 import { SquareCommand } from '../enums/SquareCommands';
 import { Database } from '../types/SupabaseDbTypes';
-import { Store } from '../utils/Store';
+import { useStoreContext } from '../utils/Store';
 import { handleError } from '../utils/supabaseUtils';
 
 const Cart = () => {
   const router = useRouter();
-  const { state, dispatch } = useContext(Store);
+  const { state, dispatch } = useStoreContext();
   const {
     cart: { cartItems }
   } = state;

@@ -3,7 +3,7 @@ import FavButton from '@ui/FavButton';
 import Image from '@ui/Image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CatalogObject,
   Client,
@@ -14,8 +14,8 @@ import {
 
 import { convertToJSON } from '../pages/api/square';
 import { Database } from '../types/SupabaseDbTypes';
+import { useStoreContext } from '../utils/Store';
 import { getImages } from '../utils/squareUtils';
-import { Store } from '../utils/Store';
 import { handleError } from '../utils/supabaseUtils';
 
 interface ProductCardProps {
@@ -32,7 +32,7 @@ function ProductCard({
   hasFavButton = false
 }: ProductCardProps) {
   const router = useRouter();
-  const { dispatch } = useContext(Store);
+  const { dispatch } = useStoreContext();
   const user = useUser();
   const supabase = useSupabaseClient<Database>();
   const [favorite, setFavorite] = useState(false);

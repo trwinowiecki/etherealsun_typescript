@@ -6,7 +6,7 @@ import FavButton from '@ui/FavButton';
 import Image from '@ui/Image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CatalogObject,
   Client,
@@ -29,7 +29,7 @@ import {
   OptionValue,
   VariationGroup
 } from '../../utils/squareUtils';
-import { Store } from '../../utils/Store';
+import { useStoreContext } from '../../utils/Store';
 import { handleError } from '../../utils/supabaseUtils';
 import { cn } from '../../utils/tw-utils';
 import { convertToJSON } from '../api/square';
@@ -44,7 +44,7 @@ function ProductPage(props: ProductPageProps) {
   const router = useRouter();
   const user = useUser();
   const supabase = useSupabaseClient<Database>();
-  const { dispatch } = useContext(Store);
+  const { dispatch } = useStoreContext();
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
   const [validOptionCombos, setValidOptionCombos] =

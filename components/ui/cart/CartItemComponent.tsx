@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import Image from '@ui/Image';
 import Link from 'next/link';
-import { useContext } from 'react';
 
 import { CartCommand } from '../../../enums/CartCommands';
 import { CartItem } from '../../../types/CartItem';
-import { Store } from '../../../utils/Store';
+import { useStoreContext } from '../../../utils/Store';
 import { cn } from '../../../utils/tw-utils';
 import Quantity from '../Quantity';
 
@@ -20,7 +19,7 @@ function CartItemComponent({
   className = '',
   children = null
 }: CartItemProps) {
-  const { state, dispatch } = useContext(Store);
+  const { state, dispatch } = useStoreContext();
   const {
     cart: { cartItems }
   } = state;

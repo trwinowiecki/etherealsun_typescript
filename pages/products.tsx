@@ -153,49 +153,51 @@ const products = ({ catalog }: ProductsPageProps) => {
 
   return (
     <Layout title="Products">
-      {WindowSize[windowSize] >= WindowSize.md && (
-        <Breadcrumbs pages={breadcrumbs} />
-      )}
-      <div className="relative flex flex-col items-center gap-2 md:flex-row md:items-start">
-        <div className="sticky top-16 z-20 w-full bg-white shadow-md rounded-lg mb-4 md:w-[250px] md:max-w-[300px] md:max-h-[90vh]">
-          {WindowSize[windowSize] >= WindowSize.md ? (
-            <div className="p-4">
-              <div className="mb-4">Filters</div>
-              <div className="max-h-[80vh] overflow-y-auto">
+      <section>
+        {WindowSize[windowSize] >= WindowSize.md && (
+          <Breadcrumbs pages={breadcrumbs} />
+        )}
+        <div className="relative flex flex-col items-center gap-2 md:flex-row md:items-start">
+          <div className="sticky top-16 z-20 w-full bg-white shadow-md rounded-lg mb-4 md:w-[250px] md:max-w-[300px] md:max-h-[90vh]">
+            {WindowSize[windowSize] >= WindowSize.md ? (
+              <div className="p-4">
+                <div className="mb-4">Filters</div>
+                <div className="max-h-[80vh] overflow-y-auto">
+                  <Filter
+                    fields={filterFields}
+                    setSelected={(val, field) => handleFilter(val, field)}
+                  />
+                </div>
+              </div>
+            ) : (
+              <Modal name="Filters">
                 <Filter
                   fields={filterFields}
                   setSelected={(val, field) => handleFilter(val, field)}
                 />
-              </div>
-            </div>
-          ) : (
-            <Modal name="Filters">
-              <Filter
-                fields={filterFields}
-                setSelected={(val, field) => handleFilter(val, field)}
-              />
-            </Modal>
-          )}
-        </div>
-        <div className="flex flex-col items-center w-full gap-6">
-          <ProductList
-            catalog={filteredItems.slice(
-              (page - 1) * pageLength,
-              page * pageLength
+              </Modal>
             )}
-            relatedObjs={catalog.relatedObjects}
-            onClick={(id: string) => handleProductClicked(id)}
-          />
-          <Paginator
-            pageLengthOpts={paginatorLengthOpts}
-            selectedLength={pageLength}
-            currentPage={page}
-            numItems={numItems}
-            onPageChange={val => handlePageChange(val)}
-            onLengthChange={val => setPageLength(val)}
-          />
+          </div>
+          <div className="flex flex-col items-center w-full gap-6">
+            <ProductList
+              catalog={filteredItems.slice(
+                (page - 1) * pageLength,
+                page * pageLength
+              )}
+              relatedObjs={catalog.relatedObjects}
+              onClick={(id: string) => handleProductClicked(id)}
+            />
+            <Paginator
+              pageLengthOpts={paginatorLengthOpts}
+              selectedLength={pageLength}
+              currentPage={page}
+              numItems={numItems}
+              onPageChange={val => handlePageChange(val)}
+              onLengthChange={val => setPageLength(val)}
+            />
+          </div>
         </div>
-      </div>
+      </section>
     </Layout>
   );
 };

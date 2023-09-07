@@ -4,18 +4,16 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import Button from '@ui/Button';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { CartCommand } from '../../../enums/CartCommands';
-import { Store } from '../../../utils/Store';
 
+import { useStoreContext } from '../../../utils/Store';
 import CartItemComponent from './CartItemComponent';
 import Subtotal from './Subtotal';
 
-interface Props {}
-
 function CartPopup() {
-  const { state, dispatch } = useContext(Store);
+  const { state, dispatch } = useStoreContext();
   const {
     cart: { cartItems, popUp = false }
   } = state;

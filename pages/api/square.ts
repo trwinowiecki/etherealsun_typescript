@@ -1,16 +1,21 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { Client, Environment } from 'square';
 
 import { SquareCommand } from '../../enums/SquareCommands';
 
-export interface SquareRequest extends NextApiRequest {
-  body: { type: SquareCommand; id?: string; ids?: string[]; email?: string };
-}
+export type SquareRequest =
+  | { type: SquareCommand.GET_ALL_CATALOG }
+  | { type: SquareCommand.GET_BATCH_CATALOG; ids: string[] }
+  | { type: SquareCommand.GET_ONE_CATALOG; id: string }
+  | { type: SquareCommand.GET_ONE_INVENTORY; id: string }
+  | { type: SquareCommand.GET_OPTIONS_AND_ATTRIBUTES }
+  | { type: SquareCommand.SEARCH_FOR_USER; email: string }
+  | { type: SquareCommand.GET_CUSTOMER; id: string };
 
 const locationId = 'LQC4A379XHYGD';
 const merchantId = 'MLQSF7HKN6S30';
 
-const handler = async (req: SquareRequest, res: NextApiResponse) => {
+const handler = async (req: { body: SquareRequest }, res: NextApiResponse) => {
   const client = new Client({
     accessToken: process.env.SQUARE_ACCESS_TOKEN,
     environment: Environment.Sandbox
@@ -24,39 +29,27 @@ const handler = async (req: SquareRequest, res: NextApiResponse) => {
       res.status(200).send(data);
       break;
     case SquareCommand.GET_BATCH_CATALOG:
-      if (req.body.ids) {
-        data = await getBatchCatalog(client, req.body.ids);
-        res.status(200).send(data);
-      } else {
-        res.status(400).send({ message: 'No search IDs provided' });
-      }
+      data = await getBatchCatalog(client, req.body.ids);
+      res.status(200).send(data);
       break;
     case SquareCommand.GET_ONE_CATALOG:
-      if (req.body.id) {
-        data = await getOneCatalog(client, req.body.id);
-        res.status(200).send(data);
-      } else {
-        res.status(400).send({ message: 'Invalid ID' });
-      }
+      data = await getOneCatalog(client, req.body.id);
+      res.status(200).send(data);
       break;
     case SquareCommand.GET_ONE_INVENTORY:
-      if (req.body.id) {
-        data = await getOneInventory(client, req.body.id);
-        res.status(200).send(data);
-      } else {
-        res.status(400).send({ message: 'Invalid ID' });
-      }
+      data = await getOneInventory(client, req.body.id);
+      res.status(200).send(data);
       break;
     case SquareCommand.SEARCH_FOR_USER:
-      if (req.body.email) {
-        data = await searchForUser(client, req.body.email);
-        res.status(200).send(data);
-      } else {
-        res.status(400).send({ message: 'Invalid email' });
-      }
+      data = await searchForUser(client, req.body.email);
+      res.status(200).send(data);
       break;
     case SquareCommand.GET_OPTIONS_AND_ATTRIBUTES:
       res.status(418).send('TODO');
+      break;
+    case SquareCommand.GET_CUSTOMER:
+      data = await getCustomer(client, req.body.id);
+      res.status(200).send(data);
       break;
     default:
       res.status(404).send({ message: 'Request not found' });
@@ -130,6 +123,17 @@ const searchForUser = async (client: Client, email: string) => {
         }
       }
     });
+  } catch (error) {
+    res = error;
+  }
+
+  return convertToJSON(res);
+};
+
+const getCustomer = async (client: Client, id: string) => {
+  let res;
+  try {
+    res = await client.customersApi.retrieveCustomer(id);
   } catch (error) {
     res = error;
   }

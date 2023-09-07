@@ -14,10 +14,9 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import Layout from '../components/Layout';
+import { UserProfileSupa } from '../types/Supabase';
 import { Database } from '../types/SupabaseDbTypes';
 import { handleError } from '../utils/supabaseUtils';
-
-type Profiles = Database['public']['Tables']['profiles']['Row'];
 
 const account = () => {
   const router = useRouter();
@@ -25,8 +24,9 @@ const account = () => {
   const user = useUser();
   const session = useSession();
   const [loading, setLoading] = useState(false);
-  const [firstName, setFirstName] = useState<Profiles['first_name']>(null);
-  const [lastName, setLastName] = useState<Profiles['last_name']>(null);
+  const [firstName, setFirstName] =
+    useState<UserProfileSupa['first_name']>(null);
+  const [lastName, setLastName] = useState<UserProfileSupa['last_name']>(null);
   const [redirect, setRedirect] = useState('/');
   const [authView, setAuthView] = useState<ViewType>('sign_in');
 
@@ -83,8 +83,8 @@ const account = () => {
     firstName,
     lastName
   }: {
-    firstName: Profiles['first_name'];
-    lastName: Profiles['last_name'];
+    firstName: UserProfileSupa['first_name'];
+    lastName: UserProfileSupa['last_name'];
   }) {
     try {
       setLoading(true);

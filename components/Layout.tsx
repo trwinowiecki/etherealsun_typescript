@@ -37,20 +37,19 @@ export default function Layout({
 
       <ToastContainer position="bottom-center" limit={1} />
 
-      <div className="flex flex-col justify-between min-h-screen wrapper snap-y snap-mandatory">
+      <main className="flex flex-col justify-between min-h-screen wrapper snap-y snap-mandatory">
         <Navbar />
-        <div className="flex justify-center flex-1 w-full">
-          <main
-            className={cn('w-full xl:w-[1200px] px-4 mt-4', {
-              'p-0 m-0': overridePadding
-            })}
-          >
-            {children}
-          </main>
-        </div>
+        <section
+          className={cn(
+            'flex justify-center flex-1 w-full mx-auto xl:w-[1200px] px-4 mt-4 [&>*]:w-full',
+            { 'p-0 my-0': overridePadding }
+          )}
+        >
+          {children}
+        </section>
         <Footer />
         <CartPopup />
-      </div>
+      </main>
     </>
   );
 }

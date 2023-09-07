@@ -10,16 +10,16 @@ import {
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { forwardRef, useContext, useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { CartCommand } from '../enums/CartCommands';
+import { UserProfileSupa } from '../types/Supabase';
 import { Database } from '../types/SupabaseDbTypes';
-import { Store } from '../utils/Store';
+import { useStoreContext } from '../utils/Store';
 import { handleError } from '../utils/supabaseUtils';
 import { cn } from '../utils/tw-utils';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
 interface MyLinkProps {
   children: React.ReactNode;
   href: string;
@@ -65,12 +65,31 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
 
 function Navbar() {
   const router = useRouter();
-  const { state, dispatch } = useContext(Store);
+  const { state, dispatch } = useStoreContext();
   const session = useSession();
   const user = useUser();
   const supabase = useSupabaseClient<Database>();
-  const [userProfile, setUserProfile] = useState<Profile>();
+  const [userProfile, setUserProfile] = useState<UserProfileSupa>();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log('here', event, session);
+      if (
+        event === 'SIGNED_IN' ||
+        event === 'INITIAL_SESSION' ||
+        event === 'USER_UPDATED'
+      ) {
+        // getUser(session?.user as User).then(user => console.log('user', user));
+        dispatch({
+          type: CartCommand.SET_USER,
+          payload: session?.user || null
+        });
+      } else if (event === 'SIGNED_OUT') {
+        // dispatch({ type: CartCommand.SET_USER, payload: null });
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();

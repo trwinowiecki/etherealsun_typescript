@@ -14,7 +14,6 @@ const getErrorSquare = (err: Error) =>
     : `${err.category} - ${err.code}`;
 
 const getErrorShippo = (err: ShippoAddressResponse | AxiosError) => {
-  console.log(err);
   if (err instanceof AxiosError && err.code === 'ERR_BAD_RESPONSE') {
     return err.message;
   }

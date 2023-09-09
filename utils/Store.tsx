@@ -1,14 +1,9 @@
 import { createContext, useContext, useReducer } from 'react';
 
-import { SupabaseClient, User } from '@supabase/auth-helpers-react';
-import axios, { AxiosResponse } from 'axios';
-import { RetrieveCustomerResponse } from 'square';
 import { CartCommand } from '../enums/CartCommands';
-import { SquareCommand } from '../enums/SquareCommands';
 import { Cart, ShippingAddress } from '../types/Cart.model';
 import { CartItem } from '../types/CartItem';
 import { UserSupaFull } from '../types/Supabase';
-import { Database } from '../types/SupabaseDbTypes';
 
 interface StoreContextInterface {
   state: State;
@@ -32,10 +27,7 @@ type Action =
     }
   | { type: CartCommand.SAVE_PAYMENT_METHOD; payload: string }
   | { type: CartCommand.POP_UP; payload: boolean }
-  | {
-      type: CartCommand.SET_USER;
-      payload: { user: User | null; supabaseClient: SupabaseClient<Database> };
-    };
+  | { type: CartCommand.SET_USER; payload: UserSupaFull | null };
 
 const CART_KEY = 'cart';
 
@@ -68,8 +60,6 @@ export const useStoreContext = () => {
 };
 
 function reducer(state: State, action: Action): State {
-  console.log('action', action);
-  console.log('state', state);
   if (typeof window === undefined) {
     return initialState;
   } else {
@@ -179,55 +169,15 @@ function reducer(state: State, action: Action): State {
         };
       }
       case CartCommand.SET_USER: {
-        if (action.payload === null) {
-          return { ...state, user: {} as UserSupaFull };
-        }
-        getUser(action.payload.user, action.payload.supabaseClient).then(
-          user => ({
-            ...state,
-            user: user
-          })
-        );
+        return {
+          ...state,
+          user: action.payload || ({} as UserSupaFull)
+        };
       }
       default:
         return state;
     }
   }
-}
-
-async function getUser(
-  user: User,
-  supabase: SupabaseClient
-): Promise<UserSupaFull> {
-  let userProfile: UserSupaFull = user as UserSupaFull;
-
-  const res = await supabase.from('profiles').select().eq('id', user.id);
-
-  if (res && res.data && res.data[0]) {
-    userProfile = { ...res.data[0], ...userProfile };
-  }
-
-  if (userProfile.square_id) {
-    const data: AxiosResponse<RetrieveCustomerResponse> = await axios.request({
-      method: 'POST',
-      url: 'api/square',
-      data: {
-        type: SquareCommand.GET_CUSTOMER,
-        id: userProfile.square_id
-      }
-    });
-
-    if (data && data.data) {
-      userProfile = {
-        ...userProfile,
-        square_customer: data.data.customer || {}
-      };
-    }
-  }
-
-  console.log('userProfile', userProfile);
-
-  return userProfile;
 }
 
 const setCart = (value: any) => {

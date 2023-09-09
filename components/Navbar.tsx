@@ -3,6 +3,8 @@
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import {
+  Session,
+  User,
   useSession,
   useSupabaseClient,
   useUser
@@ -13,8 +15,11 @@ import { useRouter } from 'next/router';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
+import axios, { AxiosResponse } from 'axios';
+import { RetrieveCustomerResponse } from 'square';
 import { CartCommand } from '../enums/CartCommands';
-import { UserProfileSupa } from '../types/Supabase';
+import { SquareCommand } from '../enums/SquareCommands';
+import { UserProfileSupa, UserSupaFull } from '../types/Supabase';
 import { Database } from '../types/SupabaseDbTypes';
 import { useStoreContext } from '../utils/Store';
 import { handleError } from '../utils/supabaseUtils';
@@ -69,24 +74,56 @@ function Navbar() {
   const session = useSession();
   const user = useUser();
   const supabase = useSupabaseClient<Database>();
-  const [userProfile, setUserProfile] = useState<UserProfileSupa>();
+  const [userProfileSupa, setUserProfileSupa] = useState<UserProfileSupa>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const getUser = async (user: User) => {
+      let userProfile: UserSupaFull = user as UserSupaFull;
+      const res = await supabase.from('profiles').select().eq('id', user.id);
+
+      if (res && res.data && res.data[0]) {
+        userProfile = { ...res.data[0], ...userProfile };
+      }
+
+      if (userProfile.square_id) {
+        const data: AxiosResponse<RetrieveCustomerResponse> =
+          await axios.request({
+            method: 'POST',
+            url: 'api/square',
+            data: {
+              type: SquareCommand.GET_CUSTOMER,
+              id: userProfile.square_id
+            }
+          });
+
+        if (data && data.data) {
+          userProfile = {
+            ...userProfile,
+            square_customer: data.data.customer || {}
+          };
+        }
+      }
+
+      return userProfile;
+    };
+
+    const dispatchUser = async (session: Session | null) => {
+      dispatch({
+        type: CartCommand.SET_USER,
+        payload: await getUser(session?.user as User)
+      });
+    };
+
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log('here', event, session);
       if (
         event === 'SIGNED_IN' ||
         event === 'INITIAL_SESSION' ||
         event === 'USER_UPDATED'
       ) {
-        // getUser(session?.user as User).then(user => console.log('user', user));
-        dispatch({
-          type: CartCommand.SET_USER,
-          payload: session?.user || null
-        });
+        dispatchUser(session);
       } else if (event === 'SIGNED_OUT') {
-        // dispatch({ type: CartCommand.SET_USER, payload: null });
+        dispatch({ type: CartCommand.SET_USER, payload: null });
       }
     });
   }, []);
@@ -117,7 +154,7 @@ function Navbar() {
     }
 
     if (data) {
-      setUserProfile(data);
+      setUserProfileSupa(data);
     }
 
     setLoading(false);
@@ -166,8 +203,8 @@ function Navbar() {
         <Menu as="div" className="z-50">
           <Menu.Button className="flex items-center h-full">
             <>
-              {userProfile?.first_name && (
-                <span className="pl-2">{userProfile.first_name}</span>
+              {userProfileSupa?.first_name && (
+                <span className="pl-2">{userProfileSupa.first_name}</span>
               )}
               <UserCircleIcon
                 className="w-10 h-10 p-2"
@@ -185,7 +222,7 @@ function Navbar() {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 overflow-hidden origin-top-right rounded-md shadow-lg right-4 ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
-              {userProfile ? (
+              {userProfileSupa ? (
                 <>
                   <Menu.Item>
                     {({ active }) => (

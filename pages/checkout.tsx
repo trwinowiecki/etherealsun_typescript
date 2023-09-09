@@ -49,19 +49,17 @@ const checkout = () => {
 
   const addressSubmit = (address: Address) => {
     setAddress(address);
-    console.log('address', address);
     handleStepChange(activeStep + 1);
   };
 
   const renderSwitch = () => {
     switch (steps[activeStep].title) {
       case 'Account':
-        if (state.user.id) {
+        if (state.user?.id) {
           handleStepChange(activeStep + 1);
           return;
         }
       case 'Address':
-        console.log('user', state.user);
         return (
           <AddressForm
             onSubmit={addressSubmit}

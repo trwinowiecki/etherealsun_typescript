@@ -16,12 +16,12 @@ import Modal from '@ui/Modal';
 import PhoneInput from 'react-phone-number-input/input';
 import { ShippoCommand } from '../enums/ShippoCommands';
 import { ShippoAddressResponse } from '../pages/api/shippo';
-import { UserProfile } from '../types/Supabase';
+import { UserSupaFull } from '../types/Supabase';
 import { getErrorShippo } from '../utils/error';
 import { cn } from '../utils/tw-utils';
 
 interface AddressFormProps {
-  user?: UserProfile;
+  user?: UserSupaFull;
   onSubmit: (data: AddressForm) => void;
   address?: AddressForm;
 }
@@ -44,31 +44,28 @@ const AddressForm = (props: AddressFormProps) => {
     let newAddress: AddressForm = {};
 
     if (user) {
-      newAddress = user.square_customer?.address
-        ? {
-            ...defaultAddress,
-            ...user.square_customer.address,
-            firstName:
-              user.first_name ??
-              user.square_customer.givenName ??
-              user.square_customer.address.firstName ??
-              defaultAddress.firstName ??
-              '',
-            lastName:
-              user.last_name ??
-              user.square_customer.familyName ??
-              user.square_customer.address.lastName ??
-              defaultAddress.lastName ??
-              '',
-            phoneNumber:
-              user.square_customer.phoneNumber ??
-              defaultAddress.phoneNumber ??
-              '',
-            email:
-              user.square_customer.emailAddress ?? defaultAddress.email ?? ''
-          }
-        : defaultAddress;
+      console.log(user);
+      newAddress = {
+        ...defaultAddress,
+        ...user.square_customer?.address,
+        firstName:
+          user.first_name ||
+          user.square_customer?.givenName ||
+          user.square_customer?.address?.firstName ||
+          defaultAddress.firstName ||
+          '',
+        lastName:
+          user.last_name ||
+          user.square_customer?.familyName ||
+          user.square_customer?.address?.lastName ||
+          defaultAddress.lastName ||
+          '',
+        phoneNumber:
+          user.square_customer?.phoneNumber || defaultAddress.phoneNumber || '',
+        email: user.square_customer?.emailAddress || defaultAddress.email || ''
+      };
     }
+    console.log('newAddress', newAddress);
 
     if (address) {
       newAddress = {
@@ -122,6 +119,7 @@ const AddressForm = (props: AddressFormProps) => {
         email: address.email || newAddress.email || defaultAddress.email || ''
       };
     }
+    console.log('newAddress2', newAddress);
 
     setDefaultAddress(newAddress);
     reset(newAddress);

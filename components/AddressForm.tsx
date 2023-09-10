@@ -110,7 +110,10 @@ const AddressForm = (props: AddressFormProps) => {
           defaultAddress.postalCode ||
           '',
         country:
-          address.country || newAddress.country || defaultAddress.country || '',
+          address.country ||
+          newAddress.country ||
+          defaultAddress.country ||
+          'US',
         phoneNumber:
           address.phoneNumber ||
           newAddress.phoneNumber ||

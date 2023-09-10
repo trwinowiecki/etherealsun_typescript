@@ -16,7 +16,7 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import axios, { AxiosResponse } from 'axios';
-import { RetrieveCustomerResponse } from 'square';
+import { RetrieveCustomerResponse, SearchCustomersResponse } from 'square';
 import { CartCommand } from '../enums/CartCommands';
 import { SquareCommand } from '../enums/SquareCommands';
 import { UserProfileSupa, UserSupaFull } from '../types/Supabase';
@@ -103,8 +103,38 @@ function Navbar() {
             square_customer: data.data.customer || {}
           };
         }
-      }
+      } else {
+        const data: AxiosResponse<SearchCustomersResponse> =
+          await axios.request({
+            method: 'POST',
+            url: 'api/square',
+            data: {
+              type: SquareCommand.SEARCH_FOR_USER,
+              email: userProfile.email
+            }
+          });
 
+        if (
+          data &&
+          data.data &&
+          data.data.customers &&
+          data.data.customers[0]
+        ) {
+          userProfile = {
+            ...userProfile,
+            square_id: data.data.customers[0].id || '',
+            square_customer: data.data.customers[0] || {}
+          };
+        }
+
+        if (userProfile.square_id) {
+          await supabase
+            .from('profiles')
+            .update({ square_id: userProfile.square_id })
+            .eq('id', userProfile.id);
+        }
+      }
+      console.log(userProfile);
       return userProfile;
     };
 

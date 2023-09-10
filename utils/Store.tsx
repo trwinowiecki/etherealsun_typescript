@@ -1,7 +1,8 @@
 import { createContext, useContext, useReducer } from 'react';
 
+import AddressForm from '../components/AddressForm';
 import { CartCommand } from '../enums/CartCommands';
-import { Cart, ShippingAddress } from '../types/Cart.model';
+import { Cart } from '../types/Cart.model';
 import { CartItem } from '../types/CartItem';
 import { UserSupaFull } from '../types/Supabase';
 
@@ -23,7 +24,7 @@ type Action =
   | { type: CartCommand.CLEAR; payload: CartItem }
   | {
       type: CartCommand.SAVE_SHIPPING_ADDRESS;
-      payload: ShippingAddress;
+      payload: AddressForm;
     }
   | { type: CartCommand.SAVE_PAYMENT_METHOD; payload: string }
   | { type: CartCommand.POP_UP; payload: boolean }
@@ -121,7 +122,7 @@ function reducer(state: State, action: Action): State {
           ...state,
           cart: {
             cartItems: [],
-            shippingAddress: {} as ShippingAddress,
+            shippingAddress: {} as AddressForm,
             paymentMethod: '',
             popUp: false
           }

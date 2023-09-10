@@ -1,26 +1,45 @@
-import { TokenResult, VerifyBuyerResponseDetails } from '@square/web-sdk';
+import {
+  ChargeVerifyBuyerDetails,
+  TokenResult,
+  VerifyBuyerResponseDetails
+} from '@square/web-sdk';
 import { PaymentForm, PaymentFormProps } from 'react-square-web-payments-sdk';
+import { useStoreContext } from '../utils/Store';
+import { getTotalPrice } from '../utils/cart-utils';
 
-interface SquarePaymentFormProps
-  extends Omit<
-    PaymentFormProps,
-    'applicationId' | 'cardTokenizeResponseReceived' | 'locationId'
-  > {}
+type SquarePaymentFormProps = Omit<
+  PaymentFormProps,
+  'applicationId' | 'cardTokenizeResponseReceived' | 'locationId'
+>;
 
 const SquarePaymentForm = ({ children, ...props }: SquarePaymentFormProps) => {
+  const { state } = useStoreContext();
+
+  const handleCardTokenizeResponseReceived = (
+    token: TokenResult,
+    verifiedBuyer?: VerifyBuyerResponseDetails | null | undefined
+  ) => {
+    console.info('Token:', token);
+    console.info('Verified Buyer:', verifiedBuyer);
+    throw new Error('Function not implemented.');
+  };
+
+  const handleCreateVerificationDetails = (): ChargeVerifyBuyerDetails => {
+    return {
+      amount: getTotalPrice(state.cart.cartItems),
+      currencyCode: 'USD',
+      intent: 'CHARGE',
+      billingContact: {}
+    };
+  };
+
   return (
     <PaymentForm
       {...props}
-      applicationId="sandbox-sq0idb-QQj2hsS8eecoEziUGE0ufw"
-      cardTokenizeResponseReceived={(
-        token: TokenResult,
-        verifiedBuyer?: VerifyBuyerResponseDetails | null | undefined
-      ) => {
-        console.info('Token:', token);
-        console.info('Verified Buyer:', verifiedBuyer);
-        throw new Error('Function not implemented.');
-      }}
-      locationId="LQC4A379XHYGD"
+      applicationId={process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID || ''}
+      cardTokenizeResponseReceived={handleCardTokenizeResponseReceived}
+      createVerificationDetails={handleCreateVerificationDetails}
+      locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID || ''}
     >
       {children}
     </PaymentForm>

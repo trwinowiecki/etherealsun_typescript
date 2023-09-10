@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { CreditCard } from 'react-square-web-payments-sdk';
 
+import { PaymentRequestOptions } from '@square/web-sdk';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { User } from '@supabase/auth-helpers-react';
 import Button from '@ui/Button';
 import { useRouter } from 'next/router';
-import { Address } from 'square';
 import AddressForm from '../components/AddressForm';
 import CheckoutSteps from '../components/CheckoutSteps';
 import Layout from '../components/Layout';
 import SquarePaymentForm from '../components/SquarePaymentForm';
+import { CartCommand } from '../enums/CartCommands';
 import { Database } from '../types/SupabaseDbTypes';
 import { useStoreContext } from '../utils/Store';
+import { getLineItems, getTotalPrice } from '../utils/cart-utils';
 
 type CheckoutProps = {
   initialUser: User | null;
@@ -27,8 +29,10 @@ const checkout = ({ initialUser }: CheckoutProps) => {
   ]);
 
   const [address, setAddress] = useState<AddressForm>({});
-  const { state } = useStoreContext();
+  const { state, dispatch } = useStoreContext();
   const router = useRouter();
+
+  console.log('state', state);
 
   useEffect(() => {
     if (!initialUser?.id) {
@@ -52,9 +56,24 @@ const checkout = ({ initialUser }: CheckoutProps) => {
     }
   };
 
-  const addressSubmit = (address: Address) => {
+  const addressSubmit = (address: AddressForm) => {
+    dispatch({ type: CartCommand.SAVE_SHIPPING_ADDRESS, payload: address });
     setAddress(address);
     handleStepChange(activeStep + 1);
+  };
+
+  const paymentOptions = (): PaymentRequestOptions => {
+    return {
+      countryCode: state.cart.shippingAddress?.country || 'US',
+      currencyCode: 'USD',
+      total: {
+        amount: getTotalPrice(state.cart.cartItems),
+        label: 'total'
+      },
+      requestBillingContact: true,
+      shippingContact: state.cart.shippingAddress,
+      lineItems: getLineItems(state.cart)
+    };
   };
 
   const renderSwitch = () => {
@@ -74,7 +93,7 @@ const checkout = ({ initialUser }: CheckoutProps) => {
         );
       case 'Payment':
         return (
-          <SquarePaymentForm>
+          <SquarePaymentForm createPaymentRequest={paymentOptions}>
             <CreditCard />
           </SquarePaymentForm>
         );

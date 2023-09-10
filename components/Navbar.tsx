@@ -117,9 +117,10 @@ function Navbar() {
 
     supabase.auth.onAuthStateChange((event, session) => {
       if (
-        event === 'SIGNED_IN' ||
-        event === 'INITIAL_SESSION' ||
-        event === 'USER_UPDATED'
+        (event === 'SIGNED_IN' ||
+          event === 'INITIAL_SESSION' ||
+          event === 'USER_UPDATED') &&
+        session?.user.id !== state.user?.id
       ) {
         dispatchUser(session);
       } else if (event === 'SIGNED_OUT') {

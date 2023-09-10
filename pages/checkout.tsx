@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { CreditCard } from 'react-square-web-payments-sdk';
 
-import { useUser } from '@supabase/auth-helpers-react';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { User } from '@supabase/auth-helpers-react';
 import Button from '@ui/Button';
 import { useRouter } from 'next/router';
 import { Address } from 'square';
@@ -9,9 +10,14 @@ import AddressForm from '../components/AddressForm';
 import CheckoutSteps from '../components/CheckoutSteps';
 import Layout from '../components/Layout';
 import SquarePaymentForm from '../components/SquarePaymentForm';
+import { Database } from '../types/SupabaseDbTypes';
 import { useStoreContext } from '../utils/Store';
 
-const checkout = () => {
+type CheckoutProps = {
+  initialUser: User | null;
+};
+
+const checkout = ({ initialUser }: CheckoutProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [steps, setSteps] = useState([
     { title: 'Account', enabled: true },
@@ -22,11 +28,10 @@ const checkout = () => {
 
   const [address, setAddress] = useState<AddressForm>({});
   const { state } = useStoreContext();
-  const userAuth = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!userAuth?.id) {
+    if (!initialUser?.id) {
       router.push('/account?callbackUrl=/checkout');
     }
   }, []);
@@ -93,5 +98,19 @@ const checkout = () => {
     </Layout>
   );
 };
+
+export async function getServerSideProps(context: any) {
+  // Fetch user authentication data from Supabase on the server-side
+  const supabase = createServerSupabaseClient<Database>(context);
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  return {
+    props: {
+      initialUser: user // Pass the user data as a prop
+    }
+  };
+}
 
 export default checkout;

@@ -2,13 +2,7 @@
 
 import { Menu, Transition } from '@headlessui/react';
 import { ShoppingBagIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import {
-  Session,
-  User,
-  useSession,
-  useSupabaseClient,
-  useUser
-} from '@supabase/auth-helpers-react';
+import { Session, User, useSupabaseClient } from '@supabase/auth-helpers-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -16,13 +10,16 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import axios, { AxiosResponse } from 'axios';
-import { RetrieveCustomerResponse, SearchCustomersResponse } from 'square';
+import {
+  CreateCustomerResponse,
+  RetrieveCustomerResponse,
+  SearchCustomersResponse
+} from 'square';
 import { CartCommand } from '../enums/CartCommands';
 import { SquareCommand } from '../enums/SquareCommands';
-import { UserProfileSupa, UserSupaFull } from '../types/Supabase';
+import { UserSupaFull } from '../types/Supabase';
 import { Database } from '../types/SupabaseDbTypes';
 import { useStoreContext } from '../utils/Store';
-import { handleError } from '../utils/supabaseUtils';
 import { cn } from '../utils/tw-utils';
 
 interface MyLinkProps {
@@ -71,11 +68,11 @@ const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>((props, ref) => {
 function Navbar() {
   const router = useRouter();
   const { state, dispatch } = useStoreContext();
-  const session = useSession();
-  const user = useUser();
   const supabase = useSupabaseClient<Database>();
-  const [userProfileSupa, setUserProfileSupa] = useState<UserProfileSupa>();
-  const [loading, setLoading] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState(crypto.randomUUID());
+  const {
+    cart: { cartItems }
+  } = state;
 
   useEffect(() => {
     const getUser = async (user: User) => {
@@ -110,7 +107,8 @@ function Navbar() {
             url: 'api/square',
             data: {
               type: SquareCommand.SEARCH_FOR_USER,
-              email: userProfile.email
+              email: userProfile.email,
+              refId: userProfile.id
             }
           });
 
@@ -125,6 +123,25 @@ function Navbar() {
             square_id: data.data.customers[0].id || '',
             square_customer: data.data.customers[0] || {}
           };
+        } else {
+          const data: AxiosResponse<CreateCustomerResponse> =
+            await axios.request({
+              method: 'POST',
+              url: 'api/square',
+              data: {
+                type: SquareCommand.CREATE_CUSTOMER,
+                customer: userProfile,
+                idempotencyKey
+              }
+            });
+
+          if (data && data.data && data.data.customer) {
+            userProfile = {
+              ...userProfile,
+              square_id: data.data.customer?.id || '',
+              square_customer: data.data.customer || {}
+            };
+          }
         }
 
         if (userProfile.square_id) {
@@ -134,7 +151,7 @@ function Navbar() {
             .eq('id', userProfile.id);
         }
       }
-      console.log(userProfile);
+
       return userProfile;
     };
 
@@ -142,6 +159,19 @@ function Navbar() {
       dispatch({
         type: CartCommand.SET_USER,
         payload: await getUser(session?.user as User)
+      });
+    };
+
+    const updateUser = async () => {
+      await axios({
+        method: 'POST',
+        url: 'api/square',
+        data: {
+          type: SquareCommand.UPDATE_CUSTOMER,
+          customer: state.user,
+          id: state.user.square_id,
+          address: state.cart.shippingAddress
+        }
       });
     };
 
@@ -156,44 +186,12 @@ function Navbar() {
       } else if (event === 'SIGNED_OUT') {
         dispatch({ type: CartCommand.SET_USER, payload: null });
       }
+
+      if (event === 'USER_UPDATED') {
+        updateUser();
+      }
     });
   }, []);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    if (session) {
-      getProfile(controller.signal);
-    }
-
-    return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
-
-  async function getProfile(signal: AbortSignal) {
-    setLoading(true);
-
-    const { data, error, status } = await supabase
-      .from('profiles')
-      .select()
-      .eq('id', user?.id)
-      .abortSignal(signal)
-      .single();
-
-    if (error && status !== 406) {
-      handleError(error);
-    }
-
-    if (data) {
-      setUserProfileSupa(data);
-    }
-
-    setLoading(false);
-  }
-
-  const {
-    cart: { cartItems }
-  } = state;
 
   const handleSignOut = async () => {
     try {
@@ -234,8 +232,8 @@ function Navbar() {
         <Menu as="div" className="z-50">
           <Menu.Button className="flex items-center h-full">
             <>
-              {userProfileSupa?.first_name && (
-                <span className="pl-2">{userProfileSupa.first_name}</span>
+              {state.user?.first_name && (
+                <span className="pl-2">{state.user.first_name}</span>
               )}
               <UserCircleIcon
                 className="w-10 h-10 p-2"
@@ -253,7 +251,7 @@ function Navbar() {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute z-30 flex flex-col justify-start w-auto mt-4 overflow-hidden origin-top-right rounded-md shadow-lg right-4 ring-1 ring-black ring-opacity-5 focus:outline-none bg-primary-background">
-              {userProfileSupa ? (
+              {state.user ? (
                 <>
                   <Menu.Item>
                     {({ active }) => (

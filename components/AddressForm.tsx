@@ -44,7 +44,6 @@ const AddressForm = (props: AddressFormProps) => {
     let newAddress: AddressForm = {};
 
     if (user) {
-      console.log(user);
       newAddress = {
         ...defaultAddress,
         ...user.square_customer?.address,
@@ -65,7 +64,6 @@ const AddressForm = (props: AddressFormProps) => {
         email: user.square_customer?.emailAddress || defaultAddress.email || ''
       };
     }
-    console.log('newAddress', newAddress);
 
     if (address) {
       newAddress = {
@@ -122,7 +120,6 @@ const AddressForm = (props: AddressFormProps) => {
         email: address.email || newAddress.email || defaultAddress.email || ''
       };
     }
-    console.log('newAddress2', newAddress);
 
     setDefaultAddress(newAddress);
     reset(newAddress);

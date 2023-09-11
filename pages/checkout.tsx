@@ -32,8 +32,6 @@ const checkout = ({ initialUser }: CheckoutProps) => {
   const { state, dispatch } = useStoreContext();
   const router = useRouter();
 
-  console.log('state', state);
-
   useEffect(() => {
     if (!initialUser?.id) {
       router.push('/account?callbackUrl=/checkout');

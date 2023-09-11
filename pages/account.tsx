@@ -13,9 +13,12 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
+import axios from 'axios';
 import Layout from '../components/Layout';
+import { SquareCommand } from '../enums/SquareCommands';
 import { UserProfileSupa } from '../types/Supabase';
 import { Database } from '../types/SupabaseDbTypes';
+import { useStoreContext } from '../utils/Store';
 import { handleError } from '../utils/supabaseUtils';
 
 const account = () => {
@@ -23,11 +26,12 @@ const account = () => {
   const supabase = useSupabaseClient<Database>();
   const user = useUser();
   const session = useSession();
+  const { state } = useStoreContext();
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] =
     useState<UserProfileSupa['first_name']>(null);
   const [lastName, setLastName] = useState<UserProfileSupa['last_name']>(null);
-  const [redirect, setRedirect] = useState('/');
+  const [redirect, setRedirect] = useState<string | null>(null);
   const [authView, setAuthView] = useState<ViewType>('sign_in');
 
   useEffect(() => {
@@ -103,6 +107,17 @@ const account = () => {
         return;
       }
       toast.success('Profile updated!');
+
+      await axios({
+        method: 'POST',
+        url: 'api/square',
+        data: {
+          type: SquareCommand.UPDATE_CUSTOMER,
+          customer: state.user,
+          id: state.user.square_id,
+          address: state.cart.shippingAddress
+        }
+      });
     } catch (error) {
       toast.error('Error updating the data!');
     } finally {
@@ -112,7 +127,7 @@ const account = () => {
   }
 
   supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
+    if (event === 'SIGNED_IN' && redirect != null) {
       router.push(redirect);
     }
     if (event === 'SIGNED_OUT' || event === 'USER_UPDATED') {

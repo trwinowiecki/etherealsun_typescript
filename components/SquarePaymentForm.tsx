@@ -3,7 +3,10 @@ import {
   TokenResult,
   VerifyBuyerResponseDetails
 } from '@square/web-sdk';
+import axios from 'axios';
+import { useState } from 'react';
 import { PaymentForm, PaymentFormProps } from 'react-square-web-payments-sdk';
+import { SquareCommand } from '../enums/SquareCommands';
 import { useStoreContext } from '../utils/Store';
 import { getTotalPrice } from '../utils/cart-utils';
 
@@ -14,6 +17,7 @@ type SquarePaymentFormProps = Omit<
 
 const SquarePaymentForm = ({ children, ...props }: SquarePaymentFormProps) => {
   const { state } = useStoreContext();
+  const [idempotencyKey, setIdempotencyKey] = useState(crypto.randomUUID());
 
   const handleCardTokenizeResponseReceived = (
     token: TokenResult,
@@ -21,7 +25,7 @@ const SquarePaymentForm = ({ children, ...props }: SquarePaymentFormProps) => {
   ) => {
     console.info('Token:', token);
     console.info('Verified Buyer:', verifiedBuyer);
-    throw new Error('Function not implemented.');
+    takePayment(token.token || '');
   };
 
   const handleCreateVerificationDetails = (): ChargeVerifyBuyerDetails => {
@@ -29,8 +33,23 @@ const SquarePaymentForm = ({ children, ...props }: SquarePaymentFormProps) => {
       amount: getTotalPrice(state.cart.cartItems),
       currencyCode: 'USD',
       intent: 'CHARGE',
-      billingContact: {}
+      billingContact: {
+        ...state.user.square_customer
+      }
     };
+  };
+
+  const takePayment = async (token: string) => {
+    const res = await axios('/api/square', {
+      method: 'POST',
+      data: {
+        type: SquareCommand.TAKE_PAYMENT,
+        token,
+        amount: getTotalPrice(state.cart.cartItems),
+        idempotencyKey
+      }
+    });
+    console.log(res);
   };
 
   return (

@@ -183,6 +183,7 @@ const searchForUserByRefId = async (client: Client, id: string) => {
 
 const getCustomer = async (client: Client, id: string) => {
   const res = await client.customersApi.retrieveCustomer(id);
+  console.log('getCustomer', res);
 
   return convertToJSON(res);
 };

@@ -87,7 +87,7 @@ function Navbar() {
         const data: AxiosResponse<RetrieveCustomerResponse> =
           await axios.request({
             method: 'POST',
-            url: 'api/square',
+            url: '/api/square',
             data: {
               type: SquareCommand.GET_CUSTOMER,
               id: userProfile.square_id
@@ -104,7 +104,7 @@ function Navbar() {
         const data: AxiosResponse<SearchCustomersResponse> =
           await axios.request({
             method: 'POST',
-            url: 'api/square',
+            url: '/api/square',
             data: {
               type: SquareCommand.SEARCH_FOR_USER,
               email: userProfile.email,
@@ -127,7 +127,7 @@ function Navbar() {
           const data: AxiosResponse<CreateCustomerResponse> =
             await axios.request({
               method: 'POST',
-              url: 'api/square',
+              url: '/api/square',
               data: {
                 type: SquareCommand.CREATE_CUSTOMER,
                 customer: userProfile,
@@ -165,7 +165,7 @@ function Navbar() {
     const updateUser = async () => {
       await axios({
         method: 'POST',
-        url: 'api/square',
+        url: '/api/square',
         data: {
           type: SquareCommand.UPDATE_CUSTOMER,
           customer: state.user,

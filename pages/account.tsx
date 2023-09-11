@@ -110,7 +110,7 @@ const account = () => {
 
       await axios({
         method: 'POST',
-        url: 'api/square',
+        url: '/api/square',
         data: {
           type: SquareCommand.UPDATE_CUSTOMER,
           customer: state.user,

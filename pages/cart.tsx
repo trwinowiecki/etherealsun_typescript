@@ -4,7 +4,6 @@ import CartItemComponent from '@ui/cart/CartItemComponent';
 import Subtotal, { calcSubtotal } from '@ui/cart/Subtotal';
 import Featured from '@ui/Featured';
 import axios from 'axios';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -12,6 +11,7 @@ import { GooglePay } from 'react-square-web-payments-sdk';
 import { toast } from 'react-toastify';
 import { BatchRetrieveCatalogObjectsResponse } from 'square';
 
+import dynamic from 'next/dynamic';
 import Layout from '../components/Layout';
 import SquarePaymentForm from '../components/SquarePaymentForm';
 import { SquareCommand } from '../enums/SquareCommands';
@@ -51,9 +51,9 @@ const Cart = () => {
         return;
       }
 
-      await axios({
+      await axios<BatchRetrieveCatalogObjectsResponse>({
         method: 'POST',
-        url: `api/square`,
+        url: `/api/square`,
         data: {
           type: SquareCommand.GET_BATCH_CATALOG,
           ids: validProducts.map(fav => fav.product_id)

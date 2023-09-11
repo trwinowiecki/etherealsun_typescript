@@ -212,16 +212,16 @@ export const getStaticProps: GetStaticProps = async () => {
     includeRelatedObjects: true
   });
 
-  const data: SearchCatalogObjectsResponse = convertToJSON(res);
+  const data = convertToJSON(res);
 
-  if (!data) {
+  if (!data.result) {
     return {
       notFound: true
     };
   }
 
   return {
-    props: { catalog: data },
+    props: { catalog: data.result },
     revalidate: 60
   };
 };

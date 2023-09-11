@@ -8,6 +8,7 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import {
+  ApiResponse,
   CatalogObject,
   Client,
   Environment,
@@ -57,13 +58,18 @@ function ProductPage(props: ProductPageProps) {
     {} as CatalogObject
   );
   const [cartDisabled, setCartDisabled] = useState(true);
+  const [queryParams, setQueryParams] = useState<URLSearchParams | null>(null);
 
-  if (catalogObjects.errors) {
-    useEffect(() => {
+  useEffect(() => {
+    if (catalogObjects.errors) {
       router.push('/404');
-    }, [router]);
-    return;
-  }
+      return;
+    }
+
+    if (router.isReady) {
+      setQueryParams(new URLSearchParams(router.asPath.split(/\?/)[1]));
+    }
+  }, [router, router.isReady, router.asPath, catalogObjects.errors]);
 
   useEffect(() => {
     if (catalogObjects.object && catalogObjects.relatedObjects) {
@@ -331,7 +337,7 @@ function ProductPage(props: ProductPageProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async ctx => {
-  let res;
+  let res: ApiResponse<ListCatalogResponse>;
   const client = new Client({
     accessToken: process.env.SQUARE_ACCESS_TOKEN,
     environment: Environment.Sandbox
@@ -346,9 +352,9 @@ export const getStaticPaths: GetStaticPaths = async ctx => {
     };
   }
 
-  const data: ListCatalogResponse = convertToJSON(res);
+  const data: ApiResponse<ListCatalogResponse> = convertToJSON(res);
 
-  if (!data.objects) {
+  if (!data.result.objects) {
     return {
       paths: [],
       fallback: 'blocking'
@@ -356,7 +362,7 @@ export const getStaticPaths: GetStaticPaths = async ctx => {
   }
 
   return {
-    paths: data.objects
+    paths: data.result.objects
       .filter(obj => obj.type === 'ITEM')
       .map(obj => ({ params: { id: obj.id } })),
     fallback: 'blocking'
@@ -369,42 +375,43 @@ export const getStaticProps: GetStaticProps = async ctx => {
     environment: Environment.Sandbox
   });
 
-  let res;
+  let res: ApiResponse<RetrieveCatalogObjectResponse>;
   try {
     res = await client.catalogApi.retrieveCatalogObject(
       ctx.params!.id! as string,
       true
     );
   } catch (error) {
-    res = error;
+    res = { result: error, statusCode: 500 } as ApiResponse<any>;
   }
 
-  const data: RetrieveCatalogObjectResponse = convertToJSON(res);
+  const data: ApiResponse<RetrieveCatalogObjectResponse> = convertToJSON(res);
 
-  let extraInfo;
+  let extraInfo: ApiResponse<ListCatalogResponse>;
   try {
     extraInfo = await client.catalogApi.listCatalog(
       undefined,
       'ITEM_OPTION,CUSTOM_ATTRIBUTE_DEFINITION'
     );
   } catch (error) {
-    extraInfo = error;
+    extraInfo = { result: error, statusCode: 500 } as ApiResponse<any>;
   }
 
-  const extraInfoData: ListCatalogResponse = convertToJSON(extraInfo);
+  const extraInfoData: ApiResponse<ListCatalogResponse> =
+    convertToJSON(extraInfo);
 
   const relatedObjects = [];
-  if (data.relatedObjects) {
-    relatedObjects.push(...data.relatedObjects);
+  if (data.result.relatedObjects) {
+    relatedObjects.push(...data.result.relatedObjects);
   }
-  if (extraInfoData.objects) {
-    relatedObjects?.push(...extraInfoData.objects);
+  if (extraInfoData.result.objects) {
+    relatedObjects?.push(...extraInfoData.result.objects);
   }
 
   return {
     props: {
       catalogObjects: {
-        ...data,
+        ...data.result,
         relatedObjects
       }
     },

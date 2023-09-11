@@ -5,10 +5,12 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import {
+  ApiResponse,
   CatalogObject,
   Client,
   Environment,
   RetrieveCatalogObjectResponse,
+  RetrieveInventoryCountResponse,
   SearchCatalogObjectsResponse
 } from 'square';
 
@@ -120,7 +122,7 @@ function ProductCard({
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async ctx => {
+export const getStaticPaths: GetStaticPaths = async () => {
   const client = new Client({
     accessToken: process.env.SQUARE_ACCESS_TOKEN,
     environment: Environment.Sandbox
@@ -130,12 +132,12 @@ export const getStaticPaths: GetStaticPaths = async ctx => {
     includeRelatedObjects: true
   });
 
-  const data: SearchCatalogObjectsResponse = convertToJSON(res);
+  const data = convertToJSON(res);
 
-  const paths = data.objects!.map(obj => ({ params: { id: obj.id } }));
+  const paths = data.result.objects?.map(obj => ({ params: { id: obj.id } }));
 
   return {
-    paths,
+    paths: paths || [],
     fallback: true
   };
 };
@@ -146,26 +148,36 @@ export const getStaticProps: GetStaticProps = async ctx => {
     environment: Environment.Sandbox
   });
 
-  let res;
+  let res: ApiResponse<
+    RetrieveCatalogObjectResponse & RetrieveInventoryCountResponse
+  >;
   try {
-    res = await client.catalogApi.retrieveCatalogObject(
+    const catalogRes = await client.catalogApi.retrieveCatalogObject(
       ctx.params!.id! as string,
       true
     );
+    const inventory = await client.inventoryApi.retrieveInventoryCount(
+      convertToJSON(catalogRes).result.object?.itemData?.variations![0].id || ''
+    );
     res = {
-      ...res,
-      inventory: await client.inventoryApi.retrieveInventoryCount(
-        convertToJSON(res).object.itemData.variations[0].id
-      )
+      ...catalogRes,
+      result: {
+        ...catalogRes.result,
+        ...inventory.result,
+        errors: [
+          ...(catalogRes.result.errors || []),
+          ...(inventory.result.errors || [])
+        ]
+      }
     };
   } catch (error) {
-    res = error;
+    res = { result: error, statusCode: 500 } as unknown as ApiResponse<any>;
   }
 
-  const data: RetrieveCatalogObjectResponse = convertToJSON(res);
+  const data = convertToJSON(res);
 
   return {
-    props: { item: data.object, relatedObj: data.relatedObjects }
+    props: { item: data.result.object, relatedObj: data.result.relatedObjects }
   };
 };
 

@@ -2,12 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import Featured from '@ui/Featured';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
-import {
-  BatchRetrieveCatalogObjectsResponse,
-  CatalogObject,
-  Client,
-  Environment
-} from 'square';
+import { CatalogObject, Client, Environment } from 'square';
 
 import Layout from '../components/Layout';
 import { FeaturedProduct } from '../types/FeaturedProduct';
@@ -92,9 +87,9 @@ export const getStaticProps: GetStaticProps = async () => {
     includeRelatedObjects: true
   });
 
-  const squareData: BatchRetrieveCatalogObjectsResponse = convertToJSON(res);
+  const squareData = convertToJSON(res);
 
-  if (!squareData.objects) {
+  if (!squareData.result.objects) {
     return {
       props: {},
       revalidate: 1
@@ -110,7 +105,9 @@ export const getStaticProps: GetStaticProps = async () => {
       title: group.title!,
       startDate: group.start_date!,
       endDate: group.start_date!,
-      products: squareData.objects!.filter(obj => productIds.includes(obj.id))
+      products: squareData.result.objects!.filter(obj =>
+        productIds.includes(obj.id)
+      )
     };
   });
 
@@ -119,7 +116,7 @@ export const getStaticProps: GetStaticProps = async () => {
       featuredProducts: featuredProducts.sort((g1, g2) =>
         Date.parse(g1.startDate) < Date.parse(g2.startDate) ? 1 : -1
       ),
-      relatedObjects: squareData.relatedObjects
+      relatedObjects: squareData.result.relatedObjects
     },
     revalidate: 100
   };

@@ -51,9 +51,6 @@ function ProductPage(props: ProductPageProps) {
   const [validOptionCombos, setValidOptionCombos] =
     useState<VariationGroup[]>();
   const [options, setOptions] = useState<OptionGroup[]>([]);
-  const [selectedOptions, setSelectedOptions] = useState(
-    new Map<string, OptionValue>()
-  );
   const [selectedVariant, setSelectedVariant] = useState<CatalogObject>(
     {} as CatalogObject
   );
@@ -168,19 +165,83 @@ function ProductPage(props: ProductPageProps) {
     });
   };
 
-  const handleOptionSelected = (key: string, value: OptionValue) => {
-    setSelectedOptions(prev => new Map(prev.set(key, value)));
-    if (validOptionCombos?.length === selectedOptions.size) {
-      setCartDisabled(false);
-      // todo update selectedVariantId
+  const getOptionsFromQueryParams = () => {
+    const queryOptions = new Map<string, OptionValue>();
+    if (!queryParams || queryParams.keys.length === 0) {
+      return queryOptions;
     }
+
+    const allQueryOptions = options.filter(option =>
+      Array.from(queryParams.keys()).includes(option.name)
+    );
+    allQueryOptions.forEach(optionGroup => {
+      const optionValueName = queryParams.get(optionGroup.name);
+      if (!optionValueName) {
+        return;
+      }
+
+      const optionValue = Array.from(
+        new Set(
+          options.flatMap(option =>
+            option.values.find(value => value.name === optionValueName)
+          )
+        ).values()
+      )[0];
+      if (optionValue) {
+        queryOptions.set(optionGroup.id, optionValue);
+      }
+    });
+    return queryOptions;
+  };
+
+  const handleOptionSelected = (optionId: string, optionValue: OptionValue) => {
+    const queryOptions = getOptionsFromQueryParams();
+    if (validOptionCombos?.length === queryOptions.size) {
+      setCartDisabled(false);
+    }
+
+    const newOptionName = options.find(option => option.id === optionId)?.name;
+    const newOptionValueName = Array.from(
+      new Set(
+        options
+          .map(
+            option =>
+              option.values.find(value => value.id === optionValue.id)?.name
+          )
+          .filter(option => !!option)
+      ).values()
+    )[0];
+    console.log(optionValue);
+    console.log(
+      options
+        .flatMap(
+          option =>
+            option.values.find(value => value.id === optionValue.id)?.name
+        )
+        .filter(option => !!option)
+    );
+
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          [newOptionName!]: newOptionValueName!
+        }
+      },
+      undefined,
+      { shallow: true, scroll: false }
+    );
   };
 
   const isOptionDisabled = (
     optionGroupId: string,
     option: OptionValue
   ): boolean => {
-    const selectedOptionKeys = Array.from(selectedOptions.keys()).filter(
+    if (queryParams === null) {
+      return false;
+    }
+    const selectedOptionKeys = Object.keys(queryParams).filter(
       key => key !== optionGroupId
     );
     const validCombos = validOptionCombos?.filter(({ options }) => {
@@ -191,10 +252,11 @@ function ProductPage(props: ProductPageProps) {
                 const optionGroup = options.find(
                   optionGroup => optionGroup.id === key
                 );
-                if (optionGroup?.values.includes(selectedOptions.get(key)!)) {
-                  return options;
-                }
-                return null;
+                return optionGroup?.values.find(
+                  optValue => optValue.name === queryParams?.get(key)!
+                )
+                  ? options
+                  : null;
               })
               .flatMap(val => val ?? [])
           : options;
@@ -268,13 +330,15 @@ function ProductPage(props: ProductPageProps) {
                 {options.map(option => (
                   <div key={option.id}>
                     <RadioGroup
-                      value={selectedOptions.get(option.id)}
+                      value={option.values.find(
+                        opt => queryParams?.get(option.name) === opt.name
+                      )}
                       onChange={value => handleOptionSelected(option.id, value)}
                     >
                       <RadioGroup.Label>
                         {option.name +
-                          (selectedOptions.has(option.id)
-                            ? ` - ${selectedOptions.get(option.id)!.name}`
+                          (queryParams?.has(option.name)
+                            ? ` - ${queryParams.get(option.name)}`
                             : '')}
                       </RadioGroup.Label>
                       <div className="flex gap-4">

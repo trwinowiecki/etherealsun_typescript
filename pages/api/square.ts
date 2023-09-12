@@ -8,7 +8,7 @@ import {
 
 import AddressForm from '../../components/AddressForm';
 import { SquareCommand } from '../../enums/SquareCommands';
-import { UserSupaFull } from '../../types/Supabase';
+import { UserCustom } from '../../types/Supabase';
 
 export type TakePaymentRequest = {
   token: string;
@@ -31,11 +31,11 @@ export type SquareRequest = BaseRequest &
     | { type: SquareCommand.SEARCH_FOR_USER; email: string; refId: string }
     | { type: SquareCommand.GET_CUSTOMER; id: string }
     | ({ type: SquareCommand.TAKE_PAYMENT } & TakePaymentRequest)
-    | { type: SquareCommand.CREATE_CUSTOMER; customer: UserSupaFull }
+    | { type: SquareCommand.CREATE_CUSTOMER; customer: UserCustom }
     | {
         type: SquareCommand.UPDATE_CUSTOMER;
         id: string;
-        customer: UserSupaFull;
+        customer: UserCustom;
         address?: AddressForm;
       }
   );
@@ -183,7 +183,6 @@ const searchForUserByRefId = async (client: Client, id: string) => {
 
 const getCustomer = async (client: Client, id: string) => {
   const res = await client.customersApi.retrieveCustomer(id);
-  console.log('getCustomer', res);
 
   return convertToJSON(res);
 };
@@ -209,7 +208,7 @@ const takePayment = async (
 
 const createCustomer = async (
   client: Client,
-  customer: UserSupaFull,
+  customer: UserCustom,
   idempotencyKey?: string
 ): Promise<ApiResponse<CreateCustomerResponse>> => {
   const res = await client.customersApi.createCustomer({
@@ -226,7 +225,7 @@ const createCustomer = async (
 const updateCustomer = async (
   client: Client,
   id: string,
-  customer: UserSupaFull,
+  customer: UserCustom,
   address?: AddressForm
 ): Promise<ApiResponse<CreateCustomerResponse>> => {
   const res = await client.customersApi.updateCustomer(id, {

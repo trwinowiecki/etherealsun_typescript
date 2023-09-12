@@ -17,7 +17,7 @@ import {
 } from 'square';
 import { CartCommand } from '../enums/CartCommands';
 import { SquareCommand } from '../enums/SquareCommands';
-import { UserSupaFull } from '../types/Supabase';
+import { UserCustom } from '../types/Supabase';
 import { Database } from '../types/SupabaseDbTypes';
 import { useStoreContext } from '../utils/Store';
 import { cn } from '../utils/tw-utils';
@@ -75,84 +75,109 @@ function Navbar() {
   } = state;
 
   useEffect(() => {
-    const getUser = async (user: User) => {
-      let userProfile: UserSupaFull = user as UserSupaFull;
-      const res = await supabase.from('profiles').select().eq('id', user.id);
-
-      if (res && res.data && res.data[0]) {
-        userProfile = { ...res.data[0], ...userProfile };
-      }
-
-      if (userProfile.square_id) {
-        const data: AxiosResponse<RetrieveCustomerResponse> =
-          await axios.request({
-            method: 'POST',
-            url: '/api/square',
-            data: {
-              type: SquareCommand.GET_CUSTOMER,
-              id: userProfile.square_id
-            }
-          });
-
-        if (data && data.data) {
-          userProfile = {
-            ...userProfile,
-            square_customer: data.data.customer || {}
-          };
-        }
-      } else {
-        const data: AxiosResponse<SearchCustomersResponse> =
-          await axios.request({
-            method: 'POST',
-            url: '/api/square',
-            data: {
-              type: SquareCommand.SEARCH_FOR_USER,
-              email: userProfile.email,
-              refId: userProfile.id
-            }
-          });
-
-        if (
-          data &&
-          data.data &&
-          data.data.customers &&
-          data.data.customers[0]
-        ) {
-          userProfile = {
-            ...userProfile,
-            square_id: data.data.customers[0].id || '',
-            square_customer: data.data.customers[0] || {}
-          };
-        } else {
-          const data: AxiosResponse<CreateCustomerResponse> =
-            await axios.request({
-              method: 'POST',
-              url: '/api/square',
-              data: {
-                type: SquareCommand.CREATE_CUSTOMER,
-                customer: userProfile,
-                idempotencyKey
-              }
-            });
-
-          if (data && data.data && data.data.customer) {
-            userProfile = {
-              ...userProfile,
-              square_id: data.data.customer?.id || '',
-              square_customer: data.data.customer || {}
-            };
+    const getSquareCustomer = async (user: UserCustom) => {
+      const data: AxiosResponse<RetrieveCustomerResponse> = await axios.request(
+        {
+          method: 'POST',
+          url: '/api/square',
+          data: {
+            type: SquareCommand.GET_CUSTOMER,
+            id: user.square_id
           }
         }
+      );
 
-        if (userProfile.square_id) {
-          await supabase
-            .from('profiles')
-            .update({ square_id: userProfile.square_id })
-            .eq('id', userProfile.id);
-        }
+      if (data && data.data) {
+        user = {
+          ...user,
+          square_customer: data.data.customer || {}
+        };
       }
 
-      return userProfile;
+      return user;
+    };
+
+    const createSquareCustomer = async (user: UserCustom) => {
+      const data: AxiosResponse<CreateCustomerResponse> = await axios.request({
+        method: 'POST',
+        url: '/api/square',
+        data: {
+          type: SquareCommand.CREATE_CUSTOMER,
+          customer: user,
+          idempotencyKey
+        }
+      });
+
+      if (data && data.data && data.data.customer) {
+        user = {
+          ...user,
+          square_id: data.data.customer?.id || '',
+          square_customer: data.data.customer || {}
+        };
+      }
+
+      return user;
+    };
+
+    const initSquareCustomer = async (user: UserCustom) => {
+      const data: AxiosResponse<SearchCustomersResponse> = await axios.request({
+        method: 'POST',
+        url: '/api/square',
+        data: {
+          type: SquareCommand.SEARCH_FOR_USER,
+          email: user.email,
+          refId: user.id
+        }
+      });
+
+      if (data && data.data && data.data.customers && data.data.customers[0]) {
+        user = {
+          ...user,
+          square_id: data.data.customers[0].id || '',
+          square_customer: data.data.customers[0] || {}
+        };
+      } else {
+        user = await createSquareCustomer(user);
+      }
+
+      if (user.square_id) {
+        await supabase
+          .from('profiles')
+          .update({ square_id: user.square_id })
+          .eq('id', user.id);
+      }
+
+      return user;
+    };
+
+    const getUser = async (sessionUser: User) => {
+      let user: UserCustom = sessionUser as UserCustom;
+      const res = await supabase
+        .from('profiles')
+        .select()
+        .eq('id', sessionUser.id);
+
+      if (res && res.data && res.data[0]) {
+        user = { ...res.data[0], ...user };
+      }
+
+      if (user.square_id) {
+        user = await getSquareCustomer(user);
+      } else {
+        user = await initSquareCustomer(user);
+      }
+
+      const favorites = await supabase
+        .from('favorite_products')
+        .select('product_id')
+        .eq('user_id', user.id);
+
+      user = {
+        ...user,
+        favorites: favorites.data?.map(fav => fav.product_id) || []
+      };
+
+      return user;
     };
 
     const dispatchUser = async (session: Session | null) => {

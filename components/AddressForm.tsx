@@ -16,12 +16,12 @@ import Modal from '@ui/Modal';
 import PhoneInput from 'react-phone-number-input/input';
 import { ShippoCommand } from '../enums/ShippoCommands';
 import { ShippoAddressResponse } from '../pages/api/shippo';
-import { UserSupaFull } from '../types/Supabase';
+import { UserCustom } from '../types/Supabase';
 import { getErrorShippo } from '../utils/error';
 import { cn } from '../utils/tw-utils';
 
 interface AddressFormProps {
-  user?: UserSupaFull;
+  user?: UserCustom;
   onSubmit: (data: AddressForm) => void;
   address?: AddressForm;
 }

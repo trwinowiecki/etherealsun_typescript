@@ -28,21 +28,21 @@ export function getImages(
   return itemImages.length >= 1 ? itemImages : [DEFAULT_IMAGE];
 }
 
-export interface OptionValue {
+export type OptionValue = {
   id: string;
   name: string;
-}
+};
 
-export interface OptionGroup {
+export type OptionGroup = {
   id: string;
   name: string;
   values: OptionValue[];
-}
+};
 
-export interface VariationGroup {
+export type VariationGroup = {
   id: string;
   options: OptionGroup[];
-}
+};
 
 export const getValidOptions = (
   objectToCheck: CatalogObject,
@@ -52,44 +52,68 @@ export const getValidOptions = (
   const itemObjects = itemsToCheck.filter(obj => obj.type === 'ITEM_OPTION');
 
   if (
-    itemObjects.length > 0 &&
-    objectToCheck.itemData?.itemOptions &&
-    objectToCheck.itemData?.itemOptions?.length > 0
+    itemObjects.length === 0 ||
+    !objectToCheck.itemData?.itemOptions ||
+    objectToCheck.itemData?.itemOptions?.length === 0
   ) {
-    objectToCheck.itemData.variations?.forEach(variation => {
-      const test = variation.itemVariationData?.itemOptionValues?.filter(
+    return [];
+  }
+
+  objectToCheck.itemData.variations?.forEach(variation => {
+    const validCatalogOptions =
+      variation.itemVariationData?.itemOptionValues?.filter(
         option => option.itemOptionId && option.itemOptionValueId
       );
-      const optionValues: OptionGroup[] = test
-        ? test.map(option => {
-            const optionItem = itemObjects.find(
-              obj => obj.id === option.itemOptionId
-            );
-            const optionItemValue = optionItem?.itemOptionData?.values?.find(
-              obj => obj.id === option.itemOptionValueId
-            );
-            const namedGroup = {
-              id: option.itemOptionId ?? '',
-              name:
-                optionItem?.itemOptionData?.displayName ??
-                optionItem?.itemOptionData?.name ??
-                '',
-              values: [
-                {
-                  id: option.itemOptionValueId ?? '',
-                  name: optionItemValue?.itemOptionValueData?.name ?? ''
-                }
-              ]
-            };
-            return namedGroup;
-          })
-        : [];
 
-      if (optionValues?.length > 0) {
-        updateMap(newOptions, variation.id, optionValues);
-      }
-    });
-  }
+    console.log('validCatalogOptions', validCatalogOptions);
+
+    const optionValues: OptionGroup[] = validCatalogOptions
+      ? validCatalogOptions.map(option => {
+          const optionItem = itemObjects.find(
+            obj => obj.id === option.itemOptionId
+          );
+          const optionItemValue = optionItem?.itemOptionData?.values?.find(
+            obj => obj.id === option.itemOptionValueId
+          );
+
+          const optGroup: OptionGroup = {
+            id: optionItem?.id || '',
+            name:
+              optionItem?.itemOptionData?.displayName ||
+              optionItem?.itemOptionData?.name ||
+              '',
+            values: []
+          };
+          const optionValue: OptionValue = {
+            id: optionItemValue?.id || '',
+            name: optionItemValue?.itemOptionValueData?.name || ''
+          };
+          console.log(variation.id, {
+            ...optGroup,
+            values: [optionValue]
+          } as OptionGroup);
+
+          return {
+            ...optGroup,
+            values: [optionValue]
+          } as OptionGroup;
+        })
+      : [];
+
+    console.log('optionValues', optionValues);
+
+    if (optionValues?.length > 0) {
+      // updateMap(newOptions, variation.id, optionValues);
+      // console.log('variationGroups', {
+      //   id: variation.id,
+      //   options: optionValues
+      // });
+      newOptions.set(variation.id, {
+        id: variation.id,
+        options: optionValues
+      });
+    }
+  });
   return Array.from(newOptions.values());
 };
 
@@ -104,6 +128,7 @@ const updateMap = (
       ...existingVariantGroup,
       options: []
     };
+
     existingVariantGroup.options.forEach(optionGroup => {
       const newOptionGroup = options.find(
         optGroup => optGroup.id === optionGroup.id

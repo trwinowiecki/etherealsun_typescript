@@ -5,9 +5,10 @@ import { Database } from './SupabaseDbTypes';
 
 export type UserProfileSupa = Database['public']['Tables']['profiles']['Row'];
 
-export type UserSupaFull = User &
+export type UserCustom = User &
   UserProfileSupa & {
     square_customer: Customer;
+    favorites: string[];
   };
 
 export interface DefaultSessionProps {

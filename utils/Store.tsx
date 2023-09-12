@@ -4,7 +4,7 @@ import AddressForm from '../components/AddressForm';
 import { CartCommand } from '../enums/CartCommands';
 import { Cart } from '../types/Cart.model';
 import { CartItem } from '../types/CartItem';
-import { UserSupaFull } from '../types/Supabase';
+import { UserCustom } from '../types/Supabase';
 
 interface StoreContextInterface {
   state: State;
@@ -13,7 +13,7 @@ interface StoreContextInterface {
 
 interface State {
   cart: Cart;
-  user: UserSupaFull;
+  user: UserCustom;
 }
 
 type Action =
@@ -28,21 +28,26 @@ type Action =
     }
   | { type: CartCommand.SAVE_PAYMENT_METHOD; payload: string }
   | { type: CartCommand.POP_UP; payload: boolean }
-  | { type: CartCommand.SET_USER; payload: UserSupaFull | null };
+  | { type: CartCommand.SET_USER; payload: UserCustom | null };
 
 const CART_KEY = 'cart';
+
+const cleanState: State = {
+  cart: {
+    cartItems: [],
+    shippingAddress: {} as AddressForm,
+    paymentMethod: '',
+    popUp: false
+  },
+  user: {} as UserCustom
+};
 
 const initialState: State = {
   cart:
     typeof window !== 'undefined' && sessionStorage.getItem(CART_KEY)
       ? JSON.parse(sessionStorage.getItem(CART_KEY)!)
-      : {
-          cartItems: [],
-          shippingAddress: {},
-          paymentMethod: '',
-          popUp: false
-        },
-  user: {} as UserSupaFull
+      : cleanState.cart,
+  user: cleanState.user
 };
 
 export const Store = createContext<StoreContextInterface>({
@@ -120,24 +125,13 @@ function reducer(state: State, action: Action): State {
       case CartCommand.RESET: {
         return {
           ...state,
-          cart: {
-            cartItems: [],
-            shippingAddress: {} as AddressForm,
-            paymentMethod: '',
-            popUp: false
-          }
+          cart: cleanState.cart
         };
       }
       case CartCommand.CLEAR: {
-        setCart({ ...state.cart, cartItems: [] });
+        setCart(cleanState.cart);
 
-        return {
-          ...state,
-          cart: {
-            ...state.cart,
-            cartItems: []
-          }
-        };
+        return cleanState;
       }
       case CartCommand.SAVE_SHIPPING_ADDRESS: {
         return {
@@ -172,7 +166,7 @@ function reducer(state: State, action: Action): State {
       case CartCommand.SET_USER: {
         return {
           ...state,
-          user: action.payload || ({} as UserSupaFull)
+          user: action.payload || cleanState.user
         };
       }
       default:

@@ -15,7 +15,8 @@ const nextConfig = withTM(
     images: {
       domains: [
         'items-images-production.s3.us-west-2.amazonaws.com',
-        'square-catalog-sandbox.s3.amazonaws.com'
+        'square-catalog-sandbox.s3.amazonaws.com',
+        'shippo-static-v2.s3.amazonaws.com'
       ]
     }
   })

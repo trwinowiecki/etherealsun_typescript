@@ -18,6 +18,10 @@ import { ShippoCommand } from '../enums/ShippoCommands';
 import { ShippoAddressResponse } from '../pages/api/shippo';
 import { UserCustom } from '../types/Supabase';
 import { getErrorShippo } from '../utils/error';
+import {
+  convertShippoToSquareAddress,
+  convertSquareToShippoAddress
+} from '../utils/shippo-utils';
 import { cn } from '../utils/tw-utils';
 
 interface AddressFormProps {
@@ -161,7 +165,7 @@ const AddressForm = (props: AddressFormProps) => {
       url: `api/shippo`,
       data: {
         type: ShippoCommand.VALIDATE_ADDRESS,
-        address: convertSquareToShippo(address)
+        address: convertSquareToShippoAddress(address)
       }
     })
       .then(({ data }: AxiosResponse<ShippoAddressResponse>) => {
@@ -194,45 +198,10 @@ const AddressForm = (props: AddressFormProps) => {
       return;
     }
     if (useSuggested) {
-      props.onSubmit(convertShippoToSquare(suggestedAddress));
+      props.onSubmit(convertShippoToSquareAddress(suggestedAddress));
     } else {
       props.onSubmit(userEnteredAddress);
     }
-  };
-
-  const convertShippoToSquare = (
-    address: ShippoAddressResponse
-  ): AddressForm => {
-    return {
-      firstName: address.name?.split(' ')[0],
-      lastName: address.name?.split(' ')[1],
-      addressLine1: address.street1,
-      addressLine2: address.street2,
-      addressLine3: address.street3,
-      locality: address.city,
-      administrativeDistrictLevel1: address.state,
-      postalCode: address.zip,
-      country: address.country,
-      phoneNumber: address.phone,
-      email: address.email
-    };
-  };
-
-  const convertSquareToShippo = (
-    address: AddressForm
-  ): ShippoAddressResponse => {
-    return {
-      name: [address.firstName, address.lastName].join(' '),
-      street1: address.addressLine1,
-      street2: address.addressLine2,
-      street3: address.addressLine3,
-      city: address.locality,
-      state: address.administrativeDistrictLevel1,
-      zip: address.postalCode,
-      country: address.country,
-      phone: address.phoneNumber,
-      email: address.email
-    };
   };
 
   const addressDisplay = (address: AddressForm) => {
@@ -449,7 +418,7 @@ const AddressForm = (props: AddressFormProps) => {
             </div>
             <div className="flex-1 p-2 border border-black">
               <strong>Suggested address:</strong>
-              {addressDisplay(convertShippoToSquare(suggestedAddress))}
+              {addressDisplay(convertShippoToSquareAddress(suggestedAddress))}
             </div>
           </div>
           <div className="absolute flex gap-2 bottom-6 right-6">

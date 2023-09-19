@@ -59,62 +59,57 @@ export const getValidOptions = (
     return [];
   }
 
-  objectToCheck.itemData.variations?.forEach(variation => {
-    const validCatalogOptions =
-      variation.itemVariationData?.itemOptionValues?.filter(
-        option => option.itemOptionId && option.itemOptionValueId
-      );
+  const variationGroups: VariationGroup[] =
+    objectToCheck.itemData.variations?.map(variation => {
+      const validCatalogOptions =
+        variation.itemVariationData?.itemOptionValues?.filter(
+          option => option.itemOptionId && option.itemOptionValueId
+        );
 
-    console.log('validCatalogOptions', validCatalogOptions);
+      console.log('validCatalogOptions', validCatalogOptions);
 
-    const optionValues: OptionGroup[] = validCatalogOptions
-      ? validCatalogOptions.map(option => {
-          const optionItem = itemObjects.find(
-            obj => obj.id === option.itemOptionId
-          );
-          const optionItemValue = optionItem?.itemOptionData?.values?.find(
-            obj => obj.id === option.itemOptionValueId
-          );
+      const optionValues: OptionGroup[] = validCatalogOptions
+        ? validCatalogOptions.map(option => {
+            const optionItem = itemObjects.find(
+              obj => obj.id === option.itemOptionId
+            );
+            const optionItemValue = optionItem?.itemOptionData?.values?.find(
+              obj => obj.id === option.itemOptionValueId
+            );
 
-          const optGroup: OptionGroup = {
-            id: optionItem?.id || '',
-            name:
-              optionItem?.itemOptionData?.displayName ||
-              optionItem?.itemOptionData?.name ||
-              '',
-            values: []
-          };
-          const optionValue: OptionValue = {
-            id: optionItemValue?.id || '',
-            name: optionItemValue?.itemOptionValueData?.name || ''
-          };
-          console.log(variation.id, {
-            ...optGroup,
-            values: [optionValue]
-          } as OptionGroup);
+            const optGroup: OptionGroup = {
+              id: optionItem?.id || '',
+              name:
+                optionItem?.itemOptionData?.displayName ||
+                optionItem?.itemOptionData?.name ||
+                '',
+              values: []
+            };
+            const optionValue: OptionValue = {
+              id: optionItemValue?.id || '',
+              name: optionItemValue?.itemOptionValueData?.name || ''
+            };
+            console.log(variation.id, {
+              ...optGroup,
+              values: [optionValue]
+            } as OptionGroup);
 
-          return {
-            ...optGroup,
-            values: [optionValue]
-          } as OptionGroup;
-        })
-      : [];
+            return {
+              ...optGroup,
+              values: [optionValue]
+            } as OptionGroup;
+          })
+        : [];
 
-    console.log('optionValues', optionValues);
+      console.log('optionValues', optionValues);
 
-    if (optionValues?.length > 0) {
-      // updateMap(newOptions, variation.id, optionValues);
-      // console.log('variationGroups', {
-      //   id: variation.id,
-      //   options: optionValues
-      // });
-      newOptions.set(variation.id, {
+      return {
         id: variation.id,
         options: optionValues
-      });
-    }
-  });
-  return Array.from(newOptions.values());
+      };
+    }) || [];
+
+  return variationGroups;
 };
 
 const updateMap = (

@@ -159,6 +159,8 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
 
   const handleOptionSelected = (optionId: string, optionValue: OptionValue) => {
     const queryOptions = getOptionsFromQueryParams();
+    console.log('queryOptions', queryOptions);
+    console.log('optionCombos', optionCombos);
     if (optionCombos?.length === queryOptions.size) {
       setCartDisabled(false);
     }
@@ -226,10 +228,10 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
 
   return (
     <Layout title={catalogObject?.itemData?.name}>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4">
         <Breadcrumbs pages={breadcrumbs} />
-        <div className="flex flex-col gap-2 md:flex-row">
-          <div className="w-full md:flex-1 shrink-0">
+        <div className="flex flex-col gap-4 md:flex-row">
+          <section className="w-full md:flex-1 shrink-0">
             {itemImages.length > 1 ? (
               <div className="flex flex-col-reverse gap-2 md:flex-row">
                 <div className="flex w-full h-12 gap-2 overflow-auto md:w-12 md:h-full md:flex-1 md:flex-col">
@@ -265,8 +267,8 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
                 alt={catalogObject!.itemData!.name!}
               />
             )}
-          </div>
-          <div className="flex flex-col items-start gap-2 md:flex-1">
+          </section>
+          <section className="flex flex-col items-start gap-2 md:flex-1">
             <span className="text-2xl font-semibold">
               {catalogObject?.itemData?.name}
             </span>
@@ -276,7 +278,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
                 catalogObject?.itemData?.descriptionHtml}
             </div>
             {optionCombos && (
-              <div className="flex flex-col gap-4 mt-4">
+              <div className="flex flex-col gap-4 my-4">
                 {options.map(option => (
                   <section key={option.id}>
                     <RadioGroup
@@ -345,7 +347,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
                 isFavorite={favorite}
               />
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </Layout>

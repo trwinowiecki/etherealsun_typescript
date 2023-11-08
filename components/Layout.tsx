@@ -37,7 +37,7 @@ export default function Layout({
 
       <ToastContainer position="bottom-center" limit={1} />
 
-      <main className="flex flex-col justify-between min-h-screen wrapper snap-y snap-mandatory">
+      <main className="flex flex-col justify-between min-h-screen overflow-x-hidden wrapper snap-y snap-mandatory">
         <Navbar />
         <section
           className={cn(

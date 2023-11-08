@@ -78,6 +78,36 @@ export type ShippoParcel = {
   mass_unit: 'lb' | 'oz' | 'kg' | 'g';
 };
 
+export type ShippoRate = {
+  object_created?: string;
+  object_id: string;
+  object_owner?: string;
+  shipment?: string;
+  attributes?: string[];
+  amount: string;
+  currency?: string;
+  amount_local?: string;
+  currency_local?: string;
+  provider: string;
+  provider_image_75?: string;
+  provider_image_200?: string;
+  servicelevel?: {
+    name?: string;
+    token?: string;
+    terms?: string;
+    extended_token?: string;
+    parent_servicelevel?: unknown;
+  };
+  estimated_days?: number;
+  arrives_by?: string;
+  duration_terms?: string;
+  messages?: [];
+  carrier_account?: string;
+  test?: boolean;
+  zone?: string;
+  included_insurance_price?: string;
+};
+
 export type ShippoShipmentResponse = {
   carrier_accounts?: string[];
   object_created?: string;
@@ -93,35 +123,7 @@ export type ShippoShipmentResponse = {
   alternate_address_to?: unknown;
   customs_declaration?: unknown;
   extra?: object;
-  rates?: {
-    object_created?: string;
-    object_id?: string;
-    object_owner?: string;
-    shipment?: string;
-    attributes?: string[];
-    amount?: string;
-    currency?: string;
-    amount_local?: string;
-    currency_local?: string;
-    provider?: string;
-    provider_image_75?: string;
-    provider_image_200?: string;
-    servicelevel?: {
-      name?: string;
-      token?: string;
-      terms?: string;
-      extended_token?: string;
-      parent_servicelevel?: unknown;
-    };
-    estimated_days?: number;
-    arrives_by?: string;
-    duration_terms?: string;
-    messages?: [];
-    carrier_account?: string;
-    test?: boolean;
-    zone?: string;
-    included_insurance_price?: string;
-  }[];
+  rates?: ShippoRate[];
   messages?: {
     source?: string;
     text?: string;

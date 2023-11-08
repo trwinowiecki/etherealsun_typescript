@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { CreditCard } from 'react-square-web-payments-sdk';
 
-import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowLeftIcon,
+  QuestionMarkCircleIcon
+} from '@heroicons/react/24/outline';
 import { PaymentRequestOptions } from '@square/web-sdk';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { User } from '@supabase/auth-helpers-react';
 import Button from '@ui/Button';
+import CustomRadio, { RadioOption } from '@ui/CustomRadio';
+import Tooltip from '@ui/Tooltip';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import AddressForm from '../components/AddressForm';
@@ -18,7 +23,7 @@ import { Database } from '../types/SupabaseDbTypes';
 import { useStoreContext } from '../utils/Store';
 import { getLineItems, getTotalPrice } from '../utils/cart-utils';
 import { convertSquareToShippoAddress } from '../utils/shippo-utils';
-import { ShippoShipmentResponse } from './api/shippo';
+import { ShippoRate } from './api/shippo';
 
 type CheckoutProps = {
   initialUser: User | null;
@@ -35,6 +40,7 @@ const checkout = ({ initialUser }: CheckoutProps) => {
   ]);
 
   const [address, setAddress] = useState<AddressForm>({});
+  const [shippingRate, setShippingRate] = useState<ShippoRate>();
   const { state, dispatch } = useStoreContext();
   const router = useRouter();
 
@@ -63,6 +69,11 @@ const checkout = ({ initialUser }: CheckoutProps) => {
   const addressSubmit = (address: AddressForm) => {
     dispatch({ type: CartCommand.SAVE_SHIPPING_ADDRESS, payload: address });
     setAddress(address);
+    handleStepChange(activeStep + 1);
+  };
+
+  const shippingRateSubmit = (rate: ShippoRate) => {
+    setShippingRate(rate);
     handleStepChange(activeStep + 1);
   };
 
@@ -96,7 +107,9 @@ const checkout = ({ initialUser }: CheckoutProps) => {
           />
         );
       case 'Shipping Options': {
-        return <ShippingOptions></ShippingOptions>;
+        return (
+          <ShippingOptions submitRate={shippingRateSubmit}></ShippingOptions>
+        );
       }
       case 'Payment':
         return (
@@ -111,25 +124,27 @@ const checkout = ({ initialUser }: CheckoutProps) => {
 
   return (
     <Layout title="Checkout">
-      <section>
+      <section className="flex flex-col items-start gap-2">
         <CheckoutSteps activeStep={activeStep} steps={steps} />
-        {renderSwitch()}
-        <Button type="button" onClick={() => handleStepChange(activeStep + 1)}>
-          +
-        </Button>
         <Button type="button" onClick={() => handleStepChange(activeStep - 1)}>
-          -
+          <ArrowLeftIcon className="inline w-4 h-4 mr-2" />
+          Back
         </Button>
+        {renderSwitch()}
       </section>
     </Layout>
   );
 };
 
-const ShippingOptions = () => {
+type ShippingOptionsProps = {
+  submitRate: (val: ShippoRate) => void;
+};
+
+const ShippingOptions = ({ submitRate }: ShippingOptionsProps) => {
   const { state } = useStoreContext();
-  type ShippoRates = ShippoShipmentResponse['rates'];
-  const [rates, setRates] = useState<ShippoRates>([]);
+  const [rates, setRates] = useState<ShippoRate[]>([]);
   console.log('state shipping address', state.cart.shippingAddress);
+  const [selectedRate, setSelectedRate] = useState<ShippoRate>();
 
   useEffect(() => {
     const getRates = async () => {
@@ -155,8 +170,8 @@ const ShippingOptions = () => {
     getRates();
   }, [state.cart.shippingAddress.addressLine1]);
 
-  const getSortedRates = (): Map<string, ShippoRates> => {
-    const map = new Map<string, ShippoRates>();
+  const getSortedRates = (): Map<string, ShippoRate[]> => {
+    const map = new Map<string, ShippoRate[]>();
 
     rates?.forEach(rate => {
       const key = rate.provider!;
@@ -179,40 +194,56 @@ const ShippingOptions = () => {
     return map;
   };
 
+  const getRadioOptions = (rates: ShippoRate[]): RadioOption<ShippoRate>[] => {
+    return rates!.map(rate => ({
+      key: rate.object_id!,
+      value: rate,
+      displayValue: (
+        <>
+          ${rate.amount} - {rate.servicelevel?.name}{' '}
+          <Tooltip text={rate.duration_terms || ''}>
+            <QuestionMarkCircleIcon className="inline w-4 h-4" />
+          </Tooltip>
+        </>
+      )
+    }));
+  };
+
   return (
     <>
-      {Array.from(getSortedRates().entries()).map(([carrier, rates]) => (
-        <div key={carrier}>
-          <div className="flex items-center h-10 gap-2">
-            <img
-              src={
-                rates && rates[0].provider_image_200
-                  ? rates[0].provider_image_200
-                  : ''
-              }
-              alt={carrier}
-              height="75px"
-              sizes=""
-              className="h-10"
-            />
-            <h3>{carrier}</h3>
-          </div>
-          {rates?.map(rate => (
-            <div key={rate.object_id}>
-              <input
-                type="radio"
-                name="shippingOption"
-                value={rate.object_id}
-                id={rate.object_id}
+      <div className="flex flex-col gap-4 md:flex-row md:w-full md:justify-evenly">
+        {Array.from(getSortedRates().entries()).map(([carrier, rates]) => (
+          <div key={carrier} className="flex flex-col gap-2">
+            <div className="flex items-center h-10 gap-2">
+              <img
+                src={
+                  rates && rates[0].provider_image_200
+                    ? rates[0].provider_image_200
+                    : ''
+                }
+                alt={carrier}
+                height="75px"
+                sizes=""
+                className="h-10"
               />
-              <label htmlFor={rate.object_id}>
-                ${rate.amount} - {rate.servicelevel?.name}{' '}
-                <QuestionMarkCircleIcon className="inline w-4 h-4" />
-              </label>
+              <h3>{carrier}</h3>
             </div>
-          ))}
-        </div>
-      ))}
+            <CustomRadio
+              options={getRadioOptions(rates)}
+              selected={selectedRate}
+              setSelected={val => setSelectedRate(val)}
+            />
+          </div>
+        ))}
+      </div>
+      <Button
+        type="submit"
+        onClick={() => submitRate(selectedRate!)}
+        disabled={!selectedRate}
+        className="w-full"
+      >
+        Submit
+      </Button>
     </>
   );
 };

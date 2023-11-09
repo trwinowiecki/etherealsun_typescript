@@ -18,11 +18,10 @@ const buttonStyles = cva(
 );
 
 export type ButtonProps = VariantProps<typeof buttonStyles> &
-  React.HTMLProps<HTMLButtonElement> & {
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
     children: React.ReactNode;
     className?: string;
-    onClick: () => void;
-  };
+  } & ({ onClick: () => void } | { type: 'submit' });
 
 function Button({
   children,
@@ -38,11 +37,11 @@ function Button({
           intent
         }),
         extraClasses,
-        'disabled:bg-slate-400'
+        'disabled:bg-slate-400 disabled:cursor-not-allowedrad'
       )}
       onClick={onClick}
-      {...props}
       type="button"
+      {...props}
     >
       {children}
     </button>

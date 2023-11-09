@@ -52,6 +52,10 @@ label.input-field {
   }
 }
 
+svg {
+  @apply stroke-[2] h-5 leading-5;
+}
+
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
 * {

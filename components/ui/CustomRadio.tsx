@@ -27,16 +27,24 @@ const CustomRadio = (props: CustomRadioProps) => {
           {({ checked }) => (
             <div
               className={cn(
-                'w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer',
+                'group w-full flex gap-2 items-center py-1 px-2 rounded-lg cursor-pointer',
                 { 'bg-primary-background-darker': checked }
               )}
             >
               <CheckIcon
-                className={cn('inline-flex h-5 invisible', {
-                  visible: checked
-                })}
+                className={cn(
+                  'inline-flex h-5 invisible stroke-[2.5] group-hover:stroke-[5]',
+                  {
+                    visible: checked
+                  }
+                )}
               />
-              <div className={cn('w-full overflow-visible', option.className)}>
+              <div
+                className={cn(
+                  'group-hover:font-bold overflow-visible w-[calc(100%+100px)]',
+                  option.className
+                )}
+              >
                 {option.displayValue}
               </div>
             </div>

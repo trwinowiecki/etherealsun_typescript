@@ -330,6 +330,7 @@ const AddressForm = (props: AddressFormProps) => {
         <form
           className="flex flex-col self-stretch w-full max-w-4xl gap-2"
           autoComplete="true"
+          onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex flex-col w-full gap-2 md:flex-row">
             {reactHookFormInput(
@@ -396,7 +397,7 @@ const AddressForm = (props: AddressFormProps) => {
           {errors.phoneNumber && (
             <p className="error-message">{errors.phoneNumber.message}</p>
           )}
-          <Button role="submit" type="submit" onClick={handleSubmit(onSubmit)}>
+          <Button role="submit" type="submit">
             Submit
           </Button>
         </form>
@@ -425,7 +426,12 @@ const AddressForm = (props: AddressFormProps) => {
             <Button onClick={() => modalHandler(false)} intent="danger">
               No
             </Button>
-            <Button onClick={() => modalHandler(true)} intent="primary">
+            <Button
+              tabIndex={0}
+              autoFocus
+              onClick={() => modalHandler(true)}
+              intent="primary"
+            >
               Yes
             </Button>
           </div>

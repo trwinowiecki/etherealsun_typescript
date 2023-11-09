@@ -43,7 +43,7 @@ const Tooltip = (props: TooltipProps) => {
 
   return (
     <div
-      className="relative inline-block cursor-help group w-max"
+      className="relative inline-block leading-none h-max cursor-help group w-max"
       onMouseEnter={() => setIsShowing(true)}
       onMouseLeave={endHover}
       onClick={() => setIsShowing(true)}
@@ -59,7 +59,10 @@ const Tooltip = (props: TooltipProps) => {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <span className="z-50 absolute left-[50%] bottom-[50%] w-max max-w-[50vw] bg-primary-background shadow-md p-2">
+        <span
+          id="tooltip"
+          className="z-50 font-normal text-sm absolute left-[50%] bottom-[50%] w-max max-w-[50vw] bg-primary-background shadow-md p-2"
+        >
           {props.text}
         </span>
       </Transition>

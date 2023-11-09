@@ -199,12 +199,12 @@ const ShippingOptions = ({ submitRate }: ShippingOptionsProps) => {
       key: rate.object_id!,
       value: rate,
       displayValue: (
-        <>
+        <span className="flex items-center gap-1">
           ${rate.amount} - {rate.servicelevel?.name}{' '}
           <Tooltip text={rate.duration_terms || ''}>
-            <QuestionMarkCircleIcon className="inline w-4 h-4" />
+            <QuestionMarkCircleIcon className="inline h-5" />
           </Tooltip>
-        </>
+        </span>
       )
     }));
   };

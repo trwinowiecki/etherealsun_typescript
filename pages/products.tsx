@@ -1,15 +1,15 @@
-import Filter, { FilterField } from '@ui/Filter';
-import Modal from '@ui/Modal';
-import Paginator from '@ui/Paginator';
+import Filter, { FilterField } from '@ui/filter';
+import Modal from '@ui/modal';
+import Paginator from '@ui/paginator';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Client, Environment, SearchCatalogObjectsResponse } from 'square';
 
-import Breadcrumbs, { BreadcrumbPage } from '../components/Breadcrumbs';
-import Layout from '../components/Layout';
-import ProductList from '../components/ProductList';
-import useWindowBreakpoint, { WindowSize } from '../utils/windowDimensions';
+import Breadcrumbs, { BreadcrumbPage } from '../components/bread-crumbs';
+import Layout from '../components/layout';
+import ProductList from '../components/product-list';
+import useWindowBreakpoint, { WindowSize } from '../utils/window-dimensions';
 
 import { convertToJSON } from './api/square';
 

@@ -6,9 +6,9 @@ import {
 import axios from 'axios';
 import { useState } from 'react';
 import { PaymentForm, PaymentFormProps } from 'react-square-web-payments-sdk';
-import { SquareCommand } from '../enums/SquareCommands';
-import { useStoreContext } from '../utils/Store';
+import { SquareCommand } from '../enums/square-commands';
 import { getTotalPrice } from '../utils/cart-utils';
+import { useStoreContext } from '../utils/store';
 
 type SquarePaymentFormProps = Omit<
   PaymentFormProps,

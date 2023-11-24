@@ -4,8 +4,8 @@ import { AppProps } from 'next/app';
 import { useState } from 'react';
 
 import '../styles/globals.scss';
-import { Database } from '../types/SupabaseDbTypes';
-import { StoreProvider } from '../utils/Store';
+import { Database } from '../types/supabase-data';
+import { StoreProvider } from '../utils/store';
 
 function MyApp({
   Component,

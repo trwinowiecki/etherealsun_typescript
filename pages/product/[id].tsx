@@ -1,8 +1,8 @@
 import { RadioGroup } from '@headlessui/react';
-import Button from '@ui/Button';
+import Button from '@ui/button';
 import Listbox from '@ui/CustomListbox';
-import FavButton from '@ui/FavButton';
-import Image from '@ui/Image';
+import FavButton from '@ui/favorite-button';
+import Image from '@ui/image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -15,10 +15,10 @@ import {
   RetrieveCatalogObjectResponse
 } from 'square';
 
-import Breadcrumbs, { BreadcrumbPage } from '../../components/Breadcrumbs';
-import Layout from '../../components/Layout';
-import { CartCommand } from '../../enums/CartCommands';
-import { CartItem } from '../../types/CartItem';
+import Breadcrumbs, { BreadcrumbPage } from '../../components/bread-crumbs';
+import Layout from '../../components/layout';
+import { CartCommand } from '../../enums/cart-commands';
+import { CartItem } from '../../types/cart-item';
 import {
   DEFAULT_IMAGE,
   getImages,
@@ -27,8 +27,8 @@ import {
   OptionGroup,
   OptionValue,
   VariationGroup
-} from '../../utils/squareUtils';
-import { useStoreContext } from '../../utils/Store';
+} from '../../utils/square-utils';
+import { useStoreContext } from '../../utils/store';
 import { cn } from '../../utils/tw-utils';
 import { convertToJSON } from '../api/square';
 

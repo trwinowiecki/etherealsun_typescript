@@ -1,6 +1,6 @@
 import { LineItem } from '@square/web-sdk';
-import { Cart } from '../types/Cart.model';
-import { CartItem } from '../types/CartItem';
+import { Cart } from '../types/cart';
+import { CartItem } from '../types/cart-item';
 
 export const getTotalPrice = (cartItems: CartItem[]): string => {
   return (

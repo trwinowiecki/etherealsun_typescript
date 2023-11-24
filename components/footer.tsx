@@ -1,4 +1,4 @@
-import Divider from '@ui/Divider';
+import Divider from '@ui/divider';
 
 function Footer() {
   return (

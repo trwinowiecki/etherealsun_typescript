@@ -1,6 +1,6 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import FavButton from '@ui/FavButton';
-import Image from '@ui/Image';
+import FavButton from '@ui/favorite-button';
+import Image from '@ui/image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -15,10 +15,10 @@ import {
 } from 'square';
 
 import { convertToJSON } from '../pages/api/square';
-import { Database } from '../types/SupabaseDbTypes';
-import { useStoreContext } from '../utils/Store';
-import { getImages } from '../utils/squareUtils';
-import { handleError } from '../utils/supabaseUtils';
+import { Database } from '../types/supabase-data';
+import { getImages } from '../utils/square-utils';
+import { useStoreContext } from '../utils/store';
+import { handleError } from '../utils/supabase-utils';
 
 interface ProductCardProps {
   item: CatalogObject;

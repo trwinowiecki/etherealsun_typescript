@@ -1,4 +1,4 @@
-import CartPopup from '@ui/cart/CartPopup';
+import CartPopup from '@ui/cart/popup';
 import Head from 'next/head';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
@@ -8,8 +8,8 @@ import { DEFAULT_THEME } from '../styles/themes';
 import { applyTheme } from '../styles/themes/utils';
 
 import { cn } from '../utils/tw-utils';
-import Footer from './Footer';
-import Navbar from './Navbar';
+import Footer from './footer';
+import Navbar from './navbar';
 
 interface LayoutProps {
   title?: string;

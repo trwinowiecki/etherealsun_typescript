@@ -8,21 +8,21 @@ import {
 import { PaymentRequestOptions } from '@square/web-sdk';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { User } from '@supabase/auth-helpers-react';
-import Button from '@ui/Button';
-import CustomRadio, { RadioOption } from '@ui/CustomRadio';
-import Tooltip from '@ui/Tooltip';
+import Button from '@ui/button';
+import CustomRadio, { RadioOption } from '@ui/radio-buttons';
+import Tooltip from '@ui/tooltip';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import AddressForm from '../components/AddressForm';
-import CheckoutSteps from '../components/CheckoutSteps';
-import Layout from '../components/Layout';
-import SquarePaymentForm from '../components/SquarePaymentForm';
-import { CartCommand } from '../enums/CartCommands';
-import { ShippoCommand } from '../enums/ShippoCommands';
-import { Database } from '../types/SupabaseDbTypes';
-import { useStoreContext } from '../utils/Store';
+import AddressForm from '../components/address-form';
+import CheckoutSteps from '../components/checkout-steps';
+import Layout from '../components/layout';
+import SquarePaymentForm from '../components/payment-form';
+import { CartCommand } from '../enums/cart-commands';
+import { ShippoCommand } from '../enums/shippo-commands';
+import { Database } from '../types/supabase-data';
 import { getLineItems, getTotalPrice } from '../utils/cart-utils';
 import { convertSquareToShippoAddress } from '../utils/shippo-utils';
+import { useStoreContext } from '../utils/store';
 import { ShippoRate } from './api/shippo';
 
 type CheckoutProps = {

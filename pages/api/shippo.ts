@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { ShippoCommand } from '../../enums/ShippoCommands';
+import { ShippoCommand } from '../../enums/shippo-commands';
 
 export type ShippoRequest = NextApiRequest & {
   body:

@@ -5,7 +5,7 @@ import {
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
 
-import Listbox from './CustomListbox';
+import Listbox from './dropdown-menu';
 
 interface PaginatorProps {
   pageLengthOpts: number[];

@@ -1,5 +1,5 @@
-import AddressForm from '../components/AddressForm';
-import { CartItem } from './CartItem';
+import AddressForm from '../components/address-form';
+import { CartItem } from './cart-item';
 
 export interface Cart {
   cartItems: CartItem[];

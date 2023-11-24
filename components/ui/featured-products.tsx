@@ -1,7 +1,7 @@
 import { CatalogObject } from 'square';
 
 import { cn } from '../../utils/tw-utils';
-import ProductCard from '../ProductCard';
+import ProductCard from '../product-card';
 
 interface FeaturedProps {
   name: string;

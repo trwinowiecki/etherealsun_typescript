@@ -1,8 +1,8 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import Button from '@ui/Button';
-import CartItemComponent from '@ui/cart/CartItemComponent';
-import Subtotal, { calcSubtotal } from '@ui/cart/Subtotal';
-import Featured from '@ui/Featured';
+import Button from '@ui/button';
+import CartItemComponent from '@ui/cart/cart-item';
+import Subtotal, { calcSubtotal } from '@ui/cart/subtotal';
+import Featured from '@ui/featured-products';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -12,12 +12,12 @@ import { toast } from 'react-toastify';
 import { BatchRetrieveCatalogObjectsResponse } from 'square';
 
 import dynamic from 'next/dynamic';
-import Layout from '../components/Layout';
-import SquarePaymentForm from '../components/SquarePaymentForm';
-import { SquareCommand } from '../enums/SquareCommands';
-import { Database } from '../types/SupabaseDbTypes';
-import { useStoreContext } from '../utils/Store';
-import { handleError } from '../utils/supabaseUtils';
+import Layout from '../components/layout';
+import SquarePaymentForm from '../components/payment-form';
+import { SquareCommand } from '../enums/square-commands';
+import { Database } from '../types/supabase-data';
+import { useStoreContext } from '../utils/store';
+import { handleError } from '../utils/supabase-utils';
 
 const Cart = () => {
   const router = useRouter();

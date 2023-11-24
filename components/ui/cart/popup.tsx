@@ -1,16 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import Button from '@ui/Button';
+import Button from '@ui/button';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-import { CartCommand } from '../../../enums/CartCommands';
+import { CartCommand } from '../../../enums/cart-commands';
 
-import { useStoreContext } from '../../../utils/Store';
-import CartItemComponent from './CartItemComponent';
-import Subtotal from './Subtotal';
+import { useStoreContext } from '../../../utils/store';
+import CartItemComponent from './cart-item';
+import Subtotal from './subtotal';
 
 function CartPopup() {
   const { state, dispatch } = useStoreContext();

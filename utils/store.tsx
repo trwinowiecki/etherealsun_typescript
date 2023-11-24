@@ -1,10 +1,10 @@
 import { createContext, useContext, useReducer } from 'react';
 
-import AddressForm from '../components/AddressForm';
-import { CartCommand } from '../enums/CartCommands';
-import { Cart } from '../types/Cart.model';
-import { CartItem } from '../types/CartItem';
-import { UserCustom } from '../types/Supabase';
+import AddressForm from '../components/address-form';
+import { CartCommand } from '../enums/cart-commands';
+import { Cart } from '../types/cart';
+import { CartItem } from '../types/cart-item';
+import { UserCustom } from '../types/supabase';
 
 interface StoreContextInterface {
   state: State;

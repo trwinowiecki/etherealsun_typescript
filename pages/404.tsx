@@ -1,7 +1,7 @@
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
-import Layout from '../components/Layout';
+import Layout from '../components/layout';
 
 // pages/404.tsx
 export default function Custom404() {

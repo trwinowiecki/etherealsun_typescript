@@ -10,13 +10,13 @@ import {
 import { toast } from 'react-toastify';
 import { Address } from 'square';
 
-import Button from '@ui/Button';
-import LoadingSpinner from '@ui/LoadingSpinner';
-import Modal from '@ui/Modal';
+import Button from '@ui/button';
+import LoadingSpinner from '@ui/loading-spinner';
+import Modal from '@ui/modal';
 import PhoneInput from 'react-phone-number-input/input';
-import { ShippoCommand } from '../enums/ShippoCommands';
+import { ShippoCommand } from '../enums/shippo-commands';
 import { ShippoAddressResponse } from '../pages/api/shippo';
-import { UserCustom } from '../types/Supabase';
+import { UserCustom } from '../types/supabase';
 import { getErrorShippo } from '../utils/error';
 import {
   convertShippoToSquareAddress,

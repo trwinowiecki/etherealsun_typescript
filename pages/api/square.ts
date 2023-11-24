@@ -6,9 +6,9 @@ import {
   Environment
 } from 'square';
 
-import AddressForm from '../../components/AddressForm';
-import { SquareCommand } from '../../enums/SquareCommands';
-import { UserCustom } from '../../types/Supabase';
+import AddressForm from '../../components/address-form';
+import { SquareCommand } from '../../enums/square-commands';
+import { UserCustom } from '../../types/supabase';
 
 export type TakePaymentRequest = {
   token: string;

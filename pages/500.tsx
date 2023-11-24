@@ -1,7 +1,7 @@
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
-import Layout from '../components/Layout';
+import Layout from '../components/layout';
 
 // pages/500.tsx
 export default function Custom500() {

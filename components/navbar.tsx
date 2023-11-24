@@ -15,11 +15,11 @@ import {
   RetrieveCustomerResponse,
   SearchCustomersResponse
 } from 'square';
-import { CartCommand } from '../enums/CartCommands';
-import { SquareCommand } from '../enums/SquareCommands';
-import { UserCustom } from '../types/Supabase';
-import { Database } from '../types/SupabaseDbTypes';
-import { useStoreContext } from '../utils/Store';
+import { CartCommand } from '../enums/cart-commands';
+import { SquareCommand } from '../enums/square-commands';
+import { UserCustom } from '../types/supabase';
+import { Database } from '../types/supabase-data';
+import { useStoreContext } from '../utils/store';
 import { cn } from '../utils/tw-utils';
 
 interface MyLinkProps {

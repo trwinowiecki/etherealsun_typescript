@@ -1,4 +1,4 @@
-import AddressForm from '../components/AddressForm';
+import AddressForm from '../components/address-form';
 import { ShippoAddressResponse } from '../pages/api/shippo';
 
 export const convertShippoToSquareAddress = (

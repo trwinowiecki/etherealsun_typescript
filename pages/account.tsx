@@ -8,18 +8,18 @@ import {
 } from '@supabase/auth-helpers-react';
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react';
 import { ViewType } from '@supabase/auth-ui-react/dist/esm/src/types';
-import Button from '@ui/Button';
+import Button from '@ui/button';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import axios from 'axios';
-import Layout from '../components/Layout';
-import { SquareCommand } from '../enums/SquareCommands';
-import { UserProfileSupa } from '../types/Supabase';
-import { Database } from '../types/SupabaseDbTypes';
-import { useStoreContext } from '../utils/Store';
-import { handleError } from '../utils/supabaseUtils';
+import Layout from '../components/layout';
+import { SquareCommand } from '../enums/square-commands';
+import { UserProfileSupa } from '../types/supabase';
+import { Database } from '../types/supabase-data';
+import { useStoreContext } from '../utils/store';
+import { handleError } from '../utils/supabase-utils';
 
 const account = () => {
   const router = useRouter();

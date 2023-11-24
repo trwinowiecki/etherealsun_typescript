@@ -1,12 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import Image from '@ui/Image';
+import Image from '@ui/image';
 import Link from 'next/link';
 
-import { CartCommand } from '../../../enums/CartCommands';
-import { CartItem } from '../../../types/CartItem';
-import { useStoreContext } from '../../../utils/Store';
+import { CartCommand } from '../../../enums/cart-commands';
+import { CartItem } from '../../../types/cart-item';
+import { useStoreContext } from '../../../utils/store';
 import { cn } from '../../../utils/tw-utils';
-import Quantity from '../Quantity';
+import Quantity from '../quantity';
 
 interface CartItemProps {
   item: CartItem;

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { CatalogObject } from 'square';
 
-import ProductCard from './ProductCard';
+import ProductCard from './product-card';
 
 interface ProductListProps {
   catalog?: CatalogObject[];

@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
-import Featured from '@ui/Featured';
+import Featured from '@ui/featured-products';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 import { CatalogObject, Client, Environment } from 'square';
 
-import Layout from '../components/Layout';
-import { FeaturedProduct } from '../types/FeaturedProduct';
-import { Database } from '../types/SupabaseDbTypes';
+import Layout from '../components/layout';
+import { FeaturedProduct } from '../types/featured-product';
+import { Database } from '../types/supabase-data';
 
 import { convertToJSON } from './api/square';
 

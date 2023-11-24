@@ -1,4 +1,4 @@
-import { CartItem } from '../../../types/CartItem';
+import { CartItem } from '../../../types/cart-item';
 
 interface SubtotalProps {
   cartItems: CartItem[];

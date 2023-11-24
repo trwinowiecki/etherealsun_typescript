@@ -4,7 +4,7 @@ import HeartIcon from '@heroicons/react/24/outline/HeartIcon';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { toast } from 'react-toastify';
 
-import { Database } from '../../types/SupabaseDbTypes';
+import { Database } from '../../types/supabase-data';
 import { cn } from '../../utils/tw-utils';
 
 interface FavButtonProps {

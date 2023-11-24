@@ -2,7 +2,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 
 import { cn } from '../../utils/tw-utils';
-import Button from './Button';
+import Button from './button';
 
 interface ModalProps {
   children: React.ReactNode;

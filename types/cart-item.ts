@@ -1,6 +1,6 @@
 import { CatalogObject } from 'square';
 
-import { getImages } from '../utils/squareUtils';
+import { getImages } from '../utils/square-utils';
 
 interface CartImage {
   id: string;
@@ -119,7 +119,7 @@ export class CartItem {
             id: image.id,
             name: image.imageData?.name ?? '',
             url: image.imageData?.url
-          } as CartImage)
+          }) as CartImage
       );
   }
 }

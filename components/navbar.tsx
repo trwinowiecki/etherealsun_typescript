@@ -19,7 +19,7 @@ import { CartCommand } from '../enums/cart-commands';
 import { SquareCommand } from '../enums/square-commands';
 import { UserCustom } from '../types/supabase';
 import { Database } from '../types/supabase-data';
-import { useStoreContext } from '../utils/store';
+import { useStoreContext } from '../contexts/store';
 import { cn } from '../utils/tw-utils';
 
 interface MyLinkProps {

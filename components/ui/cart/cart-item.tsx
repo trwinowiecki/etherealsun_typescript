@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { CartCommand } from '../../../enums/cart-commands';
 import { CartItem } from '../../../types/cart-item';
-import { useStoreContext } from '../../../utils/store';
+import { useStoreContext } from '../../../contexts/store';
 import { cn } from '../../../utils/tw-utils';
 import Quantity from '../quantity';
 

@@ -5,7 +5,7 @@ import {
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
 
-import Listbox from './dropdown-menu';
+import DropdownMenu from './dropdown-menu';
 
 interface PaginatorProps {
   pageLengthOpts: number[];
@@ -72,7 +72,7 @@ const Paginator = ({
           />
         ) : null}
       </div>
-      <Listbox
+      <DropdownMenu
         listOfItems={pageLengthOpts}
         state={selectedLength}
         setState={val => handleLimitChange(val)}

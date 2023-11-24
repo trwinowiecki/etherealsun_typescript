@@ -18,7 +18,7 @@ import Layout from '../components/layout';
 import { SquareCommand } from '../enums/square-commands';
 import { UserProfileSupa } from '../types/supabase';
 import { Database } from '../types/supabase-data';
-import { useStoreContext } from '../utils/store';
+import { useStoreContext } from '../contexts/store';
 import { handleError } from '../utils/supabase-utils';
 
 const account = () => {

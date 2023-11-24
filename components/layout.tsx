@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import { DEFAULT_THEME } from '../styles/themes';
-import { applyTheme } from '../styles/themes/utils';
+import { useTheme } from '../hooks/theme';
 
 import { cn } from '../utils/tw-utils';
 import Footer from './footer';
@@ -21,11 +21,8 @@ export default function Layout({
   children,
   overridePadding = false
 }: PropsWithChildren<LayoutProps>) {
-  const [theme, setTheme] = useState(DEFAULT_THEME);
-
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
+  const [theme, setTheme] = useTheme();
+  // todo implement theme selector
 
   return (
     <>

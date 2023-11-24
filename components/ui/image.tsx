@@ -1,6 +1,6 @@
 import NextImage from 'next/image';
 
-import { WindowSize } from '../../utils/window-dimensions';
+import { WindowSize } from '../../hooks/window-dimensions';
 
 export interface ImageProps {
   alt: string;

@@ -17,7 +17,7 @@ import {
 import { convertToJSON } from '../pages/api/square';
 import { Database } from '../types/supabase-data';
 import { getImages } from '../utils/square-utils';
-import { useStoreContext } from '../utils/store';
+import { useStoreContext } from '../contexts/store';
 import { handleError } from '../utils/supabase-utils';
 
 interface ProductCardProps {

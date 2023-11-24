@@ -1,12 +1,15 @@
 import { Fragment } from 'react';
 import { cn } from '../utils/tw-utils';
 
-interface CheckoutStepperProps {
+interface HorizontalStepperProps {
   activeStep: number;
   steps: { title: string; enabled: boolean }[];
 }
 
-const CheckoutSteps = ({ activeStep = 0, steps }: CheckoutStepperProps) => {
+const HorizontalStepper = ({
+  activeStep = 0,
+  steps
+}: HorizontalStepperProps) => {
   return (
     <div className="flex flex-col items-center justify-center w-full py-4">
       <div className="flex items-center justify-center w-full gap-2 lg:w-[75%]">
@@ -30,4 +33,4 @@ const CheckoutSteps = ({ activeStep = 0, steps }: CheckoutStepperProps) => {
   );
 };
 
-export default CheckoutSteps;
+export default HorizontalStepper;

@@ -11,7 +11,7 @@ interface Props {
   setState: (val: any) => void;
 }
 
-function CustomListbox({
+function DropdownMenu({
   listOfItems,
   state,
   label,
@@ -78,4 +78,4 @@ function CustomListbox({
   );
 }
 
-export default CustomListbox;
+export default DropdownMenu;

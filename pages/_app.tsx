@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import '../styles/globals.scss';
 import { Database } from '../types/supabase-data';
-import { StoreProvider } from '../utils/store';
+import { StoreProvider } from '../contexts/store';
 
 function MyApp({
   Component,

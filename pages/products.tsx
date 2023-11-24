@@ -1,15 +1,24 @@
+import { render } from '@headlessui/react/dist/utils/render';
 import Filter, { FilterField } from '@ui/filter';
 import Modal from '@ui/modal';
+import PaginatedData from '@ui/paginated-data';
 import Paginator from '@ui/paginator';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Client, Environment, SearchCatalogObjectsResponse } from 'square';
+import {
+  CatalogItem,
+  CatalogObject,
+  Client,
+  Environment,
+  SearchCatalogObjectsResponse
+} from 'square';
 
 import Breadcrumbs, { BreadcrumbPage } from '../components/bread-crumbs';
 import Layout from '../components/layout';
+import ProductCard from '../components/product-card';
 import ProductList from '../components/product-list';
-import useWindowBreakpoint, { WindowSize } from '../utils/window-dimensions';
+import useWindowBreakpoint, { WindowSize } from '../hooks/window-dimensions';
 
 import { convertToJSON } from './api/square';
 
@@ -130,6 +139,17 @@ const products = ({ catalog }: ProductsPageProps) => {
     setPage(newPage);
   };
 
+  const renderProductCard = (product: CatalogObject): React.ReactNode => {
+    return (
+      <ProductCard
+        key={product.id}
+        item={product}
+        relatedObj={catalog.relatedObjects}
+        onClick={(id: string) => handleProductClicked(id)}
+      />
+    );
+  };
+
   const handleProductClicked = (id: string) => {
     router.push(
       {
@@ -178,24 +198,10 @@ const products = ({ catalog }: ProductsPageProps) => {
               </Modal>
             )}
           </div>
-          <div className="flex flex-col items-center w-full gap-6">
-            <ProductList
-              catalog={filteredItems.slice(
-                (page - 1) * pageLength,
-                page * pageLength
-              )}
-              relatedObjs={catalog.relatedObjects}
-              onClick={(id: string) => handleProductClicked(id)}
-            />
-            <Paginator
-              pageLengthOpts={paginatorLengthOpts}
-              selectedLength={pageLength}
-              currentPage={page}
-              numItems={numItems}
-              onPageChange={val => handlePageChange(val)}
-              onLengthChange={val => setPageLength(val)}
-            />
-          </div>
+          <PaginatedData
+            data={filteredItems}
+            dataRenderer={renderProductCard}
+          />
         </div>
       </section>
     </Layout>

@@ -1,6 +1,6 @@
 import { RadioGroup } from '@headlessui/react';
 import Button from '@ui/button';
-import Listbox from '@ui/CustomListbox';
+import DropdownMenu from '@ui/dropdown-menu';
 import FavButton from '@ui/favorite-button';
 import Image from '@ui/image';
 import { GetStaticPaths, GetStaticProps } from 'next';
@@ -28,7 +28,7 @@ import {
   OptionValue,
   VariationGroup
 } from '../../utils/square-utils';
-import { useStoreContext } from '../../utils/store';
+import { useStoreContext } from '../../contexts/store';
 import { cn } from '../../utils/tw-utils';
 import { convertToJSON } from '../api/square';
 
@@ -322,7 +322,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
               </div>
             )}
             <div className="flex items-center gap-4">
-              <Listbox
+              <DropdownMenu
                 listOfItems={[1, 2, 3, 4, 5]}
                 state={quantity}
                 setState={setQuantity}

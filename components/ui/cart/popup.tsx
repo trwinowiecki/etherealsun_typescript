@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 import { CartCommand } from '../../../enums/cart-commands';
 
-import { useStoreContext } from '../../../utils/store';
+import { useStoreContext } from '../../../contexts/store';
 import CartItemComponent from './cart-item';
 import Subtotal from './subtotal';
 

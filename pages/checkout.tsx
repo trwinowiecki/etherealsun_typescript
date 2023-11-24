@@ -14,7 +14,7 @@ import Tooltip from '@ui/tooltip';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import AddressForm from '../components/address-form';
-import CheckoutSteps from '../components/checkout-steps';
+import HorizontalSteps from '../components/horizontal-stepper';
 import Layout from '../components/layout';
 import SquarePaymentForm from '../components/payment-form';
 import { CartCommand } from '../enums/cart-commands';
@@ -22,7 +22,7 @@ import { ShippoCommand } from '../enums/shippo-commands';
 import { Database } from '../types/supabase-data';
 import { getLineItems, getTotalPrice } from '../utils/cart-utils';
 import { convertSquareToShippoAddress } from '../utils/shippo-utils';
-import { useStoreContext } from '../utils/store';
+import { useStoreContext } from '../contexts/store';
 import { ShippoRate } from './api/shippo';
 
 type CheckoutProps = {
@@ -125,7 +125,7 @@ const checkout = ({ initialUser }: CheckoutProps) => {
   return (
     <Layout title="Checkout">
       <section className="flex flex-col items-start gap-2">
-        <CheckoutSteps activeStep={activeStep} steps={steps} />
+        <HorizontalSteps activeStep={activeStep} steps={steps} />
         <Button type="button" onClick={() => handleStepChange(activeStep - 1)}>
           <ArrowLeftIcon className="inline w-4 h-4 mr-2" />
           Back

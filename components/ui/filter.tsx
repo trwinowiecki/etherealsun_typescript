@@ -1,40 +1,52 @@
 import { Disclosure, RadioGroup } from '@headlessui/react';
 import { CheckIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { useEffect } from 'react';
+import { CatalogObject } from 'square';
+import useSquareFilters from '../../hooks/square-product-filter';
 import { cn } from '../../utils/tw-utils';
 
-export interface FilterField<TFilterType> {
-  name: string;
+export interface FilterField<T> {
+  key: string;
+  displayName: string;
   description?: string;
-  values: TFilterType[];
-  displayValues?: string[];
-  selected: TFilterType;
-  defaultValue?: TFilterType;
+  values: T[];
+  renderValue: (val: T) => string;
+  selected: T | null;
   type: 'radio' | 'check' | 'range' | 'color';
 }
 
 interface FilterProps {
-  fields: FilterField<any>[];
-  setSelected: (val: any, field: FilterField<any>) => void;
+  products: CatalogObject[];
+  onFilterChange: (filteredProducts: CatalogObject[]) => void;
 }
 
-const Filter = ({ fields, setSelected }: FilterProps) => {
-  fields.forEach(field => {
-    if (!field.selected && field.defaultValue) {
-      setSelected(field.defaultValue, field);
-    }
-  });
+const Filter = ({ products, onFilterChange }: FilterProps) => {
+  const { filteredProducts, updateFilters, filters } =
+    useSquareFilters(products);
+
+  useEffect(() => {
+    onFilterChange(filteredProducts);
+  }, [filteredProducts]);
+
+  const handleFilterSelected = (
+    filter: FilterField<string>,
+    value: string | null
+  ) => {
+    updateFilters([{ key: filter.key, value }]);
+  };
+
   return (
     <div className="z-20 flex flex-col w-full h-full gap-2 overflow-y-auto">
-      {fields.map(field => (
+      {filters.map(filter => (
         <Disclosure
-          key={field.name}
+          key={filter.key}
           as="div"
           className="px-4 py-2 bg-primary-background rounded-xl"
         >
           {({ open }) => (
             <>
               <Disclosure.Button className="flex items-center justify-between w-full">
-                <span>{field.name}</span>
+                <span>{filter.displayName}</span>
                 <ChevronUpIcon
                   className={cn('w-5 h-5', { 'transform rotate-180': open })}
                 />
@@ -42,42 +54,19 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
               <Disclosure.Panel className="pt-2">
                 <div
                   className={cn('pb-2 text-xs hidden', {
-                    block: field.description
+                    block: filter.description
                   })}
                 >
-                  {field.description}
+                  {filter.description}
                 </div>
-                <RadioGroup
-                  value={field.selected}
-                  onChange={event => setSelected(event, field)}
-                >
-                  {field.displayValues
-                    ? field.displayValues.map((val, i) => (
+                <RadioGroup value={filter.selected}>
+                  {filter.values
+                    ? filter.values.map((val, i) => (
                         <RadioGroup.Option
-                          key={field.values[i]}
-                          value={field.values[i]}
+                          key={filter.values[i]}
+                          value={val}
+                          onClick={() => handleFilterSelected(filter, val)}
                         >
-                          {({ checked }) => (
-                            <div
-                              className={cn({
-                                'bg-primary-background-darker': checked
-                              })}
-                            >
-                              <CheckIcon
-                                className={cn(
-                                  'w-full h-5 gap-2 items-center p-1 rounded-lg cursor-pointer inline-flex invisible',
-                                  { visible: checked }
-                                )}
-                              />
-                              <div className="w-full overflow-x-auto">
-                                {val}
-                              </div>
-                            </div>
-                          )}
-                        </RadioGroup.Option>
-                      ))
-                    : field.values.map(val => (
-                        <RadioGroup.Option key={val} value={val}>
                           {({ checked }) => (
                             <div
                               className={cn(
@@ -91,12 +80,13 @@ const Filter = ({ fields, setSelected }: FilterProps) => {
                                 })}
                               />
                               <div className="w-full overflow-x-auto">
-                                {val}
+                                {filter.renderValue(val)}
                               </div>
                             </div>
                           )}
                         </RadioGroup.Option>
-                      ))}
+                      ))
+                    : null}
                 </RadioGroup>
               </Disclosure.Panel>
             </>

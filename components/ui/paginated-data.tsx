@@ -12,30 +12,44 @@ type PaginatedDataProps<T> = {
   dataRenderer: (data: T) => React.ReactNode;
   firstLastPageVisible?: boolean;
   pageLengthOpts?: number[];
+  pageInitial?: number;
+  pageChanged?: (page: number) => void;
 };
 
 const PaginatedData = <T extends unknown>({
   data,
   dataRenderer,
   firstLastPageVisible = true,
-  pageLengthOpts = [10, 25, 50]
+  pageLengthOpts = [10, 25, 50],
+  pageInitial,
+  pageChanged
 }: PaginatedDataProps<T>) => {
   const [pageLength, setPageLength] = useState(pageLengthOpts[0]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(pageInitial ?? 1);
   const [numPages, setNumPages] = useState(Math.ceil(data.length / pageLength));
 
   useEffect(() => {
     setNumPages(Math.ceil(data.length / pageLength));
-    if (page > numPages) {
+    if (page > numPages && numPages > 0) {
       setPage(numPages);
+    }
+    if (page <= 0) {
+      setPage(1);
     }
   }, [pageLength, data.length, page, numPages]);
 
-  const handlePageChange = (val: number) => {
-    if (val < 1 || val > numPages) {
+  useEffect(() => {
+    handlePageChange(pageInitial ?? 1);
+  }, [pageInitial]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > numPages) {
       return;
     }
-    setPage(val);
+    setPage(newPage);
+    if (pageChanged) {
+      pageChanged(newPage);
+    }
   };
 
   const iconClasses = 'h-5 cursor-pointer';

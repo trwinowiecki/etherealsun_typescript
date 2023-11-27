@@ -143,7 +143,6 @@ type ShippingOptionsProps = {
 const ShippingOptions = ({ submitRate }: ShippingOptionsProps) => {
   const { state } = useStoreContext();
   const [rates, setRates] = useState<ShippoRate[]>([]);
-  console.log('state shipping address', state.cart.shippingAddress);
   const [selectedRate, setSelectedRate] = useState<ShippoRate>();
 
   useEffect(() => {

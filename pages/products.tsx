@@ -94,7 +94,6 @@ const products = ({ catalog }: ProductsPageProps) => {
   const handleFilterChanged = (
     filterKeyValues: FilterChangeRequest<string>[]
   ) => {
-    console.log('handleFilterChanged', filterKeyValues);
     const newFilters: FilterChangeRequest<string>[] = filterKeyValues.filter(
       filter => filter.value !== null
     );

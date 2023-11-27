@@ -10,29 +10,44 @@ export interface FilterField<T> {
   displayName: string;
   description?: string;
   values: T[];
+  valueKeyExtractor: (val: T) => string;
   renderValue: (val: T) => string;
   selected: T | null;
   type: 'radio' | 'check' | 'range' | 'color';
 }
 
-interface FilterProps {
-  products: CatalogObject[];
-  onFilterChange: (filteredProducts: CatalogObject[]) => void;
-}
+export type FilterChangeRequest<T> = {
+  key: string;
+  value: T | null;
+};
 
-const Filter = ({ products, onFilterChange }: FilterProps) => {
-  const { filteredProducts, updateFilters, filters } =
-    useSquareFilters(products);
+type FilterProps<T> = {
+  filters: FilterField<T>[];
+  filterRequest: (filterRequest: FilterChangeRequest<T>[]) => void;
+};
 
-  useEffect(() => {
-    onFilterChange(filteredProducts);
-  }, [filteredProducts]);
+const Filter = <T extends unknown>({
+  filters,
+  filterRequest
+}: FilterProps<T>) => {
+  const isNewFilterSet = (changeRequest: FilterChangeRequest<T>[]) => {
+    return !changeRequest.every(
+      ({ key, value }) =>
+        filters.find(filter => filter.key === key)?.selected === value
+    );
+  };
 
-  const handleFilterSelected = (
-    filter: FilterField<string>,
-    value: string | null
-  ) => {
-    updateFilters([{ key: filter.key, value }]);
+  const handleFilterSelected = (filter: FilterField<T>, value: T | null) => {
+    const changeRequest: FilterChangeRequest<T> = {
+      key: filter.key,
+      value: value
+    };
+    if (isNewFilterSet([changeRequest])) {
+      filterRequest([changeRequest]);
+    } else {
+      changeRequest.value = null;
+      filterRequest([changeRequest]);
+    }
   };
 
   return (
@@ -63,7 +78,7 @@ const Filter = ({ products, onFilterChange }: FilterProps) => {
                   {filter.values
                     ? filter.values.map((val, i) => (
                         <RadioGroup.Option
-                          key={filter.values[i]}
+                          key={filter.valueKeyExtractor(filter.values[i])}
                           value={val}
                           onClick={() => handleFilterSelected(filter, val)}
                         >

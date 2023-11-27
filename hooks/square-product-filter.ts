@@ -1,4 +1,4 @@
-import { FilterField } from '@ui/filter';
+import { FilterChangeRequest, FilterField } from '@ui/filter';
 import { useEffect, useState } from 'react';
 import { CatalogObject } from 'square';
 
@@ -17,6 +17,7 @@ const useSquareFilters = (unfilteredProducts: CatalogObject[]) => {
           .filter(obj => obj.type === 'CATEGORY')
           .map(cat => cat.id)
       ],
+      valueKeyExtractor: id => id,
       renderValue: id =>
         unfilteredProducts.find(
           obj => obj.type === 'CATEGORY' && obj.id === id
@@ -38,6 +39,7 @@ const useSquareFilters = (unfilteredProducts: CatalogObject[]) => {
           attr.customAttributeDefinitionData!.selectionConfig!.allowedSelections!.map(
             sel => sel.name
           ),
+        valueKeyExtractor: name => name,
         renderValue: name => name,
         selected: null,
         type: 'radio'
@@ -92,20 +94,22 @@ const useSquareFilters = (unfilteredProducts: CatalogObject[]) => {
         filtered = filtered.filter(obj => productHasAttribute(obj, key, value));
       }
     });
-    console.log(filtered);
 
     setFilteredProducts(filtered);
   };
 
-  const updateFilters = (updates: { key: string; value: string | null }[]) => {
+  const updateFilters = (updates: FilterChangeRequest<string>[]) => {
     const filterMap = new Map<string, FilterField<string>>();
     filters.forEach(filter => filterMap.set(filter.key, filter));
+
     updates.forEach(({ key, value }) => {
       if (filterMap.has(key)) {
-        filterMap.get(key)!.selected =
-          filterMap.get(key)!.selected === value ? null : value;
+        const newFilter = filterMap.get(key);
+        newFilter!.selected = value;
+        filterMap.set(key, newFilter!);
       }
     });
+
     setFilters(Array.from(filterMap.values()));
     filterProducts();
   };

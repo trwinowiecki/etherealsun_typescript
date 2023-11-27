@@ -1,5 +1,4 @@
-import { w } from '@supabase/auth-helpers-nextjs/dist/withMiddlewareAuth-9d46fbd7';
-import Filter, { FilterField } from '@ui/filter';
+import Filter, { FilterChangeRequest } from '@ui/filter';
 import Modal from '@ui/modal';
 import PaginatedData from '@ui/paginated-data';
 import { GetStaticProps } from 'next';
@@ -15,6 +14,7 @@ import {
 import Breadcrumbs, { BreadcrumbPage } from '../components/bread-crumbs';
 import Layout from '../components/layout';
 import ProductCard from '../components/product-card';
+import useSquareFilters from '../hooks/square-product-filter';
 import useWindowBreakpoint, { WindowSize } from '../hooks/window-dimensions';
 
 import { convertToJSON } from './api/square';
@@ -24,26 +24,41 @@ interface ProductsPageProps {
 }
 
 const products = ({ catalog }: ProductsPageProps) => {
-  const products: CatalogObject[] =
-    catalog.objects?.filter(obj => obj.type === 'ITEM') ?? [];
   const router = useRouter();
   const [page, setPage] = useState(1);
-  const [filteredProducts, setFilteredProducts] = useState(products ?? []);
+  const { filters, filteredProducts, updateFilters } = useSquareFilters(
+    catalog.objects ?? []
+  );
   const paginatorLengthOpts = [12, 24, 48, 96];
 
   const windowSize = useWindowBreakpoint();
 
   useEffect(() => {
     const updateState = () => {
+      const params = new URLSearchParams(router.asPath.split(/\?/)[1]);
       setPage(prev =>
-        router.query.page ? parseInt(router.query.page as string, 10) : prev
+        params.has('page') ? parseInt(params.get('page') as string, 10) : prev
       );
+
+      const urlFilters = getFiltersFromParams(params);
+      if (urlFilters && urlFilters.length > 0) {
+        updateFilters(urlFilters);
+      }
     };
 
     if (router.isReady) {
       updateState();
     }
-  }, [router.isReady]);
+  }, [router.isReady, router.asPath]);
+
+  const getFiltersFromParams = (
+    params: URLSearchParams
+  ): FilterChangeRequest<string>[] => {
+    return Array.from(params.keys()).map(key => ({
+      key,
+      value: params.get(key)
+    }));
+  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -58,10 +73,6 @@ const products = ({ catalog }: ProductsPageProps) => {
       undefined,
       { shallow: true, scroll: true }
     );
-  };
-
-  const handleFilterChange = (products: CatalogObject[]) => {
-    setFilteredProducts(products.filter(obj => obj.type === 'ITEM'));
   };
 
   const handleProductClicked = (id: string) => {
@@ -80,6 +91,30 @@ const products = ({ catalog }: ProductsPageProps) => {
     router.push(`/product/${id}`);
   };
 
+  const handleFilterChanged = (
+    filterKeyValues: FilterChangeRequest<string>[]
+  ) => {
+    console.log('handleFilterChanged', filterKeyValues);
+    const newFilters: FilterChangeRequest<string>[] = filterKeyValues.filter(
+      filter => filter.value !== null
+    );
+
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          page: router.query.page ? router.query.page : 1,
+          ...newFilters.reduce(
+            (acc, { key, value }) => ({ ...acc, [key]: value }),
+            {}
+          )
+        }
+      },
+      undefined,
+      { shallow: true, scroll: true }
+    );
+  };
+
   const breadcrumbs: BreadcrumbPage[] = [
     { href: '/', name: 'Home' },
     { href: '/products', name: 'Products', active: true }
@@ -96,6 +131,10 @@ const products = ({ catalog }: ProductsPageProps) => {
     );
   };
 
+  const renderFilter = () => {
+    return <Filter filters={filters} filterRequest={handleFilterChanged} />;
+  };
+
   return (
     <Layout title="Products">
       <section>
@@ -108,25 +147,17 @@ const products = ({ catalog }: ProductsPageProps) => {
               <div className="p-4">
                 <div className="mb-4">Filters</div>
                 <div className="max-h-[80vh] overflow-y-auto">
-                  <Filter
-                    products={catalog.objects ?? []}
-                    onFilterChange={handleFilterChange}
-                  />
+                  {renderFilter()}
                 </div>
               </div>
             ) : (
-              <Modal name="Filters">
-                <Filter
-                  products={catalog.objects ?? []}
-                  onFilterChange={handleFilterChange}
-                />
-              </Modal>
+              <Modal name="Filters">{renderFilter()}</Modal>
             )}
           </div>
           <PaginatedData
             page={page}
             pageLengthOpts={paginatorLengthOpts}
-            data={filteredProducts}
+            data={filteredProducts.filter(obj => obj.type === 'ITEM')}
             dataRenderer={renderProductCard}
             pageChanged={handlePageChange}
           />

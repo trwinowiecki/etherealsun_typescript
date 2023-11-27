@@ -44,12 +44,8 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
   const [cartDisabled, setCartDisabled] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
-  const {
-    productOptions,
-    getValidVariantIds,
-    variantsWithOption,
-    isOptionAllowed
-  } = useSquareProductOptions(product!, relatedObjects!);
+  const { productOptions, getValidVariantIds, isOptionAllowed } =
+    useSquareProductOptions(product!, relatedObjects!);
   const [selectedOptions, setSelectedOptions] = useState<
     Map<string, OptionGroupSingle>
   >(new Map());

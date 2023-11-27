@@ -41,18 +41,18 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
 
   const router = useRouter();
   const { state, dispatch } = useStoreContext();
-  const [queryParams, setQueryParams] = useState<URLSearchParams>(
-    new URLSearchParams()
-  );
   const [cartDisabled, setCartDisabled] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
-  const { productOptions, getValidVariantIds, variantsWithOption } =
-    useSquareProductOptions(product!, relatedObjects!);
+  const {
+    productOptions,
+    getValidVariantIds,
+    variantsWithOption,
+    isOptionAllowed
+  } = useSquareProductOptions(product!, relatedObjects!);
   const [selectedOptions, setSelectedOptions] = useState<
     Map<string, OptionGroupSingle>
   >(new Map());
-  const [selectedVariantId, setSelectedVariantId] = useState<string>('');
 
   useEffect(() => {
     if (catalogObjects.errors) {
@@ -60,26 +60,31 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
       return;
     }
 
+    const updateState = (params: URLSearchParams) => {
+      const options = getOptionsFromQueryParams(params);
+      setSelectedOptions(options);
+
+      const validVariantIds = getValidVariantIds(
+        ...Array.from(options.values())
+      );
+      setCartDisabled(validVariantIds.length !== 1);
+    };
+
     if (router.isReady) {
-      setQueryParams(new URLSearchParams(router.asPath.split(/\?/)[1]));
+      const params = new URLSearchParams(router.asPath.split(/\?/)[1]);
+      updateState(params);
     }
   }, [router, router.isReady, router.asPath, catalogObjects.errors]);
-
-  useEffect(() => {
-    setCartDisabled(
-      getValidVariantIds(...Array.from(selectedOptions.values())).length !== 1
-    );
-  }, [selectedOptions]);
 
   useEffect(() => {
     setFavorite(state.user.favorites?.includes(product!.id));
   }, [state.user.favorites]);
 
-  const getOptionsFromQueryParams = () => {
+  const getOptionsFromQueryParams = (params: URLSearchParams) => {
     const options = new Map<string, OptionGroupSingle>();
     productOptions?.forEach(optionGroup => {
       const optionValue = optionGroup.values.find(
-        value => value.name === queryParams.get(optionGroup.name)
+        value => value.name === params.get(optionGroup.name)
       );
       if (optionValue) {
         options.set(optionGroup.id, { ...optionGroup, value: optionValue });
@@ -87,16 +92,6 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
     });
     return options;
   };
-
-  const breadcrumbs: BreadcrumbPage[] = [
-    { href: '/', name: 'Home' },
-    { href: '/products', name: 'Products' },
-    {
-      href: `/product/${product!.id}`,
-      name: `${product!.itemData!.name!}`,
-      active: true
-    }
-  ];
 
   let itemImages = getImages(product!, relatedObjects!);
   if (itemImages.length === 0) {
@@ -138,38 +133,14 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
     });
   };
 
-  useEffect(() => {
-    router.replace(
-      {
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          variant: selectedVariantId
-        }
-      },
-      undefined,
-      { shallow: true }
-    );
-  }, [selectedVariantId]);
-
   const handleOptionSelected = (
     optionGroup: OptionGroup,
-    optionValue: OptionValue
+    optionValueId: string
   ) => {
+    const optionValue = optionGroup.values.find(
+      value => value.id === optionValueId
+    )!;
     const newOption: OptionGroupSingle = { ...optionGroup, value: optionValue };
-
-    setSelectedOptions(prev => {
-      prev.set(newOption.id, newOption);
-      return prev;
-    });
-
-    const validVariantIds = getValidVariantIds(
-      ...Array.from(selectedOptions.values())
-    );
-    setCartDisabled(validVariantIds.length !== 1);
-    setSelectedVariantId(
-      validVariantIds.length === 1 ? validVariantIds[0] : ''
-    );
 
     router.replace(
       {
@@ -189,17 +160,19 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
     optionValue: OptionValue
   ): boolean => {
     const option: OptionGroupSingle = { ...optionGroup, value: optionValue };
-    //const selected: OptionGroupSingle[] = Array.from(selectedOptions.values());
 
-    const selected = Array.from(selectedOptions.keys())
-      .filter(key => optionGroup.id !== key)
-      .map(key => selectedOptions.get(key)!);
-
-    const validVariantIds = getValidVariantIds(...selected);
-    const variants = variantsWithOption(option);
-
-    return !variants.some(variant => validVariantIds.includes(variant.id));
+    return !isOptionAllowed(option, Array.from(selectedOptions.values()));
   };
+
+  const breadcrumbs: BreadcrumbPage[] = [
+    { href: '/', name: 'Home' },
+    { href: '/products', name: 'Products' },
+    {
+      href: `/product/${product!.id}`,
+      name: `${product!.itemData!.name!}`,
+      active: true
+    }
+  ];
 
   const renderOptions = () => {
     return !productOptions || productOptions.length === 0 ? null : (
@@ -209,8 +182,13 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
           .map(optionGroup => (
             <section key={optionGroup.id}>
               <RadioGroup
-                onChange={(value: OptionValue) =>
-                  handleOptionSelected(optionGroup, value)
+                value={
+                  selectedOptions.has(optionGroup.id)
+                    ? selectedOptions.get(optionGroup.id)!.value.id
+                    : null
+                }
+                onChange={(valueId: string) =>
+                  handleOptionSelected(optionGroup, valueId)
                 }
               >
                 <RadioGroup.Label>
@@ -225,7 +203,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
                     .map(optionValue => (
                       <RadioGroup.Option
                         key={optionValue.id}
-                        value={optionValue}
+                        value={optionValue.id}
                         disabled={isOptionDisabled(optionGroup, optionValue)}
                       >
                         {({ checked, disabled }) => (

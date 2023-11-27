@@ -185,23 +185,7 @@ const useSquareProductOptions = (
     if (!variantOptions || variantOptions.size === 0) {
       return [];
     }
-    // const variantIds: Set<string> = new Set();
-    // options.forEach(optionA => {
-    //   const variants: VariantGroup[] = [];
-    //   options.forEach(optionB => {
-    //     if (optionA.id === optionB.id) {
-    //       return;
-    //     }
-    //     const variantGroup: VariantGroup | undefined = Array.from(
-    //       variantOptions.values()
-    //     ).find(variant =>
-    //       variant.options.find(
-    //         option =>
-    //           option.id === optionA.id && option.value.id === optionA.value.id
-    //       )
-    //     );
-    //   });
-    // });
+
     return Array.from(variantOptions.values())
       .filter(variantGroup =>
         options.every(option =>
@@ -213,11 +197,24 @@ const useSquareProductOptions = (
       .map(variantGroup => variantGroup.id);
   };
 
+  const isOptionAllowed = (
+    option: OptionGroupSingle,
+    selectedOptions: OptionGroupSingle[]
+  ): boolean => {
+    const selected = selectedOptions.filter(opt => opt.id !== option.id);
+
+    const validVariantIds = getValidVariantIds(...selected);
+    const variants = variantsWithOption(option);
+
+    return variants.some(variant => validVariantIds.includes(variant.id));
+  };
+
   return {
     productOptions,
     variantOptions,
     getValidVariantIds,
-    variantsWithOption
+    variantsWithOption,
+    isOptionAllowed
   };
 };
 

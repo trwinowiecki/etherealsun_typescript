@@ -34,9 +34,15 @@ const products = ({ catalog }: ProductsPageProps) => {
   const windowSize = useWindowBreakpoint();
 
   useEffect(() => {
-    setPage(prev =>
-      router.query.page ? parseInt(router.query.page as string, 10) : prev
-    );
+    const updateState = () => {
+      setPage(prev =>
+        router.query.page ? parseInt(router.query.page as string, 10) : prev
+      );
+    };
+
+    if (router.isReady) {
+      updateState();
+    }
   }, [router.isReady]);
 
   const handlePageChange = (newPage: number) => {
@@ -51,17 +57,6 @@ const products = ({ catalog }: ProductsPageProps) => {
       },
       undefined,
       { shallow: true, scroll: true }
-    );
-  };
-
-  const renderProductCard = (product: CatalogObject): React.ReactNode => {
-    return (
-      <ProductCard
-        key={product.id}
-        item={product}
-        relatedObj={catalog.relatedObjects}
-        onClick={(id: string) => handleProductClicked(id)}
-      />
     );
   };
 
@@ -89,6 +84,17 @@ const products = ({ catalog }: ProductsPageProps) => {
     { href: '/', name: 'Home' },
     { href: '/products', name: 'Products', active: true }
   ];
+
+  const renderProductCard = (product: CatalogObject): React.ReactNode => {
+    return (
+      <ProductCard
+        key={product.id}
+        item={product}
+        relatedObj={catalog.relatedObjects}
+        onClick={(id: string) => handleProductClicked(id)}
+      />
+    );
+  };
 
   return (
     <Layout title="Products">
@@ -118,7 +124,7 @@ const products = ({ catalog }: ProductsPageProps) => {
             )}
           </div>
           <PaginatedData
-            pageInitial={page}
+            page={page}
             pageLengthOpts={paginatorLengthOpts}
             data={filteredProducts}
             dataRenderer={renderProductCard}

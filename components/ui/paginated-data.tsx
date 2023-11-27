@@ -12,8 +12,8 @@ type PaginatedDataProps<T> = {
   dataRenderer: (data: T) => React.ReactNode;
   firstLastPageVisible?: boolean;
   pageLengthOpts?: number[];
-  pageInitial?: number;
-  pageChanged?: (page: number) => void;
+  page: number;
+  pageChanged: (page: number) => void;
 };
 
 const PaginatedData = <T extends unknown>({
@@ -21,32 +21,27 @@ const PaginatedData = <T extends unknown>({
   dataRenderer,
   firstLastPageVisible = true,
   pageLengthOpts = [10, 25, 50],
-  pageInitial,
+  page,
   pageChanged
 }: PaginatedDataProps<T>) => {
   const [pageLength, setPageLength] = useState(pageLengthOpts[0]);
-  const [page, setPage] = useState(pageInitial ?? 1);
   const [numPages, setNumPages] = useState(Math.ceil(data.length / pageLength));
 
   useEffect(() => {
     setNumPages(Math.ceil(data.length / pageLength));
     if (page > numPages && numPages > 0) {
-      setPage(numPages);
+      pageChanged(numPages);
     }
     if (page <= 0) {
-      setPage(1);
+      pageChanged(1);
     }
   }, [pageLength, data.length, page, numPages]);
-
-  useEffect(() => {
-    handlePageChange(pageInitial ?? 1);
-  }, [pageInitial]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > numPages) {
       return;
     }
-    setPage(newPage);
+    pageChanged(newPage);
     if (pageChanged) {
       pageChanged(newPage);
     }

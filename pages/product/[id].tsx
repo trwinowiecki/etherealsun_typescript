@@ -17,18 +17,18 @@ import {
 
 import Breadcrumbs, { BreadcrumbPage } from '../../components/bread-crumbs';
 import Layout from '../../components/layout';
+import { useStoreContext } from '../../contexts/store';
 import { CartCommand } from '../../enums/cart-commands';
+import useSquareProductOptions, {
+  OptionGroupSingle
+} from '../../hooks/square-product-options';
 import { CartItem } from '../../types/cart-item';
 import {
   DEFAULT_IMAGE,
   getImages,
-  getProperOptionGroups,
-  getValidOptions,
   OptionGroup,
-  OptionValue,
-  VariationGroup
+  OptionValue
 } from '../../utils/square-utils';
-import { useStoreContext } from '../../contexts/store';
 import { cn } from '../../utils/tw-utils';
 import { convertToJSON } from '../api/square';
 
@@ -37,20 +37,22 @@ interface ProductPageProps {
 }
 
 function ProductPage({ catalogObjects }: ProductPageProps) {
-  const catalogObject = catalogObjects.object;
-  const relatedObjects = catalogObjects.relatedObjects;
+  const { object: product, relatedObjects } = catalogObjects;
 
   const router = useRouter();
   const { state, dispatch } = useStoreContext();
-  const [queryParams, setQueryParams] = useState<URLSearchParams | null>(null);
+  const [queryParams, setQueryParams] = useState<URLSearchParams>(
+    new URLSearchParams()
+  );
   const [cartDisabled, setCartDisabled] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
-  const [optionCombos, setOptionCombos] = useState<VariationGroup[]>();
-  const [options, setOptions] = useState<OptionGroup[]>([]);
-  const [selectedVariant, setSelectedVariant] = useState<CatalogObject>(
-    {} as CatalogObject
-  );
+  const { productOptions, getValidVariantIds, variantsWithOption } =
+    useSquareProductOptions(product!, relatedObjects!);
+  const [selectedOptions, setSelectedOptions] = useState<
+    Map<string, OptionGroupSingle>
+  >(new Map());
+  const [selectedVariantId, setSelectedVariantId] = useState<string>('');
 
   useEffect(() => {
     if (catalogObjects.errors) {
@@ -64,35 +66,39 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
   }, [router, router.isReady, router.asPath, catalogObjects.errors]);
 
   useEffect(() => {
-    if (catalogObject && relatedObjects) {
-      const newOptions = getValidOptions(catalogObject, relatedObjects);
-      console.log('newOptions', newOptions);
-
-      if (newOptions.length <= 1) {
-        setSelectedVariant(catalogObject.itemData!.variations![0]);
-        setCartDisabled(false);
-      }
-
-      setOptionCombos(newOptions);
-      setOptions(getProperOptionGroups(newOptions));
-    }
-  }, [catalogObject?.id, relatedObjects?.length]);
+    setCartDisabled(
+      getValidVariantIds(...Array.from(selectedOptions.values())).length !== 1
+    );
+  }, [selectedOptions]);
 
   useEffect(() => {
-    setFavorite(state.user.favorites?.includes(catalogObject!.id));
+    setFavorite(state.user.favorites?.includes(product!.id));
   }, [state.user.favorites]);
+
+  const getOptionsFromQueryParams = () => {
+    const options = new Map<string, OptionGroupSingle>();
+    productOptions?.forEach(optionGroup => {
+      const optionValue = optionGroup.values.find(
+        value => value.name === queryParams.get(optionGroup.name)
+      );
+      if (optionValue) {
+        options.set(optionGroup.id, { ...optionGroup, value: optionValue });
+      }
+    });
+    return options;
+  };
 
   const breadcrumbs: BreadcrumbPage[] = [
     { href: '/', name: 'Home' },
     { href: '/products', name: 'Products' },
     {
-      href: `/product/${catalogObject!.id}`,
-      name: `${catalogObject!.itemData!.name!}`,
+      href: `/product/${product!.id}`,
+      name: `${product!.itemData!.name!}`,
       active: true
     }
   ];
 
-  let itemImages = getImages(catalogObject!, relatedObjects!);
+  let itemImages = getImages(product!, relatedObjects!);
   if (itemImages.length === 0) {
     itemImages = [
       DEFAULT_IMAGE,
@@ -112,9 +118,11 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
 
   const addToCartHandler = async (
     product: CatalogObject,
-    relatedObjects: CatalogObject[],
-    variationId: string
+    relatedObjects: CatalogObject[]
   ) => {
+    const variationId = getValidVariantIds(
+      ...Array.from(selectedOptions.values())
+    )[0];
     dispatch({
       type: CartCommand.ADD,
       payload: new CartItem({
@@ -130,53 +138,45 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
     });
   };
 
-  const getOptionsFromQueryParams = () => {
-    const queryOptions = new Map<string, OptionValue>();
-    if (!queryParams || queryParams.size === 0) {
-      return queryOptions;
-    }
-
-    const allQueryOptions = options.filter(option =>
-      Array.from(queryParams.keys()).includes(option.name)
+  useEffect(() => {
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          variant: selectedVariantId
+        }
+      },
+      undefined,
+      { shallow: true }
     );
+  }, [selectedVariantId]);
 
-    allQueryOptions.forEach(optionGroup => {
-      const optionValueName = queryParams.get(optionGroup.name);
-      if (!optionValueName) {
-        return;
-      }
+  const handleOptionSelected = (
+    optionGroup: OptionGroup,
+    optionValue: OptionValue
+  ) => {
+    const newOption: OptionGroupSingle = { ...optionGroup, value: optionValue };
 
-      const optionValue = optionGroup.values.find(
-        value => value.name === optionValueName
-      );
-
-      if (optionValue) {
-        queryOptions.set(optionGroup.id, optionValue);
-      }
+    setSelectedOptions(prev => {
+      prev.set(newOption.id, newOption);
+      return prev;
     });
-    return queryOptions;
-  };
 
-  const handleOptionSelected = (optionId: string, optionValue: OptionValue) => {
-    const queryOptions = getOptionsFromQueryParams();
-    console.log('queryOptions', queryOptions);
-    console.log('optionCombos', optionCombos);
-    if (optionCombos?.length === queryOptions.size) {
-      setCartDisabled(false);
-    }
-
-    const newOption = options.find(option => option.id === optionId);
-    const newOptionName = newOption?.name;
-    const newOptionValueName = newOption?.values.find(
-      value => value.id === optionValue.id
-    )?.name;
+    const validVariantIds = getValidVariantIds(
+      ...Array.from(selectedOptions.values())
+    );
+    setCartDisabled(validVariantIds.length !== 1);
+    setSelectedVariantId(
+      validVariantIds.length === 1 ? validVariantIds[0] : ''
+    );
 
     router.replace(
       {
         pathname: router.pathname,
         query: {
           ...router.query,
-          [newOptionName!]: newOptionValueName!
+          [newOption.name]: newOption.value.name
         }
       },
       undefined,
@@ -185,49 +185,75 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
   };
 
   const isOptionDisabled = (
-    optionGroupId: string,
-    option: OptionValue
+    optionGroup: OptionGroup,
+    optionValue: OptionValue
   ): boolean => {
-    if (queryParams === null) {
-      return false;
-    }
+    const option: OptionGroupSingle = { ...optionGroup, value: optionValue };
+    //const selected: OptionGroupSingle[] = Array.from(selectedOptions.values());
 
-    const selectedOptionGroupIds = Object.keys(
-      getOptionsFromQueryParams()
-    ).filter(optGroupId => optGroupId !== optionGroupId);
-    const validCombos = optionCombos?.filter(({ options: validGroups }) => {
-      const combosWithSelectedOptions =
-        selectedOptionGroupIds.length > 0
-          ? selectedOptionGroupIds
-              .map(selectedGroupId => {
-                const optionGroup = validGroups.find(
-                  optionGroup => optionGroup.id === selectedGroupId
-                );
-                return optionGroup?.values.find(
-                  optValue =>
-                    optValue.name === queryParams?.get(selectedGroupId)!
-                )
-                  ? validGroups
-                  : null;
-              })
-              .flatMap(val => val ?? [])
-          : validGroups;
+    const selected = Array.from(selectedOptions.keys())
+      .filter(key => optionGroup.id !== key)
+      .map(key => selectedOptions.get(key)!);
 
-      if (combosWithSelectedOptions.length === 0) {
-        return false;
-      }
+    const validVariantIds = getValidVariantIds(...selected);
+    const variants = variantsWithOption(option);
 
-      const hasOption = combosWithSelectedOptions.find(validOption =>
-        validOption.values.includes(option)
-      );
+    return !variants.some(variant => validVariantIds.includes(variant.id));
+  };
 
-      return hasOption;
-    });
-    return validCombos?.length === 0;
+  const renderOptions = () => {
+    return !productOptions || productOptions.length === 0 ? null : (
+      <div className="flex flex-col gap-4 my-4">
+        {productOptions
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(optionGroup => (
+            <section key={optionGroup.id}>
+              <RadioGroup
+                onChange={(value: OptionValue) =>
+                  handleOptionSelected(optionGroup, value)
+                }
+              >
+                <RadioGroup.Label>
+                  {optionGroup.name +
+                    (selectedOptions.has(optionGroup.id)
+                      ? `: ${selectedOptions.get(optionGroup.id)!.value.name}`
+                      : '')}
+                </RadioGroup.Label>
+                <section className="flex gap-4">
+                  {optionGroup.values
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map(optionValue => (
+                      <RadioGroup.Option
+                        key={optionValue.id}
+                        value={optionValue}
+                        disabled={isOptionDisabled(optionGroup, optionValue)}
+                      >
+                        {({ checked, disabled }) => (
+                          <div className="mt-2 cursor-pointer">
+                            <div
+                              className={cn(
+                                'w-10 h-6 rounded-full bg-blue-400',
+                                {
+                                  'border-2 border-black': checked,
+                                  'opacity-50 cursor-not-allowed': disabled
+                                }
+                              )}
+                              title={optionValue.name}
+                            />
+                          </div>
+                        )}
+                      </RadioGroup.Option>
+                    ))}
+                </section>
+              </RadioGroup>
+            </section>
+          ))}
+      </div>
+    );
   };
 
   return (
-    <Layout title={catalogObject?.itemData?.name}>
+    <Layout title={product?.itemData?.name}>
       <div className="flex flex-col gap-4">
         <Breadcrumbs pages={breadcrumbs} />
         <div className="flex flex-col gap-4 md:flex-row">
@@ -247,7 +273,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
                     >
                       <Image
                         src={image.imageData!.url!}
-                        alt={catalogObject!.itemData!.name!}
+                        alt={product!.itemData!.name!}
                       />
                     </button>
                   ))}
@@ -255,7 +281,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
                 <div className="w-full flex-[6]">
                   <Image
                     src={selectedImage.imageData!.url!}
-                    alt={catalogObject!.itemData!.name!}
+                    alt={product!.itemData!.name!}
                   />
                 </div>
               </div>
@@ -264,63 +290,20 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
                 src={
                   itemImages.length > 0 ? itemImages[0].imageData!.url! : '/'
                 }
-                alt={catalogObject!.itemData!.name!}
+                alt={product!.itemData!.name!}
               />
             )}
           </section>
           <section className="flex flex-col items-start gap-2 md:flex-1">
             <span className="text-2xl font-semibold">
-              {catalogObject?.itemData?.name}
+              {product?.itemData?.name}
             </span>
             <div className="">
-              {catalogObject?.itemData?.description ??
-                catalogObject?.itemData?.descriptionPlaintext ??
-                catalogObject?.itemData?.descriptionHtml}
+              {product?.itemData?.description ??
+                product?.itemData?.descriptionPlaintext ??
+                product?.itemData?.descriptionHtml}
             </div>
-            {optionCombos && (
-              <div className="flex flex-col gap-4 my-4">
-                {options.map(option => (
-                  <section key={option.id}>
-                    <RadioGroup
-                      value={option.values.find(
-                        opt => queryParams?.get(option.name) === opt.name
-                      )}
-                      onChange={value => handleOptionSelected(option.id, value)}
-                    >
-                      <RadioGroup.Label>
-                        {[
-                          option.name,
-                          queryParams?.has(option.name)
-                            ? queryParams.get(option.name)
-                            : ''
-                        ].join(': ')}
-                      </RadioGroup.Label>
-                      <section className="flex gap-4">
-                        {option.values.map(optionValue => (
-                          <RadioGroup.Option
-                            key={optionValue.id}
-                            value={optionValue}
-                            disabled={isOptionDisabled(option.id, optionValue)}
-                          >
-                            {({ checked }) => (
-                              <div className="mt-2 cursor-pointer">
-                                <div
-                                  className={cn(
-                                    'w-10 h-6 rounded-full bg-blue-400',
-                                    { 'border-2 border-black': checked }
-                                  )}
-                                  title={optionValue.name}
-                                />
-                              </div>
-                            )}
-                          </RadioGroup.Option>
-                        ))}
-                      </section>
-                    </RadioGroup>
-                  </section>
-                ))}
-              </div>
-            )}
+            {renderOptions()}
             <div className="flex items-center gap-4">
               <DropdownMenu
                 listOfItems={[1, 2, 3, 4, 5]}
@@ -330,19 +313,13 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
               />
               <Button
                 intent="primary"
-                onClick={() =>
-                  addToCartHandler(
-                    catalogObject!,
-                    relatedObjects ?? [],
-                    selectedVariant.id
-                  )
-                }
+                onClick={() => addToCartHandler(product!, relatedObjects ?? [])}
                 disabled={cartDisabled}
               >
                 Add to bag
               </Button>
               <FavButton
-                productId={catalogObject!.id}
+                productId={product!.id}
                 handleFavorite={newValue => setFavorite(newValue)}
                 isFavorite={favorite}
               />

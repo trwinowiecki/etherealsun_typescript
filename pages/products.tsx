@@ -24,11 +24,11 @@ interface ProductsPageProps {
 }
 
 const products = ({ catalog }: ProductsPageProps) => {
+  const products: CatalogObject[] =
+    catalog.objects?.filter(obj => obj.type === 'ITEM') ?? [];
   const router = useRouter();
   const [page, setPage] = useState(1);
-  const [filteredProducts, setFilteredProducts] = useState(
-    catalog.objects ?? []
-  );
+  const [filteredProducts, setFilteredProducts] = useState(products ?? []);
   const paginatorLengthOpts = [12, 24, 48, 96];
 
   const windowSize = useWindowBreakpoint();
@@ -37,7 +37,6 @@ const products = ({ catalog }: ProductsPageProps) => {
     setPage(prev =>
       router.query.page ? parseInt(router.query.page as string, 10) : prev
     );
-    console.log(parseInt(router.query.page as string, 10));
   }, [router.isReady]);
 
   const handlePageChange = (newPage: number) => {
@@ -64,6 +63,10 @@ const products = ({ catalog }: ProductsPageProps) => {
         onClick={(id: string) => handleProductClicked(id)}
       />
     );
+  };
+
+  const handleFilterChange = (products: CatalogObject[]) => {
+    setFilteredProducts(products.filter(obj => obj.type === 'ITEM'));
   };
 
   const handleProductClicked = (id: string) => {
@@ -101,7 +104,7 @@ const products = ({ catalog }: ProductsPageProps) => {
                 <div className="max-h-[80vh] overflow-y-auto">
                   <Filter
                     products={catalog.objects ?? []}
-                    onFilterChange={products => setFilteredProducts(products)}
+                    onFilterChange={handleFilterChange}
                   />
                 </div>
               </div>
@@ -109,7 +112,7 @@ const products = ({ catalog }: ProductsPageProps) => {
               <Modal name="Filters">
                 <Filter
                   products={catalog.objects ?? []}
-                  onFilterChange={products => setFilteredProducts(products)}
+                  onFilterChange={handleFilterChange}
                 />
               </Modal>
             )}

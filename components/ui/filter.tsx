@@ -1,8 +1,5 @@
 import { Disclosure, RadioGroup } from '@headlessui/react';
 import { CheckIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { useEffect } from 'react';
-import { CatalogObject } from 'square';
-import useSquareFilters from '../../hooks/square-product-filter';
 import { cn } from '../../utils/tw-utils';
 
 export interface FilterField<T> {

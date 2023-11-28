@@ -100,7 +100,9 @@ const useSquareFilters = (unfilteredProducts: CatalogObject[]) => {
 
   const updateFilters = (updates: FilterChangeRequest<string>[]) => {
     const filterMap = new Map<string, FilterField<string>>();
-    filters.forEach(filter => filterMap.set(filter.key, filter));
+    filters.forEach(filter => {
+      filterMap.set(filter.key, filter);
+    });
 
     updates.forEach(({ key, value }) => {
       if (filterMap.has(key)) {

@@ -3,6 +3,7 @@ import Modal from '@ui/modal';
 import PaginatedData from '@ui/paginated-data';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+import { ParsedUrlQuery } from 'querystring';
 import { useEffect, useState } from 'react';
 import {
   CatalogObject,
@@ -41,9 +42,7 @@ const products = ({ catalog }: ProductsPageProps) => {
       );
 
       const urlFilters = getFiltersFromParams(params);
-      if (urlFilters && urlFilters.length > 0) {
-        updateFilters(urlFilters);
-      }
+      updateFilters(urlFilters);
     };
 
     if (router.isReady) {
@@ -94,20 +93,20 @@ const products = ({ catalog }: ProductsPageProps) => {
   const handleFilterChanged = (
     filterKeyValues: FilterChangeRequest<string>[]
   ) => {
-    const newFilters: FilterChangeRequest<string>[] = filterKeyValues.filter(
-      filter => filter.value !== null
-    );
+    updateFilters(filterKeyValues);
+    const query: ParsedUrlQuery = router.query;
+    filterKeyValues.forEach(filter => {
+      if (filter.value === null) {
+        delete query[filter.key];
+      } else {
+        query[filter.key] = filter.value;
+      }
+    });
 
     router.push(
       {
         pathname: router.pathname,
-        query: {
-          page: router.query.page ? router.query.page : 1,
-          ...newFilters.reduce(
-            (acc, { key, value }) => ({ ...acc, [key]: value }),
-            {}
-          )
-        }
+        query
       },
       undefined,
       { shallow: true, scroll: true }

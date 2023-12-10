@@ -36,7 +36,9 @@ const products = ({ catalog }: ProductsPageProps) => {
 
   useEffect(() => {
     const updateState = () => {
-      const params = new URLSearchParams(router.asPath.split(/\?/)[1]);
+      const params = new URLSearchParams(
+        router.asPath.split(/\?/)[1]?.split(/\#/)[0]
+      );
       setPage(prev =>
         params.has('page') ? parseInt(params.get('page') as string, 10) : prev
       );
@@ -78,10 +80,7 @@ const products = ({ catalog }: ProductsPageProps) => {
     router.push(
       {
         pathname: '/products',
-        query: {
-          ...router.query,
-          page
-        },
+        query: router.query,
         hash: id
       },
       undefined,
@@ -103,14 +102,10 @@ const products = ({ catalog }: ProductsPageProps) => {
       }
     });
 
-    router.push(
-      {
-        pathname: router.pathname,
-        query
-      },
-      undefined,
-      { shallow: true, scroll: true }
-    );
+    router.push({ pathname: router.pathname, query }, undefined, {
+      shallow: true,
+      scroll: true
+    });
   };
 
   const breadcrumbs: BreadcrumbPage[] = [
@@ -129,9 +124,9 @@ const products = ({ catalog }: ProductsPageProps) => {
     );
   };
 
-  const renderFilter = () => {
-    return <Filter filters={filters} filterRequest={handleFilterChanged} />;
-  };
+  const renderFilter = () => (
+    <Filter filters={filters} filterRequest={handleFilterChanged} />
+  );
 
   return (
     <Layout title="Products">
@@ -139,7 +134,7 @@ const products = ({ catalog }: ProductsPageProps) => {
         {WindowSize[windowSize] >= WindowSize.md && (
           <Breadcrumbs pages={breadcrumbs} />
         )}
-        <div className="relative flex flex-col items-center gap-2 md:flex-row md:items-start">
+        <div className="w-full relative flex flex-col items-center gap-2 md:flex-row md:items-start">
           <div className="sticky top-16 z-20 w-full bg-white shadow-md rounded-lg mb-4 md:w-[250px] md:max-w-[300px] md:max-h-[90vh]">
             {WindowSize[windowSize] >= WindowSize.md ? (
               <div className="p-4">

@@ -20,15 +20,12 @@ import Layout from '../../components/layout';
 import { useStoreContext } from '../../contexts/store';
 import { CartCommand } from '../../enums/cart-commands';
 import useSquareProductOptions, {
-  OptionGroupSingle
+  OptionGroup,
+  OptionGroupSingle,
+  OptionValue
 } from '../../hooks/square-product-options';
 import { CartItem } from '../../types/cart-item';
-import {
-  DEFAULT_IMAGE,
-  getImages,
-  OptionGroup,
-  OptionValue
-} from '../../utils/square-utils';
+import { DEFAULT_IMAGE, getImages } from '../../utils/square-utils';
 import { cn } from '../../utils/tw-utils';
 import { convertToJSON } from '../api/square';
 

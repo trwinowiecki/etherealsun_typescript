@@ -1,3 +1,4 @@
+import Button from '@ui/button';
 import Filter, { FilterChangeRequest } from '@ui/filter';
 import Modal from '@ui/modal';
 import PaginatedData from '@ui/paginated-data';
@@ -30,6 +31,7 @@ const products = ({ catalog }: ProductsPageProps) => {
   const { filters, filteredProducts, updateFilters } = useSquareFilters(
     catalog.objects ?? []
   );
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
   const paginatorLengthOpts = [12, 24, 48, 96];
 
   const windowSize = useWindowBreakpoint();
@@ -44,7 +46,7 @@ const products = ({ catalog }: ProductsPageProps) => {
       );
 
       const urlFilters = getFiltersFromParams(params);
-      updateFilters(urlFilters);
+      //updateFilters(urlFilters);
     };
 
     if (router.isReady) {
@@ -144,7 +146,7 @@ const products = ({ catalog }: ProductsPageProps) => {
                 </div>
               </div>
             ) : (
-              <Modal name="Filters">{renderFilter()}</Modal>
+              <Button onClick={() => setFilterModalOpen(true)}>Filter</Button>
             )}
           </div>
           <PaginatedData
@@ -156,6 +158,13 @@ const products = ({ catalog }: ProductsPageProps) => {
           />
         </div>
       </section>
+      <Modal
+        isOpen={filterModalOpen}
+        setIsOpen={setFilterModalOpen}
+        name="Filters"
+      >
+        {renderFilter()}
+      </Modal>
     </Layout>
   );
 };

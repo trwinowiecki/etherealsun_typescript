@@ -7,10 +7,8 @@ const useSquareFilters = (unfilteredProducts: CatalogObject[]) => {
     unfilteredProducts ?? []
   );
   const [filters, setFilters] = useState<FilterField<string>[]>([]);
-  const [initalizing, setInitializing] = useState(true);
 
   useEffect(() => {
-    setInitializing(true);
     const categoryField: FilterField<string> = {
       key: 'CATEGORY',
       displayName: 'Category',
@@ -53,7 +51,6 @@ const useSquareFilters = (unfilteredProducts: CatalogObject[]) => {
         (a, b) => a.displayName?.localeCompare(b.displayName)
       )
     ]);
-    setInitializing(false);
   }, [unfilteredProducts.length]);
 
   const productHasAttribute = (

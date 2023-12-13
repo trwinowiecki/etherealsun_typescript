@@ -406,7 +406,7 @@ const AddressForm = (props: AddressFormProps) => {
       <Modal
         name="Suggested Address Changes"
         open={modalOpen}
-        closeButton={false}
+        hasCloseButton={false}
         modalClosed={modalHandler}
         minHeight="auto"
       >

@@ -74,6 +74,56 @@ const Cart = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, cartItems]);
 
+  const renderCheckoutOptions = () => {
+    //todo
+    return null;
+    return (
+      <SquarePaymentForm
+        createPaymentRequest={() => ({
+          countryCode: 'US',
+          currencyCode: 'USD',
+          lineItems: cartItems.map(item => ({
+            amount: ((Number(item.price) * item.quantity) / 100).toString(),
+            label: `${item.name!} x ${item.quantity}`,
+            id: item.variationId,
+            imageUrl: item.images[0].url,
+            productUrl: ``
+          })),
+          requestShippingContact: true,
+          shippingOptions: [
+            {
+              label: 'Next Day',
+              amount: '15.69',
+              id: '1'
+            },
+            {
+              label: 'Three Day',
+              amount: '2.00',
+              id: '2'
+            }
+          ],
+          // pending is only required if it's true.
+          total: {
+            amount: calcSubtotal(cartItems).toString(),
+            label: 'Total'
+          }
+        })}
+      >
+        <div className="flex flex-col gap-2 mt-2">
+          <Button
+            type="button"
+            onClick={() => router.push('/checkout')}
+            className="w-full"
+          >
+            Checkout
+          </Button>
+          <GooglePay />
+          {/* <ApplePay /> */}
+        </div>
+      </SquarePaymentForm>
+    );
+  };
+
   return (
     <Layout title="Cart">
       <div className="flex flex-col gap-4">
@@ -96,52 +146,7 @@ const Cart = () => {
               <Subtotal cartItems={cartItems} />
               <div className="w-full p-4 rounded-md shadow-md bg-primary-background-darker">
                 <h1 className="text-2xl">Checkout</h1>
-                <SquarePaymentForm
-                  createPaymentRequest={() => ({
-                    countryCode: 'US',
-                    currencyCode: 'USD',
-                    lineItems: cartItems.map(item => ({
-                      amount: (
-                        (Number(item.price) * item.quantity) /
-                        100
-                      ).toString(),
-                      label: `${item.name!} x ${item.quantity}`,
-                      id: item.variationId,
-                      imageUrl: item.images[0].url,
-                      productUrl: ``
-                    })),
-                    requestShippingContact: true,
-                    shippingOptions: [
-                      {
-                        label: 'Next Day',
-                        amount: '15.69',
-                        id: '1'
-                      },
-                      {
-                        label: 'Three Day',
-                        amount: '2.00',
-                        id: '2'
-                      }
-                    ],
-                    // pending is only required if it's true.
-                    total: {
-                      amount: calcSubtotal(cartItems).toString(),
-                      label: 'Total'
-                    }
-                  })}
-                >
-                  <div className="flex flex-col gap-2 mt-2">
-                    <Button
-                      type="button"
-                      onClick={() => router.push('/checkout')}
-                      className="w-full"
-                    >
-                      Checkout
-                    </Button>
-                    <GooglePay />
-                    {/* <ApplePay /> */}
-                  </div>
-                </SquarePaymentForm>
+                {renderCheckoutOptions()}
               </div>
             </div>
           </div>

@@ -57,10 +57,14 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
       const options = getOptionsFromQueryParams(params);
       setSelectedOptions(options);
 
-      const validVariantIds = getValidVariantIds(
-        ...Array.from(options.values())
-      );
-      setCartDisabled(validVariantIds.length !== 1);
+      if (product?.itemData?.variations?.length === 1) {
+        setCartDisabled(false);
+      } else {
+        const validVariantIds = getValidVariantIds(
+          ...Array.from(options.values())
+        );
+        setCartDisabled(validVariantIds.length !== 1);
+      }
     };
 
     if (router.isReady) {
@@ -108,9 +112,14 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
     product: CatalogObject,
     relatedObjects: CatalogObject[]
   ) => {
-    const variationId = getValidVariantIds(
-      ...Array.from(selectedOptions.values())
-    )[0];
+    let variationId;
+    if (product.itemData?.variations?.length === 1) {
+      variationId = product.itemData.variations[0].id;
+    } else {
+      variationId = getValidVariantIds(
+        ...Array.from(selectedOptions.values())
+      )[0];
+    }
     dispatch({
       type: CartCommand.ADD,
       payload: new CartItem({

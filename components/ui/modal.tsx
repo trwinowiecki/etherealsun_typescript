@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { cn } from '../../utils/tw-utils';
 import Button from './button';
 
-interface ModalProps<T = any> {
+interface ModalProps {
   children: React.ReactNode;
   name: string;
   isOpen: boolean;
@@ -20,7 +20,7 @@ const Modal = ({
   setIsOpen: setIsOpen,
   hasCloseButton: closeButton = true,
   minHeight = 'min-h-[75vh]'
-}: ModalProps<T>) => {
+}: ModalProps) => {
   const closeModal = () => {
     setIsOpen(false);
   };

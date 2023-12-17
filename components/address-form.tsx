@@ -405,9 +405,9 @@ const AddressForm = (props: AddressFormProps) => {
       <LoadingSpinner loading={loading} />
       <Modal
         name="Suggested Address Changes"
-        open={modalOpen}
+        isOpen={modalOpen}
+        setIsOpen={setModalOpen}
         hasCloseButton={false}
-        modalClosed={modalHandler}
         minHeight="auto"
       >
         <div className="flex flex-col gap-2">

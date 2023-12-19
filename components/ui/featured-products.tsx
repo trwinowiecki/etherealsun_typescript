@@ -79,7 +79,7 @@ const Featured = ({
           ref={featureGroupRef}
           onScroll={() => updateScroll()}
           className={cn(
-            'flex w-full max-w-full gap-4 pt-4 overflow-y-auto snap-mandatory',
+            'flex w-full max-w-full gap-4 pt-4 overflow-y-auto motion-safe:scroll-smooth',
             {
               'justify-center': products.length === 1
             }
@@ -91,7 +91,6 @@ const Featured = ({
               item={product}
               relatedObj={relatedObjs}
               hasFavButton={hasFavButton}
-              className="scroll-snap-align-start"
             />
           ))}
         </div>

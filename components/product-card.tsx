@@ -91,7 +91,7 @@ function ProductCard({
     <div
       id={item.id}
       className={cn(
-        'relative overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md hover:cursor-pointer hover:drop-shadow-lg hover:scale-105 hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32 justify-between flex flex-col',
+        'relative overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md hover:cursor-pointer hover:drop-shadow-lg motion-safe:hover:scale-105 motion-safe:hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32 justify-between flex flex-col',
         className
       )}
     >

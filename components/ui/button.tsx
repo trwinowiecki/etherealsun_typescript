@@ -11,7 +11,7 @@ const buttonStyles = cva(
         danger: 'bg-negative'
       },
       iconButton: {
-        true: 'p-2 rounded-full'
+        true: 'p-2 rounded-full focus:rounded-full'
       }
     },
     defaultVariants: {

@@ -5,6 +5,7 @@ import { CatalogObject } from 'square';
 import { cn } from '../../utils/tw-utils';
 import ProductCard from '../product-card';
 import Button from './button';
+import FadeInOut from './fade-in-out';
 
 interface FeaturedProps {
   name: string;
@@ -55,6 +56,24 @@ const Featured = ({
   return (
     <>
       <div className="relative">
+        <FadeInOut isShowing={canScrollLeft} durationClass="duration-[150ms]">
+          <Button
+            className="absolute top-1/2 left-0 transform -translate-y-1/2 z-50"
+            iconButton
+            onClick={scrollLeft}
+          >
+            <ChevronLeftIcon className="w-8 h-8 text-white" />
+          </Button>
+        </FadeInOut>
+        <FadeInOut isShowing={canScrollRight} durationClass="duration-[150ms]">
+          <Button
+            className="absolute top-1/2 right-0 transform -translate-y-1/2 z-50"
+            iconButton
+            onClick={scrollRight}
+          >
+            <ChevronRightIcon className="w-8 h-8 text-white" />
+          </Button>
+        </FadeInOut>
         <h2 className="tracking-widest">{name.toUpperCase()}</h2>
         <div
           ref={featureGroupRef}
@@ -76,30 +95,6 @@ const Featured = ({
             />
           ))}
         </div>
-        <Button
-          className={cn(
-            'absolute top-1/2 left-0 transform -translate-y-1/2 z-99',
-            {
-              invisible: !canScrollLeft
-            }
-          )}
-          iconButton
-          onClick={scrollLeft}
-        >
-          <ChevronLeftIcon className="w-8 h-8 text-white" />
-        </Button>
-        <Button
-          className={cn(
-            'absolute top-1/2 right-0 transform -translate-y-1/2 z-99',
-            {
-              invisible: !canScrollRight
-            }
-          )}
-          iconButton
-          onClick={scrollRight}
-        >
-          <ChevronRightIcon className="w-8 h-8 text-white" />
-        </Button>
       </div>
     </>
   );

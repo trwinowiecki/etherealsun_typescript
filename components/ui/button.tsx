@@ -9,6 +9,9 @@ const buttonStyles = cva(
         primary: 'bg-primary hover:bg-primary-darker text-primary-text',
         secondary: 'bg-secondary hover:bg-secondary-darker, text-primary-text',
         danger: 'bg-negative'
+      },
+      iconButton: {
+        true: 'p-2 rounded-full'
       }
     },
     defaultVariants: {
@@ -24,6 +27,7 @@ export type ButtonProps = VariantProps<typeof buttonStyles> &
   } & ({ onClick: () => void } | { type: 'submit' });
 
 function Button({
+  iconButton = false,
   children,
   className: extraClasses = '',
   onClick,
@@ -34,7 +38,8 @@ function Button({
     <button
       className={cn(
         buttonStyles({
-          intent
+          intent,
+          iconButton
         }),
         extraClasses,
         'disabled:bg-slate-400 disabled:cursor-not-allowedrad'

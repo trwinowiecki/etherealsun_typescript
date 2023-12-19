@@ -19,22 +19,24 @@ import { Database } from '../types/supabase-data';
 import { getImages } from '../utils/square-utils';
 import { useStoreContext } from '../contexts/store';
 import { handleError } from '../utils/supabase-utils';
+import { cn } from '../utils/tw-utils';
 
 interface ProductCardProps {
   item: CatalogObject;
   relatedObj: SearchCatalogObjectsResponse['relatedObjects'];
   onClick?: (id: string) => void;
   hasFavButton?: boolean;
+  className?: string;
 }
 
 function ProductCard({
   item,
   relatedObj,
   onClick,
-  hasFavButton = false
+  hasFavButton = false,
+  className
 }: ProductCardProps) {
   const router = useRouter();
-  const { dispatch } = useStoreContext();
   const user = useUser();
   const supabase = useSupabaseClient<Database>();
   const [favorite, setFavorite] = useState(false);
@@ -88,7 +90,10 @@ function ProductCard({
   return (
     <div
       id={item.id}
-      className="relative overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md hover:cursor-pointer hover:drop-shadow-lg hover:scale-105 hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32 justify-between flex flex-col"
+      className={cn(
+        'relative overflow-hidden w-full md:w-[200px] max-w-[250px] min-w-[200px] drop-shadow-md hover:cursor-pointer hover:drop-shadow-lg hover:scale-105 hover:-translate-y-2 transition-all ease-in-out duration-300 hover:z-10 snap-start scroll-mt-32 justify-between flex flex-col',
+        className
+      )}
     >
       <button
         className="w-full cursor-pointer text-primary-text hover:text-primary-text"

@@ -2,10 +2,11 @@ import { RadioGroup } from '@headlessui/react';
 import Button from '@ui/button';
 import DropdownMenu from '@ui/dropdown-menu';
 import FavButton from '@ui/favorite-button';
+import Gallery from '@ui/gallery';
 import Image from '@ui/image';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ApiResponse,
   CatalogObject,
@@ -25,7 +26,11 @@ import useSquareProductOptions, {
   OptionValue
 } from '../../hooks/square-product-options';
 import { CartItem } from '../../types/cart-item';
-import { DEFAULT_IMAGE, getImages } from '../../utils/square-utils';
+import {
+  DEFAULT_IMAGE,
+  getImages,
+  SquareImage
+} from '../../utils/square-utils';
 import { cn } from '../../utils/tw-utils';
 import { convertToJSON } from '../api/square';
 
@@ -38,6 +43,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
 
   const router = useRouter();
   const { state, dispatch } = useStoreContext();
+  const imageGalleryRef = useRef<HTMLDivElement>(null);
   const [cartDisabled, setCartDisabled] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [favorite, setFavorite] = useState(false);
@@ -91,20 +97,16 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
   };
 
   let itemImages = getImages(product!, relatedObjects!);
-  if (itemImages.length === 0) {
-    itemImages = [
-      DEFAULT_IMAGE,
-      DEFAULT_IMAGE,
-      DEFAULT_IMAGE,
-      DEFAULT_IMAGE,
-      DEFAULT_IMAGE,
-      DEFAULT_IMAGE,
-      DEFAULT_IMAGE,
-      DEFAULT_IMAGE
-    ];
+  for (let i = 0; i < 10; i++) {
+    itemImages.push(DEFAULT_IMAGE);
   }
+  itemImages = itemImages.map((image, i) => ({
+    ...image,
+    id: image.id + '_' + i
+  }));
+  console.log(itemImages);
 
-  const [selectedImage, setSelectedImage] = useState<CatalogObject>(
+  const [selectedImage, setSelectedImage] = useState<SquareImage>(
     itemImages[0]
   );
 
@@ -240,36 +242,40 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
           <section className="w-full md:flex-1 shrink-0">
             {itemImages.length > 1 ? (
               <div className="flex flex-col-reverse gap-2 md:flex-row">
-                <div className="flex w-full h-12 gap-2 overflow-auto md:w-12 md:h-full md:flex-1 md:flex-col">
-                  {itemImages.map((image, i) => (
-                    <button
-                      key={image.id}
-                      className={cn(
-                        'border-primary hover:cursor-pointer w-12 md:w-auto',
-                        { 'border-2': selectedImage.id === image.id }
-                      )}
-                      type="button"
-                      onClick={() => setSelectedImage(image)}
-                    >
-                      <Image
-                        src={image.imageData!.url!}
-                        alt={product!.itemData!.name!}
-                      />
-                    </button>
-                  ))}
-                </div>
+                <Gallery
+                  scrollRef={imageGalleryRef}
+                  direction="vertical"
+                  length={itemImages.length}
+                >
+                  <div
+                    ref={imageGalleryRef}
+                    className="flex w-full h-12 gap-2 overflow-auto md:w-12 md:h-full md:flex-1 md:flex-col md:max-h-[500px]"
+                  >
+                    {itemImages.map(image => (
+                      <button
+                        key={image.id}
+                        className={cn(
+                          'border-primary hover:cursor-pointer w-12 md:w-auto',
+                          { 'border-2': selectedImage.id === image.id }
+                        )}
+                        type="button"
+                        onClick={() => setSelectedImage(image)}
+                      >
+                        <Image src={image.url} alt={product!.itemData!.name!} />
+                      </button>
+                    ))}
+                  </div>
+                </Gallery>
                 <div className="w-full flex-[6]">
                   <Image
-                    src={selectedImage.imageData!.url!}
+                    src={selectedImage.url}
                     alt={product!.itemData!.name!}
                   />
                 </div>
               </div>
             ) : (
               <Image
-                src={
-                  itemImages.length > 0 ? itemImages[0].imageData!.url! : '/'
-                }
+                src={itemImages.length > 0 ? itemImages[0].url : '/'}
                 alt={product!.itemData!.name!}
               />
             )}

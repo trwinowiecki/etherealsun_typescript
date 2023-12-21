@@ -112,14 +112,7 @@ export class CartItem {
   ): CartImage[] {
     const validImages = getImages(catalogObject, relatedObjects);
     return validImages
-      .filter(image => image.imageData?.url)
-      .map(
-        image =>
-          ({
-            id: image.id,
-            name: image.imageData?.name ?? '',
-            url: image.imageData?.url
-          }) as CartImage
-      );
+      .filter(image => image.url)
+      .map(image => ({ ...image }) as CartImage);
   }
 }

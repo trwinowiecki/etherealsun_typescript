@@ -34,7 +34,7 @@ const products = ({ catalog }: ProductsPageProps) => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const paginatorLengthOpts = [12, 24, 48, 96];
 
-  const windowSize = useWindowBreakpoint();
+  const { windowBreakpoint, windowSizeInRange } = useWindowBreakpoint();
 
   useEffect(() => {
     const updateState = () => {
@@ -133,12 +133,12 @@ const products = ({ catalog }: ProductsPageProps) => {
   return (
     <Layout title="Products">
       <section>
-        {WindowSize[windowSize] >= WindowSize.md && (
+        {windowSizeInRange({ min: 'md' }) && (
           <Breadcrumbs pages={breadcrumbs} />
         )}
         <div className="w-full relative flex flex-col items-center gap-2 md:flex-row md:items-start">
           <div className="sticky top-16 z-20 w-full bg-white shadow-md rounded-lg mb-4 md:w-[250px] md:max-w-[300px] md:max-h-[90vh]">
-            {WindowSize[windowSize] >= WindowSize.md ? (
+            {windowSizeInRange({ min: 'md' }) ? (
               <div className="p-4">
                 <div className="mb-4">Filters</div>
                 <div className="max-h-[80vh] overflow-y-auto">

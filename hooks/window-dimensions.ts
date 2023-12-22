@@ -7,7 +7,8 @@ export const WindowSize: { [id: string]: number } = {
   md: 768,
   lg: 1024,
   xl: 1280,
-  xxl: 1536
+  xxl: 1536,
+  inf: Number.POSITIVE_INFINITY
 };
 
 export default function useWindowBreakpoint() {
@@ -44,5 +45,16 @@ export default function useWindowBreakpoint() {
     }
   }, []);
 
-  return windowBreakpoint;
+  const windowSizeInRange = ({
+    min = 'DEFAULT',
+    max = 'inf'
+  }: {
+    min?: keyof typeof WindowSize;
+    max?: keyof typeof WindowSize;
+  }): boolean => {
+    const width = WindowSize[windowBreakpoint];
+    return !!width && width >= WindowSize[min] && width < WindowSize[max];
+  };
+
+  return { windowBreakpoint, windowSizeInRange };
 }

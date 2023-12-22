@@ -4,25 +4,29 @@ import { cn } from '../../utils/tw-utils';
 import Button from './button';
 import FadeInOut from './fade-in-out';
 
-export type GalleryProps = {
+type GalleryProps = {
   children: React.ReactNode;
   length: number;
   scrollRef: React.RefObject<HTMLDivElement>;
   direction?: 'horizontal' | 'vertical';
+  iconClass?: string;
 };
 
 const Gallery = ({
   children,
   length,
   scrollRef,
-  direction = 'horizontal'
+  direction = 'horizontal',
+  iconClass = ''
 }: GalleryProps) => {
   const [canScrollReverse, setCanScrollReverse] = useState(false);
   const [canScrollForward, setCanScrollForward] = useState(false);
 
   useEffect(() => {
-    updateScroll();
-  }, [length]);
+    if (scrollRef.current) {
+      scrollRef.current.onscroll = () => updateScroll();
+    }
+  }, [scrollRef]);
 
   const updateScroll = () => {
     if (direction === 'horizontal') {
@@ -85,7 +89,7 @@ const Gallery = ({
           iconButton
           onClick={scrollReverse}
         >
-          <ChevronLeftIcon className="w-8 h-8 text-white" />
+          <ChevronLeftIcon className={cn('w-8 h-8 text-white', iconClass)} />
         </Button>
       </FadeInOut>
       <FadeInOut isShowing={canScrollForward} durationClass="duration-[150ms]">
@@ -93,7 +97,7 @@ const Gallery = ({
           className={cn(
             'absolute transform z-50',
             {
-              'rotate-90 bottom-0 left-1/2 translate-x-1/2':
+              'rotate-90 bottom-0 left-1/2 -translate-x-1/2':
                 direction === 'vertical'
             },
             { 'top-1/2 right-0 -translate-y-1/2': direction === 'horizontal' }
@@ -101,7 +105,7 @@ const Gallery = ({
           iconButton
           onClick={scrollForward}
         >
-          <ChevronRightIcon className="w-8 h-8 text-white" />
+          <ChevronRightIcon className={cn('w-8 h-8 text-white', iconClass)} />
         </Button>
       </FadeInOut>
       {children}

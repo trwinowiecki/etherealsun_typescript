@@ -25,8 +25,16 @@ const Gallery = ({
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.onscroll = () => updateScroll();
+      updateScroll();
     }
-  }, [scrollRef]);
+  }, [
+    scrollRef.current?.scrollLeft,
+    scrollRef.current?.scrollTop,
+    scrollRef.current?.scrollHeight,
+    scrollRef.current?.scrollWidth,
+    scrollRef.current?.clientHeight,
+    scrollRef.current?.clientWidth
+  ]);
 
   const updateScroll = () => {
     if (direction === 'horizontal') {

@@ -47,7 +47,7 @@ function CartPopup() {
         leave="transition duration-150"
         leaveFrom="opacity-25"
         leaveTo="opacity-0"
-        className="absolute top-0 bottom-0 left-0 right-0 z-40 bg-black"
+        className="fixed top-0 bottom-0 left-0 right-0 z-40 bg-black"
         onClick={handleClose}
       />
       <Transition
@@ -58,7 +58,7 @@ function CartPopup() {
         leave="transition transform duration-150"
         leaveFrom="translate-y-0 md:translate-x-0"
         leaveTo="translate-y-full md:translate-x-full md:translate-y-0"
-        className="absolute bottom-0 left-0 right-0 z-50 max-h-[50vh] p-4 rounded-t-lg md:rounded-l-lg md:left-auto md:h-screen md:max-h-screen md:top-0 bg-primary-background md:rounded-tr-none"
+        className="fixed bottom-0 left-0 right-0 z-50 max-h-[50vh] p-4 rounded-t-lg md:rounded-l-lg md:left-auto md:h-screen md:max-h-screen md:top-0 bg-primary-background md:rounded-tr-none"
       >
         <>
           <div className="flex items-center justify-between">

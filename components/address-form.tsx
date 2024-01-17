@@ -280,8 +280,8 @@ const AddressForm = (props: AddressFormProps) => {
     displayName: string,
     type: HTMLInputTypeAttribute,
     options: RegisterOptions = {},
-    className: string = '',
-    extraProps: any = {}
+    className = '',
+    props = {}
   ) => {
     return (
       <label
@@ -293,7 +293,7 @@ const AddressForm = (props: AddressFormProps) => {
           type={type}
           {...register(name, options)}
           autoComplete="true"
-          {...extraProps}
+          {...props}
         />
       </label>
     );
@@ -305,7 +305,7 @@ const AddressForm = (props: AddressFormProps) => {
     values: string[],
     keys = values,
     options: RegisterOptions = {},
-    className: string = ''
+    className = ''
   ) => {
     return (
       <label

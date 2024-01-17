@@ -23,10 +23,7 @@ type FilterProps<T> = {
   filterRequest: (filterRequest: FilterChangeRequest<T>[]) => void;
 };
 
-const Filter = <T extends unknown>({
-  filters,
-  filterRequest
-}: FilterProps<T>) => {
+const Filter = <T = unknown,>({ filters, filterRequest }: FilterProps<T>) => {
   const isNewFilterSet = (changeRequest: FilterChangeRequest<T>[]) => {
     return !changeRequest.every(
       ({ key, value }) =>
@@ -74,30 +71,30 @@ const Filter = <T extends unknown>({
                 <RadioGroup value={filter.selected}>
                   {filter.values
                     ? filter.values.map((val, i) => (
-                        <RadioGroup.Option
-                          key={filter.valueKeyExtractor(filter.values[i])}
-                          value={val}
-                          onClick={() => handleFilterSelected(filter, val)}
-                        >
-                          {({ checked }) => (
-                            <div
-                              className={cn(
-                                'w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer',
-                                { 'bg-primary-background-darker': checked }
-                              )}
-                            >
-                              <CheckIcon
-                                className={cn('inline-flex h-5 invisible', {
-                                  visible: checked
-                                })}
-                              />
-                              <div className="w-full overflow-x-auto">
-                                {filter.renderValue(val)}
-                              </div>
+                      <RadioGroup.Option
+                        key={filter.valueKeyExtractor(filter.values[i])}
+                        value={val}
+                        onClick={() => handleFilterSelected(filter, val)}
+                      >
+                        {({ checked }) => (
+                          <div
+                            className={cn(
+                              'w-full flex gap-2 items-center p-1 rounded-lg cursor-pointer',
+                              { 'bg-primary-background-darker': checked }
+                            )}
+                          >
+                            <CheckIcon
+                              className={cn('inline-flex h-5 invisible', {
+                                visible: checked
+                              })}
+                            />
+                            <div className="w-full overflow-x-auto">
+                              {filter.renderValue(val)}
                             </div>
-                          )}
-                        </RadioGroup.Option>
-                      ))
+                          </div>
+                        )}
+                      </RadioGroup.Option>
+                    ))
                     : null}
                 </RadioGroup>
               </Disclosure.Panel>

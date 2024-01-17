@@ -1,4 +1,3 @@
-/* eslint-disable promise/catch-or-return */
 /* eslint-disable @typescript-eslint/naming-convention */
 import HeartIcon from '@heroicons/react/24/outline/HeartIcon';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';

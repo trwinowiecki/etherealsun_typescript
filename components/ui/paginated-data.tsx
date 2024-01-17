@@ -16,7 +16,7 @@ type PaginatedDataProps<T> = {
   pageChanged: (page: number) => void;
 };
 
-const PaginatedData = <T extends unknown>({
+const PaginatedData = <T = unknown,>({
   data,
   dataRenderer,
   firstLastPageVisible = true,

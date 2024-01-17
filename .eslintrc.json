@@ -4,13 +4,9 @@
     "es2021": true
   },
   "extends": [
-    "plugin:react/recommended",
-    "standard-with-typescript",
-    "plugin:@shopify/esnext",
-    "plugin:@shopify/typescript",
-    "plugin:@shopify/react",
-    "plugin:@shopify/prettier",
-    "plugin:@next/next/recommended"
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
   "overrides": [],
   "parserOptions": {

@@ -19,10 +19,7 @@ function CartItemComponent({
   className = '',
   children = null
 }: CartItemProps) {
-  const { state, dispatch } = useStoreContext();
-  const {
-    cart: { cartItems }
-  } = state;
+  const { dispatch } = useStoreContext();
 
   const handleQuantityUpdate = async (
     selectedItem: CartItem,
@@ -65,7 +62,9 @@ function CartItemComponent({
           </a>
         </Link>
         <div className="flex flex-col gap-1">
-          <Link href={`/product/${item.catalogObjectId}`}>
+          <Link
+            href={`/product/${item.catalogObjectId}?variant=${item.variationId}`}
+          >
             <a>
               <span>{item.name}</span>
             </a>

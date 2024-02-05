@@ -60,6 +60,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
     const updateState = (params: URLSearchParams) => {
       const options = getOptionsFromQueryParams(params);
       setSelectedOptions(options);
+      console.log('options', options);
 
       if (product?.itemData?.variations?.length === 1) {
         setCartDisabled(false);
@@ -81,7 +82,31 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
     setFavorite(state.user.favorites?.includes(product!.id));
   }, [state.user.favorites]);
 
-  const getOptionsFromQueryParams = (params: URLSearchParams) => {
+  const getOptionsFromQueryParams = (
+    params: URLSearchParams
+  ): Map<string, OptionGroupSingle> => {
+    if (params.has('variant')) {
+      const variantId = params.get('variant')!;
+      product?.itemData?.variations?.forEach(variant => {
+        if (variant.id === variantId) {
+          const options = new Map<string, OptionGroupSingle>();
+          variant.itemVariationData?.itemOptionValues?.forEach(optionValue => {
+            const optionGroup = productOptions?.find(
+              optionGroup => optionGroup.id === optionValue.itemOptionId
+            );
+            if (optionGroup) {
+              options.set(optionGroup.id, {
+                ...optionGroup,
+                value: optionGroup.values.find(
+                  value => value.id === optionValue.itemOptionValueId
+                )!
+              });
+            }
+          });
+          return options;
+        }
+      });
+    }
     const options = new Map<string, OptionGroupSingle>();
     productOptions?.forEach(optionGroup => {
       const optionValue = optionGroup.values.find(

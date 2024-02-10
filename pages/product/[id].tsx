@@ -3,6 +3,7 @@ import Button from '@ui/button';
 import DropdownMenu from '@ui/dropdown-menu';
 import FavButton from '@ui/favorite-button';
 import Image from '@ui/image';
+import axios from 'axios';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -12,13 +13,16 @@ import {
   Client,
   Environment,
   ListCatalogResponse,
-  RetrieveCatalogObjectResponse
+  RetrieveCatalogObjectResponse,
+  RetrieveInventoryCountRequest,
+  RetrieveInventoryCountResponse
 } from 'square';
 
 import Breadcrumbs, { BreadcrumbPage } from '../../components/bread-crumbs';
 import Layout from '../../components/layout';
 import { useStoreContext } from '../../contexts/store';
 import { CartCommand } from '../../enums/cart-commands';
+import { SquareCommand } from '../../enums/square-commands';
 import useSquareProductOptions, {
   OptionGroup,
   OptionGroupSingle,
@@ -28,6 +32,7 @@ import { CartItem } from '../../types/cart-item';
 import {
   DEFAULT_IMAGE,
   getImages,
+  getStockFromInventory,
   SquareImage
 } from '../../utils/square-utils';
 import { cn } from '../../utils/tw-utils';
@@ -44,6 +49,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
   const { state, dispatch } = useStoreContext();
   const [cartDisabled, setCartDisabled] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [stock, setStock] = useState(0);
   const [favorite, setFavorite] = useState(false);
   const { productOptions, getValidVariantIds, isOptionAllowed } =
     useSquareProductOptions(product!, relatedObjects!);
@@ -57,10 +63,24 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
       return;
     }
 
-    const updateState = (params: URLSearchParams) => {
+    const updateState = async (params: URLSearchParams) => {
       const options = getOptionsFromQueryParams(params);
       setSelectedOptions(options);
       console.log('options', options);
+
+      if (params.has('variant')) {
+        const inventory: RetrieveInventoryCountResponse = await axios.request({
+          method: 'POST',
+          url: '/api/square',
+          data: {
+            type: SquareCommand.GET_ONE_INVENTORY,
+            id: params.get('variant')
+          }
+        });
+        setStock(
+          getStockFromInventory(inventory, params.get('variant') || undefined)
+        );
+      }
 
       if (product?.itemData?.variations?.length === 1) {
         setCartDisabled(false);
@@ -309,7 +329,7 @@ function ProductPage({ catalogObjects }: ProductPageProps) {
             {renderOptions()}
             <div className="flex items-center gap-4">
               <DropdownMenu
-                listOfItems={[1, 2, 3, 4, 5]}
+                listOfItems={Array.from(Array(stock).keys())}
                 state={quantity}
                 setState={setQuantity}
                 disabled={cartDisabled}

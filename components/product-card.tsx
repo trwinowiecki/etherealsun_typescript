@@ -24,6 +24,7 @@ import { cn } from '../utils/tw-utils';
 interface ProductCardProps {
   item: CatalogObject;
   relatedObj: SearchCatalogObjectsResponse['relatedObjects'];
+  inventory: RetrieveInventoryCountResponse['counts'];
   onClick?: (id: string) => void;
   hasFavButton?: boolean;
   className?: string;
@@ -32,6 +33,7 @@ interface ProductCardProps {
 function ProductCard({
   item,
   relatedObj,
+  inventory,
   onClick,
   hasFavButton = false,
   className
@@ -87,6 +89,14 @@ function ProductCard({
     )
   );
 
+  const stockCount = inventory
+    ?.filter(count => count.state === 'IN_STOCK')
+    .reduce(
+      (acc, count) => acc + Number.parseInt(count.quantity ?? '0', 10),
+      0
+    );
+  console.log(stockCount);
+
   return (
     <div
       id={item.id}
@@ -105,13 +115,12 @@ function ProductCard({
           src={itemImages[0].url ?? '/defaultProduct.png'}
           className="overflow-hidden rounded-t-full rounded-b-lg"
         />
-        <div className="p-2 text-center">
+        <div className="flex flex-col justify-between p-2 text-center">
           <div className="font-semibold">{item.itemData?.name}</div>
-          <>
-            {prices.length > 1
-              ? `$${Math.min(...prices)} - $${Math.max(...prices)}`
-              : `$${prices[0]}`}
-          </>
+          {prices.length > 1
+            ? `$${Math.min(...prices)} - $${Math.max(...prices)}`
+            : `$${prices[0]}`}
+          {stockCount === 0 && <span>- Out of stock</span>}
         </div>
       </button>
       {hasFavButton && (
@@ -182,7 +191,12 @@ export const getStaticProps: GetStaticProps = async ctx => {
   const data = convertToJSON(res);
 
   return {
-    props: { item: data.result.object, relatedObj: data.result.relatedObjects }
+    props: {
+      item: data.result.object,
+      relatedObj: data.result.relatedObjects,
+      inventory: data.result.counts
+    },
+    revalidate: 10
   };
 };
 

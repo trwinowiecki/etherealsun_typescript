@@ -24,20 +24,24 @@ type BaseRequest = {
 
 export type SquareRequest = BaseRequest &
   (
-    | { type: SquareCommand.GET_ALL_CATALOG }
-    | { type: SquareCommand.GET_BATCH_CATALOG; ids: string[] }
-    | { type: SquareCommand.GET_ONE_INVENTORY; id: string }
-    | { type: SquareCommand.GET_OPTIONS_AND_ATTRIBUTES }
-    | { type: SquareCommand.SEARCH_FOR_USER; email: string; refId: string }
-    | { type: SquareCommand.GET_CUSTOMER; id: string }
-    | ({ type: SquareCommand.TAKE_PAYMENT } & TakePaymentRequest)
-    | { type: SquareCommand.CREATE_CUSTOMER; customer: UserCustom }
+    | { type: typeof SquareCommand.GET_ALL_CATALOG }
+    | { type: typeof SquareCommand.GET_BATCH_CATALOG; ids: string[] }
+    | { type: typeof SquareCommand.GET_ONE_INVENTORY; id: string }
+    | { type: typeof SquareCommand.GET_OPTIONS_AND_ATTRIBUTES }
     | {
-        type: SquareCommand.UPDATE_CUSTOMER;
-        id: string;
-        customer: UserCustom;
-        address?: AddressForm;
-      }
+      type: typeof SquareCommand.SEARCH_FOR_USER;
+      email: string;
+      refId: string;
+    }
+    | { type: typeof SquareCommand.GET_CUSTOMER; id: string }
+    | ({ type: typeof SquareCommand.TAKE_PAYMENT } & TakePaymentRequest)
+    | { type: typeof SquareCommand.CREATE_CUSTOMER; customer: UserCustom }
+    | {
+      type: typeof SquareCommand.UPDATE_CUSTOMER;
+      id: string;
+      customer: UserCustom;
+      address?: AddressForm;
+    }
   );
 
 const handler = async (req: { body: SquareRequest }, res: NextApiResponse) => {
